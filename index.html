@@ -6,6 +6,9 @@
     <title>Podium Fantasy F1 - EFEH Tech Systems</title>
     <!-- SDK de Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Script de Conexión Independiente -->
+    <script src="./supabaseClient.js"></script>
+
     <style>
         :root {
             --bg-main: #2b303c;
@@ -42,7 +45,7 @@
         /* Barra Superior / Navbar */
         .navbar {
             background-color: var(--bg-card);
-            border-bottom: 2px solid var(--color-turquoise);
+            border-bottom: 4px solid var(--color-turquoise);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -60,7 +63,7 @@
         }
 
         .navbar-brand span {
-            display: block;
+            display: inline-block; 
             font-size: 0.65rem;
             color: var(--color-papaya);
             letter-spacing: 0.5px;
@@ -94,7 +97,7 @@
         .container {
             flex: 1;
             padding: 1.5rem;
-            max-width: 1200px;
+            max-width: 650px;
             margin: 0 auto;
             width: 100%;
             padding-bottom: 6rem;
@@ -201,7 +204,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 2000;
+            z-index: 1000;
         }
 
         .modal-card {
@@ -453,14 +456,14 @@
                     <label>Contraseña</label>
                     <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" required>
                 </div>
-                <button type="submit" class="btn-action">Entrar con Supabase</button>
-                <button type="button" class="btn-action btn-demo" onclick="entrarModoDemo()">Entrar en Modo Demo</button>
+                <button type="submit" class="btn-action">Entrar</button>
+                
             </form>
             <div id="authFeedback" class="hidden"></div>
         </div>
     </div>
 
-    <!-- MODAL DE REGISTRO (Actualizado con campos de username e idioma) -->
+    <!-- MODAL DE REGISTRO (Actualizado pais e idioma) -->
     <div id="registerModal" class="modal-overlay hidden">
         <div class="modal-card">
             <button type="button" class="modal-close" onclick="cerrarModalRegistro()">×</button>
@@ -488,12 +491,33 @@
                     <select id="reg-pais" class="form-control" required>
                         <option value="">Selecciona tu país</option>
                         <option value="AR">🇦🇷 Argentina</option>
+                        <option value="BZ">🇧🇿 Belice</option>
+                        <option value="BO">🇧🇴 Bolivia</option>
+                        <option value="BR">🇧🇷 Brasil</option>
+                        <option value="CA">🇨🇦 Canadá</option>
                         <option value="CL">🇨🇱 Chile</option>
                         <option value="CO">🇨🇴 Colombia</option>
+                        <option value="CR">🇨🇷 Costa Rica</option>
+                        <option value="CU">🇨🇺 Cuba</option>
+                        <option value="DO">🇩🇴 Rep. Dominicana</option>
+                        <option value="EC">🇪🇨 Ecuador</option>
+                        <option value="SV">🇸🇻 El Salvador</option>
                         <option value="ES">🇪🇸 España</option>
+                        <option value="GT">🇬🇹 Guatemala</option>
+                        <option value="GY">🇬🇾 Guyana</option>
+                        <option value="HT">🇭🇹 Haití</option>
+                        <option value="HN">🇭🇳 Honduras</option>
+                        <option value="JM">🇯🇲 Jamaica</option>
                         <option value="MX">🇲🇽 México</option>
+                        <option value="NI">🇳🇮 Nicaragua</option>
+                        <option value="PA">🇵🇦 Panamá</option>
+                        <option value="PY">🇵🇾 Paraguay</option>
                         <option value="PE">🇵🇪 Perú</option>
+                        <option value="PT">🇵🇹 Portugal</option>
+                        <option value="PR">🇵🇷 Puerto Rico</option>
+                        <option value="SR">🇸🇷 Surinam</option>
                         <option value="US">🇺🇸 Estados Unidos</option>
+                        <option value="UY">🇺🇾 Uruguay</option>
                         <option value="VE">🇻🇪 Venezuela</option>
                     </select>
                 </div>
@@ -516,8 +540,7 @@
         <!-- TAB 1: PREDICCIONES / DASHBOARD -->
         <div id="tabHome" class="dashboard-tab">
             <div class="dashboard-header">
-                <h1>Panel de Predicciones F1</h1>
-                <p>Selecciona tu Gran Premio y fija tus pronósticos oficiales para la temporada</p>
+                <h1>Mis predicciones GP</h1> <p>Selecciona tu Gran Premio y fija tus pronósticos oficiales para la temporada</p>
             </div>
 
             <div class="card-box">
@@ -528,7 +551,8 @@
                         <option value="">Cargando calendario...</option>
                     </select>
                 </div>
-
+             <!-- Sección Quali (Polemam) -->
+              <div id="QualiSection" class="card-box"></div>
                 <div class="form-group" style="margin-top: 1rem;">
                     <label>Piloto Pole Position (Poleman)</label>
                     <select id="poleSelect" class="form-control">
@@ -539,32 +563,37 @@
 
             <!-- Sección Sprint (condicional) -->
             <div id="sprintSection" class="card-box hidden">
-                <h2 style="color: var(--color-papaya);">Carrera Sprint (Top 3)</h2>
+                <h2 style="color: var(--color-papaya);">Carrera Corta / Sprint (Top 3)</h2>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
                     <div class="form-group">
-                        <label>1° Sprint</label>
-                        <select class="form-control driver-select sprint-slot"><option value="">Selecciona piloto</option></select>
+                        <label>P1 Sprint</label></div>
+                        <div><select class="form-control driver-select sprint-slot"><option value="">Selecciona piloto</option></select>
                     </div>
                     <div class="form-group">
-                        <label>2° Sprint</label>
-                        <select class="form-control driver-select sprint-slot"><option value="">Selecciona piloto</option></select>
+                        <label>P2 Sprint</label></div>
+                        <div><select class="form-control driver-select sprint-slot"><option value="">Selecciona piloto</option></select>
                     </div>
                     <div class="form-group">
-                        <label>3° Sprint</label>
-                        <select class="form-control driver-select sprint-slot"><option value="">Selecciona piloto</option></select>
+                        <label>P3 Sprint</label></div>
+                        <div><select class="form-control driver-select sprint-slot"><option value="">Selecciona piloto</option></select>
                     </div>
                 </div>
             </div>
 
             <!-- Carrera Larga (Top 5) -->
             <div class="card-box">
-                <h2 style="color: var(--color-turquoise);">🏎️ Carrera Larga (Top 5)</h2>
+                <h2 style="color: var(--color-turquoise);">🏎️ Carrera Larga/Long Race (Top 5)</h2>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-                    <div class="form-group"><label>1° Puesto</label><select class="form-control driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select></div>
-                    <div class="form-group"><label>2° Puesto</label><select class="form-control driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select></div>
-                    <div class="form-group"><label>3° Puesto</label><select class="form-control driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select></div>
-                    <div class="form-group"><label>4° Puesto</label><select class="form-control driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select></div>
-                    <div class="form-group"><label>5° Puesto</label><select class="form-control driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select></div>
+                    <div class="form-group"><label>P1</label></div>
+                        <div><select class="form-control driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select></div>
+                    <div class="form-group"><label>P2</label></div>
+                        <div><select class="form-control driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select></div>
+                    <div class="form-group"><label>P3</label></div>
+                        <div><select class="form-control driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select></div>
+                    <div class="form-group"><label>P4</label></div>
+                        <div><select class="form-control driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select></div>
+                    <div class="form-group"><label>P5</label></div>
+                        <div><select class="form-control driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select></div>
                 </div>
             </div>
 
@@ -576,7 +605,7 @@
         <div id="tabStandings" class="dashboard-tab hidden">
             <div class="dashboard-header">
                 <h1>Tabla de Posiciones</h1>
-                <p>Ranking general sincronizado desde base de datos Supabase</p>
+                <p>Ranking Global </p>
             </div>
 
             <div class="subtabs">
@@ -595,53 +624,57 @@
         </div>
 
         <!-- TAB 3: MI CUENTA / DESGLOSE -->
-        <div id="tabAccount" class="dashboard-tab hidden">
-            <div class="dashboard-header">
-                <h1 id="accountGpTitle">Mi Cuenta y Rendimiento</h1>
-                <p>Resumen de rendimiento y desglose de puntuación por sesión desde Supabase</p>
-            </div>
+<div id="tabAccount" class="dashboard-tab hidden">
+    <div class="dashboard-header">
+        <h1>Mi Cuenta y Puntuación</h1>
+        <p>Resumen de rendimiento y desglose de puntuación por Gran Premio</p>
+    </div>
 
-            <div class="stats-grid">
-                <div class="stat-card turquoise">
-                    <h3>Total Fin de Semana</h3>
-                    <div class="value" id="statWeekendPts">0 Pts</div>
-                </div>
-                <div class="stat-card">
-                    <h3>Puntos en la General</h3>
-                    <div class="value" id="statGlobalPts">0 Pts</div>
-                </div>
-                <div class="stat-card turquoise">
-                    <h3>Posición en Liga</h3>
-                    <div class="value" id="statLeaguePos">#--</div>
-                </div>
-            </div>
+    <!-- Puntuación Global Acumulada -->
+    <div class="stats-grid">
+        <div class="stat-card turquoise" style="grid-column: 1 / -1;">
+            <h3>Puntuación Global</h3>
+            <div class="value" id="statGlobalPts">0 Pts</div>
+        </div>
+    </div>
 
-            <div class="card-box">
-                <h2>Desglose de Puntuación (Última Predicción)</h2>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Fase / Sesión</th>
-                                <th class="text-center">Estado</th>
-                                <th class="text-right">Puntos Obt.</th>
-                            </tr>
-                        </thead>
-                        <tbody id="breakdownTableBody">
-                            <tr>
-                                <td colspan="3" class="text-center" style="color: var(--text-muted);">Cargando desglose...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+    <!-- Desglose por Gran Premio con Selector -->
+    <div class="card-box">
+        <h2>Desglose por Gran Premio</h2>
+        <div class="form-group">
+            <label>Seleccionar Gran Premio</label>
+            <select id="gpHistorySelect" class="form-control" onchange="cambiarGpCuenta()">
+                <option value="">Cargando historial de predicciones...</option>
+            </select>
+        </div>
+        
+        <div style="margin-top: 1.2rem; display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.95rem;">
+            <div style="display: flex; justify-content: space-between;">
+                <span>🏁 Pole Position:</span>
+                <span id="accPolePts" style="color: var(--text-main); font-weight: bold;">0 pts</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span>⚡ Carrera Sprint:</span>
+                <span id="accSprintPts" style="color: var(--color-papaya); font-weight: bold;">0 pts</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span>🏎️ Carrera Larga:</span>
+                <span id="accRacePts" style="color: var(--color-turquoise); font-weight: bold;">0 pts</span>
+            </div>
+            <hr style="border-color: var(--border-color); margin: 0.5rem 0;">
+            <div style="display: flex; justify-content: space-between; font-size: 1.1rem;">
+                <span style="color: var(--color-papaya); font-weight: bold;">🏆 Total GP:</span>
+                <span id="accTotalGpPts" style="color: var(--color-papaya); font-weight: bold;">0 pts</span>
             </div>
         </div>
+    </div>
+</div>
 
         <!-- TAB 4: REGLAMENTO -->
         <div id="tabInfo" class="dashboard-tab hidden">
             <div class="dashboard-header">
                 <h1>Información y Reglamento</h1>
-                <p>Normas oficiales de puntuación y colaboración del proyecto</p>
+                <p>Reglas de puntuación y Colaboración</p>
             </div>
 
             <div class="card-box">
@@ -657,7 +690,7 @@
 
                 <div class="paypal-box">
                     <h3 style="color: var(--color-papaya); font-size: 1rem; margin-bottom: 0.3rem;">APOYA EL PROYECTO PODIUM FANTASY F1</h3>
-                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">Ayuda a mantener la infraestructura de EFEH Tech activa.</p>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">Ayuda a mantener el proyecto Podium Fantasy F1 activa.</p>
                     <a href="https://paypal.me" target="_blank" class="btn-paypal">♥ Donar con PayPal ♥</a>
                 </div>
             </div>
@@ -681,7 +714,7 @@
         </button>
         <button id="navInfoBtn" class="nav-btn" onclick="switchDashboardTab('info')">
             <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-            Reglamento
+            Info
         </button>
     </nav>
 
@@ -713,44 +746,37 @@
                 }
             }
         });
+        
 
-        function entrarModoDemo() {
-            usuarioActual = "elvisfeh@efeh.tech";
-            userIdActual = "2bdfb2be-ba46-4a2b-afe6-e4e5c2b2b3bf"; 
-            entrarAlSistema(usuarioActual);
-        }
-
+        
         function inicializarPilotosYCalendarioEstaticos() {
             driversList = [
-                { code: 'VER', name: 'Max Verstappen', team: 'Red Bull Racing' },
-                { code: 'HAD', name: 'Isack Hadjar', team: 'Red Bull Racing' },
-                { code: 'LEC', name: 'Charles Leclerc', team: 'Ferrari' },
-                { code: 'HAM', name: 'Lewis Hamilton', team: 'Ferrari' },
                 { code: 'NOR', name: 'Lando Norris', team: 'McLaren' },
                 { code: 'PIA', name: 'Oscar Piastri', team: 'McLaren' },
                 { code: 'RUS', name: 'George Russell', team: 'Mercedes' },
                 { code: 'ANT', name: 'Kimi Antonelli', team: 'Mercedes' },
-                { code: 'ALO', name: 'Fernando Alonso', team: 'Aston Martin' },
-                { code: 'STR', name: 'Lance Stroll', team: 'Aston Martin' },
-                { code: 'GAS', name: 'Pierre Gasly', team: 'Alpine' },
-                { code: 'COL', name: 'Franco Colapinto', team: 'Alpine' },
-                { code: 'OCO', name: 'Esteban Ocon', team: 'Haas F1 Team' },
-                { code: 'BEA', name: 'Oliver Bearman', team: 'Haas F1 Team' },
+                { code: 'LEC', name: 'Charles Leclerc', team: 'Ferrari' },
+                { code: 'HAM', name: 'Lewis Hamilton', team: 'Ferrari' },
+                { code: 'VER', name: 'Max Verstappen', team: 'Red Bull Racing' },
+                { code: 'HAD', name: 'Isack Hadjar', team: 'Red Bull Racing' },
                 { code: 'LAW', name: 'Liam Lawson', team: 'Racing Bulls' },
                 { code: 'LIN', name: 'Arvid Lindblad', team: 'Racing Bulls' },
-                { code: 'SAI', name: 'Carlos Sainz', team: 'Williams' },
-                { code: 'ALB', name: 'Alexander Albon', team: 'Williams' },
+                { code: 'STR', name: 'Lance Stroll', team: 'Aston Martin' },
+                { code: 'OCO', name: 'Esteban Ocon', team: 'Haas F1 Team' },
+                { code: 'BEA', name: 'Oliver Bearman', team: 'Haas F1 Team' },
                 { code: 'HUL', name: 'Nico Hülkenberg', team: 'Audi' },
                 { code: 'BOR', name: 'Gabriel Bortoleto', team: 'Audi' },
+                { code: 'ALO', name: 'Fernando Alonso', team: 'Aston Martin' },
+                { code: 'STR', name: 'Lance Stroll', team: 'Aston Martin' },
+                { code: 'SAI', name: 'Carlos Sainz', team: 'Williams' },
+                { code: 'ALB', name: 'Alexander Albon', team: 'Williams' },
+                { code: 'GAS', name: 'Pierre Gasly', team: 'Alpine' },
+                { code: 'COL', name: 'Franco Colapinto', team: 'Alpine' },
                 { code: 'PER', name: 'Sergio Pérez', team: 'Cadillac F1 Team' },
                 { code: 'BOT', name: 'Valtteri Bottas', team: 'Cadillac F1 Team' }
             ];
 
-            calendarData = [
-                { round: 1, name: 'Gran Premio de Australia', date: '2026-03-15', sprint: false },
-                { round: 2, name: 'Gran Premio de China', date: '2026-03-29', sprint: true }
-            ];
-
+          
             poblarSelectoresPilotos();
             poblarCalendario();
         }
@@ -822,7 +848,7 @@
             document.getElementById('registerModal').classList.add('hidden');
         }
 
-        // Función para registrar un nuevo usuario integrada con los campos de tu esquema
+        // Función para registrar un nuevo usuario
         async function manejarRegistro(event) {
             event.preventDefault();
 
@@ -1066,6 +1092,96 @@
             }
             verificarDuplicadosCarrera();
         }
+        // ==========================================
+// NUEVO BLOQUE DE CÓDIGO PARA MI CUENTA Y GP
+// ==========================================
+
+// 1. Variable global para guardar el listado de predicciones del usuario
+let misPrediccionesUsuario = [];
+
+// 2. Función principal que carga los puntos globales y llena el selector de GP
+async function cargarDatosMiCuenta() {
+    let puntosGlobales = 0;
+    misPrediccionesUsuario = [];
+
+    try {
+        if (supabaseClient && userIdActual) {
+            // Obtener puntos globales oficiales de la tabla 'usuarios'
+            const { data: userData, error: userError } = await supabaseClient
+                .from('usuarios')
+                .select('puntos_globales')
+                .eq('id', userIdActual)
+                .single();
+
+            if (!userError && userData) {
+                puntosGlobales = userData.puntos_globales || 0;
+            }
+
+            // Obtener todas las predicciones registradas por este usuario
+            const { data: predList, error: predError } = await supabaseClient
+                .from('predicciones')
+                .select('*')
+                .eq('usuario_id', userIdActual);
+
+            if (!predError && predList) {
+                misPrediccionesUsuario = predList;
+            }
+        }
+    } catch (e) {
+        console.warn("Error al sincronizar datos de la cuenta:", e);
+    }
+
+    // Mostrar Puntuación Global en pantalla
+    document.getElementById('statGlobalPts').innerText = `${puntosGlobales} Pts`;
+
+    // Poblar el selector de Gran Premio con el historial
+    const selectHistory = document.getElementById('gpHistorySelect');
+    selectHistory.innerHTML = '';
+
+    if (misPrediccionesUsuario.length === 0) {
+        selectHistory.innerHTML = '<option value="">No hay predicciones registradas aún</option>';
+        limpiarDesgloseCuentaZeros();
+        return;
+    }
+
+    misPrediccionesUsuario.forEach((pred, index) => {
+        const option = document.createElement('option');
+        option.value = index; // Índice del array para ubicarlo rápido
+        option.textContent = `${pred.gran_premio} (Total: ${pred.total_fin_de_semana || 0} pts)`;
+        selectHistory.appendChild(option);
+    });
+
+    // Seleccionar por defecto el primer GP de la lista
+    selectHistory.selectedIndex = 0;
+    cambiarGpCuenta();
+}
+
+// 3. Función que se activa al cambiar de opción en el menú desplegable del GP
+function cambiarGpCuenta() {
+    const selectHistory = document.getElementById('gpHistorySelect');
+    const index = selectHistory.value;
+
+    if (index === "" || !misPrediccionesUsuario[index]) {
+        limpiarDesgloseCuentaZeros();
+        return;
+    }
+
+    const predSeleccionada = misPrediccionesUsuario[index];
+
+    // Pintar los valores específicos del GP seleccionado en la interfaz
+    document.getElementById('accPolePts').innerText = `${predSeleccionada.puntos_qualy || 0} pts`;
+    document.getElementById('accSprintPts').innerText = `${predSeleccionada.puntos_sprint || 0} pts`;
+    document.getElementById('accRacePts').innerText = `${predSeleccionada.puntos_carrera || 0} pts`;
+    document.getElementById('accTotalGpPts').innerText = `${predSeleccionada.total_fin_de_semana || 0} pts`;
+}
+
+// 4. Función de respaldo para dejar en ceros si no hay datos
+function limpiarDesgloseCuentaZeros() {
+    document.getElementById('accPolePts').innerText = "0 pts";
+    document.getElementById('accSprintPts').innerText = "0 pts";
+    document.getElementById('accRacePts').innerText = "0 pts";
+    document.getElementById('accTotalGpPts').innerText = "0 pts";
+}
 
         async function guardarPrediccion() {
             const feedback = document.getElementById('predictionFeedback');
@@ -1081,6 +1197,38 @@
             feedback.textContent = "¡Predicción guardada y sincronizada correctamente!";
             feedback.className = "status-msg status-success";
         }
+        async function cargarCalendario() {
+    try {
+        const { data, error } = await supabaseClient
+            .from('calendario')
+            .select('*')
+            .order('round', { ascending: true });
+        
+        if (error) throw error;
+        calendarData = data;
+        
+        const selectRace = document.getElementById('raceSelect');
+        const historySelect = document.getElementById('gpHistorySelect');
+        
+        selectRace.innerHTML = '<option value="">Selecciona un Gran Premio</option>';
+        historySelect.innerHTML = '<option value="">Selecciona un GP para consultar</option>';
+        
+        calendarData.forEach(race => {
+            const option = document.createElement('option');
+            option.value = race.round;
+            const hasSprint = race.sprint === true || race.isSprint === true;
+            option.dataset.isSprint = hasSprint ? 'true' : 'false';
+            option.dataset.gpName = race.name;
+            option.textContent = `Ronda ${race.round}: ${race.name} (${race.date})`;
+            selectRace.appendChild(option);
+
+            const historyOpt = option.cloneNode(true);
+            historySelect.appendChild(historyOpt);
+        });
+           } catch (error) {
+        console.error("Error al cargar calendario desde Supabase:", error);
+    }
+}
     </script>
 </body>
 </html>
