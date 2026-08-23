@@ -719,516 +719,433 @@
     </nav>
 
     <script>
-        // Inicializa Supabase con tus credenciales reales del proyecto
-        const SUPABASE_URL = 'https://tobebpyymtwchqjfchip.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_F-J01J3ktvXhYofc3N0eYA_lhhKBwWB';
+    	// Inicializa Supabase con tus credenciales reales del proyecto
+    	const SUPABASE_URL = 'https://tobebpyymtwchqjfchip.supabase.co';
+    	const SUPABASE_ANON_KEY = 'sb_publishable_F-J01J3ktvXhYofc3N0eYA_lhhKBwWB';
 
-        // Renombrado a supabaseClient para evitar colisiones con el CDN
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    	// Renombrado a supabaseClient para evitar colisiones con el CDN
+	    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        let driversList = [];
-        let calendarData = [];
-        let usuarioActual = null;
-        let userIdActual = null;
+	    let driversList = [];
+    	let calendarData = [];
+    	let usuarioActual = null;
+    	let userIdActual = null;
 
-        document.addEventListener("DOMContentLoaded", async () => {
-            inicializarPilotosYCalendarioEstaticos();
-            if (supabaseClient) {
-                try {
-                    const { data: { session } } = await supabaseClient.auth.getSession();
-                    if (session && session.user) {
-                        userIdActual = session.user.id;
-                        usuarioActual = session.user.email;
-                        entrarAlSistema(usuarioActual);
-                    }
-                } catch (err) {
-                    console.log("Modo offline o sin sesión activa.");
+    // 1. Inicialización al cargar la página
+    document.addEventListener("DOMContentLoaded", async () => {
+        inicializarPilotosYCalendarioEstaticos();
+        await cargarCalendario(); // Carga las carreras desde Supabase
+
+        if (supabaseClient) {
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (session && session.user) {
+                    userIdActual = session.user.id;
+                    usuarioActual = session.user.email;
+                    entrarAlSistema(usuarioActual);
                 }
+            } catch (err) {
+                console.log("Modo offline o sin sesión activa.");
             }
-        });
-        
-
-        
-        function inicializarPilotosYCalendarioEstaticos() {
-            driversList = [
-                { code: 'NOR', name: 'Lando Norris', team: 'McLaren' },
-                { code: 'PIA', name: 'Oscar Piastri', team: 'McLaren' },
-                { code: 'RUS', name: 'George Russell', team: 'Mercedes' },
-                { code: 'ANT', name: 'Kimi Antonelli', team: 'Mercedes' },
-                { code: 'LEC', name: 'Charles Leclerc', team: 'Ferrari' },
-                { code: 'HAM', name: 'Lewis Hamilton', team: 'Ferrari' },
-                { code: 'VER', name: 'Max Verstappen', team: 'Red Bull Racing' },
-                { code: 'HAD', name: 'Isack Hadjar', team: 'Red Bull Racing' },
-                { code: 'LAW', name: 'Liam Lawson', team: 'Racing Bulls' },
-                { code: 'LIN', name: 'Arvid Lindblad', team: 'Racing Bulls' },
-                { code: 'STR', name: 'Lance Stroll', team: 'Aston Martin' },
-                { code: 'OCO', name: 'Esteban Ocon', team: 'Haas F1 Team' },
-                { code: 'BEA', name: 'Oliver Bearman', team: 'Haas F1 Team' },
-                { code: 'HUL', name: 'Nico Hülkenberg', team: 'Audi' },
-                { code: 'BOR', name: 'Gabriel Bortoleto', team: 'Audi' },
-                { code: 'ALO', name: 'Fernando Alonso', team: 'Aston Martin' },
-                { code: 'STR', name: 'Lance Stroll', team: 'Aston Martin' },
-                { code: 'SAI', name: 'Carlos Sainz', team: 'Williams' },
-                { code: 'ALB', name: 'Alexander Albon', team: 'Williams' },
-                { code: 'GAS', name: 'Pierre Gasly', team: 'Alpine' },
-                { code: 'COL', name: 'Franco Colapinto', team: 'Alpine' },
-                { code: 'PER', name: 'Sergio Pérez', team: 'Cadillac F1 Team' },
-                { code: 'BOT', name: 'Valtteri Bottas', team: 'Cadillac F1 Team' }
-            ];
-
-          
-            poblarSelectoresPilotos();
-            poblarCalendario();
         }
+    });
+    
+    function inicializarPilotosYCalendarioEstaticos() {
+        driversList = [
+            { code: 'NOR', name: 'Lando Norris', team: 'McLaren' },
+            { code: 'PIA', name: 'Oscar Piastri', team: 'McLaren' },
+            { code: 'RUS', name: 'George Russell', team: 'Mercedes' },
+            { code: 'ANT', name: 'Kimi Antonelli', team: 'Mercedes' },
+            { code: 'LEC', name: 'Charles Leclerc', team: 'Ferrari' },
+            { code: 'HAM', name: 'Lewis Hamilton', team: 'Ferrari' },
+            { code: 'VER', name: 'Max Verstappen', team: 'Red Bull Racing' },
+            { code: 'HAD', name: 'Isack Hadjar', team: 'Red Bull Racing' },
+            { code: 'LAW', name: 'Liam Lawson', team: 'Racing Bulls' },
+            { code: 'LIN', name: 'Arvid Lindblad', team: 'Racing Bulls' },
+            { code: 'STR', name: 'Lance Stroll', team: 'Aston Martin' },
+            { code: 'OCO', name: 'Esteban Ocon', team: 'Haas F1 Team' },
+            { code: 'BEA', name: 'Oliver Bearman', team: 'Haas F1 Team' },
+            { code: 'HUL', name: 'Nico Hülkenberg', team: 'Audi' },
+            { code: 'BOR', name: 'Gabriel Bortoleto', team: 'Audi' },
+            { code: 'ALO', name: 'Fernando Alonso', team: 'Aston Martin' },
+            { code: 'SAI', name: 'Carlos Sainz', team: 'Williams' },
+            { code: 'ALB', name: 'Alexander Albon', team: 'Williams' },
+            { code: 'GAS', name: 'Pierre Gasly', team: 'Alpine' },
+            { code: 'COL', name: 'Franco Colapinto', team: 'Alpine' },
+            { code: 'PER', name: 'Sergio Pérez', team: 'Cadillac F1 Team' },
+            { code: 'BOT', name: 'Valtteri Bottas', team: 'Cadillac F1 Team' }
+        ];
 
-        function poblarSelectoresPilotos() {
-            const poleSelect = document.getElementById('poleSelect');
-            if (!poleSelect) return;
-            poleSelect.innerHTML = '<option value="">Selecciona Poleman</option>';
+        poblarSelectoresPilotos();
+    }
+
+    // 2. Cargar Calendario exclusivamente para el selector de pronósticos (raceSelect)
+    async function cargarCalendario() {
+        try {
+            const { data, error } = await supabaseClient
+                .from('calendario')
+                .select('*')
+                .order('round', { ascending: true });
             
-            const raceSelects = document.querySelectorAll('.driver-select');
-            raceSelects.forEach(select => {
-                select.innerHTML = '<option value="">Selecciona piloto</option>';
-            });
-
-            driversList.forEach(d => {
-                const optText = `${d.code} - ${d.name} (${d.team})`;
-                
-                const optPole = document.createElement('option');
-                optPole.value = d.code;
-                optPole.textContent = optText;
-                poleSelect.appendChild(optPole);
-
-                raceSelects.forEach(select => {
-                    const optRace = document.createElement('option');
-                    optRace.value = d.code;
-                    optRace.textContent = optText;
-                    select.appendChild(optRace);
-                });
-            });
-        }
-
-        function poblarCalendario() {
+            if (error) throw error;
+            calendarData = data || [];
+            
             const selectRace = document.getElementById('raceSelect');
             if (!selectRace) return;
+
             selectRace.innerHTML = '<option value="">Selecciona un Gran Premio</option>';
             
             calendarData.forEach(race => {
                 const option = document.createElement('option');
-                option.value = race.name;
-                option.dataset.isSprint = race.sprint ? 'true' : 'false';
+                option.value = race.round;
+                const hasSprint = race.sprint === true || race.isSprint === true;
+                option.dataset.isSprint = hasSprint ? 'true' : 'false';
                 option.dataset.gpName = race.name;
                 option.textContent = `Ronda ${race.round}: ${race.name} (${race.date})`;
                 selectRace.appendChild(option);
             });
+        } catch (error) {
+            console.error("Error al cargar calendario desde Supabase:", error);
         }
-
-        function verificarDuplicadosCarrera() {
-            const raceSlots = document.querySelectorAll('.race-slot');
-            const selectedCodes = Array.from(raceSlots).map(s => s.value).filter(v => v !== "");
-
-            raceSlots.forEach(select => {
-                const currentValue = select.value;
-                Array.from(select.options).forEach(option => {
-                    if (option.value === "") return;
-                    if (selectedCodes.includes(option.value) && option.value !== currentValue) {
-                        option.disabled = true;
-                    } else {
-                        option.disabled = false;
-                    }
-                });
-            });
-        }
-
-        function abrirModalRegistro() {
-            document.getElementById('registerModal').classList.remove('hidden');
-        }
-
-        function cerrarModalRegistro() {
-            document.getElementById('registerModal').classList.add('hidden');
-        }
-
-        // Función para registrar un nuevo usuario
-        async function manejarRegistro(event) {
-            event.preventDefault();
-
-            const email = document.getElementById('reg-email').value;
-            const password = document.getElementById('reg-password').value;
-            const passwordConfirm = document.getElementById('reg-password-confirm').value;
-            const username = document.getElementById('reg-username').value;
-            const pais = document.getElementById('reg-pais').value;
-            const idioma = document.getElementById('reg-idioma').value || 'es';
-            const feedback = document.getElementById('registerFeedback');
-            feedback.className = "hidden";
-
-            try {
-                if (password !== passwordConfirm) throw new Error("Las contraseñas no coinciden.");
-
-                const { data: authData, error: authError } = await supabaseClient.auth.signUp({
-                    email: email,
-                    password: password
-                });
-
-                if (authError) throw authError;
-
-                const userId = authData.user.id; 
-
-                const { error: profileError } = await supabaseClient
-                    .from('usuarios')
-                    .insert([
-                        { 
-                            id: userId, 
-                            username: username, 
-                            pais: pais, 
-                            idioma_preferido: idioma, 
-                            puntos_globales: 0,
-                            escuderia_id: null 
-                        }
-                    ]);
-
-                if (profileError) throw profileError;
-
-                userIdActual = userId;
-                usuarioActual = email;
-                cerrarModalRegistro();
-                entrarAlSistema(email);
-
-            } catch (error) {
-                console.error('Error en el registro:', error.message);
-                feedback.textContent = 'Hubo un error al registrarse: ' + error.message;
-                feedback.className = "status-msg status-error";
-            }
-        }
-
-        async function procesarLogin(event) {
-            event.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            const feedback = document.getElementById('authFeedback');
-            feedback.className = "hidden";
-
-            try {
-                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-                if (error) throw error;
-
-                userIdActual = data.user ? data.user.id : null;
-                usuarioActual = email;
-                entrarAlSistema(email);
-            } catch (err) {
-                feedback.textContent = "Error al iniciar sesión: " + err.message;
-                feedback.className = "status-msg status-error";
-            }
-        }
-
-        function entrarAlSistema(email) {
-            document.getElementById('userEmailDisplay').innerText = email;
-            document.getElementById('authView').classList.add('hidden');
-            document.getElementById('dashboardView').classList.remove('hidden');
-            document.getElementById('bottomNavBar').classList.remove('hidden');
-            document.getElementById('navUserArea').classList.remove('hidden');
-            cargarStandingsIndividuales();
-            cargarDatosMiCuenta();
-        }
-
-        function cerrarSesion() {
-            usuarioActual = null;
-            userIdActual = null;
-            if (supabaseClient) supabaseClient.auth.signOut();
-            document.getElementById('dashboardView').classList.add('hidden');
-            document.getElementById('bottomNavBar').classList.add('hidden');
-            document.getElementById('navUserArea').classList.add('hidden');
-            document.getElementById('authView').classList.remove('hidden');
-        }
-
-        function switchDashboardTab(tabName) {
-            document.querySelectorAll('.dashboard-tab').forEach(tab => tab.classList.add('hidden'));
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-
-            const lowerTab = tabName.toLowerCase();
-            if (lowerTab === 'home') {
-                document.getElementById('tabHome').classList.remove('hidden');
-                document.getElementById('navHomeBtn').classList.add('active');
-            } else if (lowerTab === 'standings') {
-                document.getElementById('tabStandings').classList.remove('hidden');
-                document.getElementById('navStandingsBtn').classList.add('active');
-                cargarStandingsIndividuales();
-            } else if (lowerTab === 'account') {
-                document.getElementById('tabAccount').classList.remove('hidden');
-                document.getElementById('navAccountBtn').classList.add('active');
-                cargarDatosMiCuenta();
-            } else if (lowerTab === 'info') {
-                document.getElementById('tabInfo').classList.remove('hidden');
-                document.getElementById('navInfoBtn').classList.add('active');
-            }
-        }
-
-        function switchStandingsSub(subType) {
-            document.getElementById('subIndBtn').classList.remove('active');
-            document.getElementById('subEscBtn').classList.remove('active');
-            document.getElementById('subStandingsIndividual').classList.add('hidden');
-            document.getElementById('subStandingsEscuderias').classList.add('hidden');
-
-            if (subType === 'individual') {
-                document.getElementById('subIndBtn').classList.add('active');
-                document.getElementById('subStandingsIndividual').classList.remove('hidden');
-                cargarStandingsIndividuales();
-            } else {
-                document.getElementById('subEscBtn').classList.add('active');
-                document.getElementById('subStandingsEscuderias').classList.remove('hidden');
-            }
-        }
-
-        async function cargarStandingsIndividuales() {
-            const container = document.getElementById('subStandingsIndividual');
-            container.innerHTML = '<p class="text-center" style="color: var(--color-turquoise);">Cargando ranking...</p>';
-
-            let usuarios = [];
-
-            try {
-                if (supabaseClient) {
-                    const { data, error } = await supabaseClient
-                        .from('usuarios')
-                        .select('username, pais, puntos_globales')
-                        .order('puntos_globales', { ascending: false });
-                    if (!error && data) usuarios = data;
-                }
-            } catch (e) {
-                console.warn("Error al cargar standings.");
-            }
-
-            if (usuarios.length === 0) {
-                usuarios = [
-                    { username: 'efeh8581', pais: 'ES', puntos_globales: 390 },
-                    { username: 'elvisfeh', pais: 'VE', puntos_globales: 249 }
-                ];
-            }
-
-            let html = '<table>';
-            html += '<tr><th>Pos</th><th>Usuario</th><th>País</th><th class="text-right">Puntos</th></tr>';
-            
-            usuarios.forEach((u, index) => {
-                html += `<tr>
-                    <td>#${index + 1}</td>
-                    <td style="color: var(--text-main); font-weight: bold;">${u.username || 'Usuario'}</td>
-                    <td>${u.pais || 'VE'}</td>
-                    <td class="text-right" style="color: var(--color-turquoise); font-weight: bold;">${u.puntos_globales || 0} pts</td>
-                </tr>`;
-            });
-            html += '</table>';
-
-            container.innerHTML = html;
-        }
-
-        async function cargarDatosMiCuenta() {
-            let puntosGlobales = 0;
-            let posicionLiga = 1;
-            let prediccionReciente = {
-                gran_premio: 'Gran Premio de China',
-                puntos_qualy: 0,
-                puntos_sprint: 0,
-                puntos_carrera: 0,
-                total_fin_de_semana: 0
-            };
-
-            try {
-                if (supabaseClient && userIdActual) {
-                    const { data: userData } = await supabaseClient
-                        .from('usuarios')
-                        .select('puntos_globales')
-                        .eq('id', userIdActual)
-                        .single();
-                    if (userData) puntosGlobales = userData.puntos_globales;
-
-                    const { data: predData } = await supabaseClient
-                        .from('predicciones')
-                        .select('*')
-                        .eq('usuario_id', userIdActual)
-                        .order('id', { ascending: false })
-                        .limit(1);
-                    if (predData && predData.length > 0) {
-                        prediccionReciente = predData[0];
-                    }
-                }
-            } catch (e) {
-                console.warn("Usando datos locales por defecto para la cuenta.");
-            }
-
-            document.getElementById('statWeekendPts').innerText = `${prediccionReciente.total_fin_de_semana || 0} Pts`;
-            document.getElementById('statGlobalPts').innerText = `${puntosGlobales} Pts`;
-            document.getElementById('statLeaguePos').innerText = `#${posicionLiga}`;
-            document.getElementById('accountGpTitle').innerText = prediccionReciente.gran_premio || 'Gran Premio F1';
-
-            const tbody = document.getElementById('breakdownTableBody');
-            tbody.innerHTML = `
-                <tr>
-                    <td>Qualy (Clasificación)</td>
-                    <td class="text-center"><span class="badge">Completado</span></td>
-                    <td class="text-right" style="color: var(--color-turquoise);">${prediccionReciente.puntos_qualy || 0} Pts</td>
-                </tr>
-                <tr>
-                    <td>Sprint (Formato Corto)</td>
-                    <td class="text-center"><span class="badge" style="background-color: var(--color-papaya);">Sprint</span></td>
-                    <td class="text-right">${prediccionReciente.puntos_sprint || 0} Pts</td>
-                </tr>
-                <tr>
-                    <td>Carrera Principal (Domingo)</td>
-                    <td class="text-center"><span class="badge">Completado</span></td>
-                    <td class="text-right" style="color: var(--color-turquoise);">${prediccionReciente.puntos_carrera || 0} Pts</td>
-                </tr>
-            `;
-        }
-
-        function actualizarModalidadGranPremio() {
-            const selectRace = document.getElementById('raceSelect');
-            const selectedOption = selectRace.options[selectRace.selectedIndex];
-            const isSprint = selectedOption && selectedOption.dataset.isSprint === 'true';
-            
-            const sprintSection = document.getElementById('sprintSection');
-            if (isSprint) {
-                sprintSection.classList.remove('hidden');
-            } else {
-                sprintSection.classList.add('hidden');
-                document.querySelectorAll('.sprint-slot').forEach(s => s.value = "");
-            }
-            verificarDuplicadosCarrera();
-        }
-        // ==========================================
-// NUEVO BLOQUE DE CÓDIGO PARA MI CUENTA Y GP
-// ==========================================
-
-// 1. Variable global para guardar el listado de predicciones del usuario
-let misPrediccionesUsuario = [];
-
-// 2. Función principal que carga los puntos globales y llena el selector de GP
-async function cargarDatosMiCuenta() {
-    let puntosGlobales = 0;
-    misPrediccionesUsuario = [];
-
-    try {
-        if (supabaseClient && userIdActual) {
-            // Obtener puntos globales oficiales de la tabla 'usuarios'
-            const { data: userData, error: userError } = await supabaseClient
-                .from('usuarios')
-                .select('puntos_globales')
-                .eq('id', userIdActual)
-                .single();
-
-            if (!userError && userData) {
-                puntosGlobales = userData.puntos_globales || 0;
-            }
-
-            // Obtener todas las predicciones registradas por este usuario
-            const { data: predList, error: predError } = await supabaseClient
-                .from('predicciones')
-                .select('*')
-                .eq('usuario_id', userIdActual);
-
-            if (!predError && predList) {
-                misPrediccionesUsuario = predList;
-            }
-        }
-    } catch (e) {
-        console.warn("Error al sincronizar datos de la cuenta:", e);
     }
 
-    // Mostrar Puntuación Global en pantalla
-    document.getElementById('statGlobalPts').innerText = `${puntosGlobales} Pts`;
-
-    // Poblar el selector de Gran Premio con el historial
-    const selectHistory = document.getElementById('gpHistorySelect');
-    selectHistory.innerHTML = '';
-
-    if (misPrediccionesUsuario.length === 0) {
-        selectHistory.innerHTML = '<option value="">No hay predicciones registradas aún</option>';
-        limpiarDesgloseCuentaZeros();
-        return;
-    }
-
-    misPrediccionesUsuario.forEach((pred, index) => {
-        const option = document.createElement('option');
-        option.value = index; // Índice del array para ubicarlo rápido
-        option.textContent = `${pred.gran_premio} (Total: ${pred.total_fin_de_semana || 0} pts)`;
-        selectHistory.appendChild(option);
-    });
-
-    // Seleccionar por defecto el primer GP de la lista
-    selectHistory.selectedIndex = 0;
-    cambiarGpCuenta();
-}
-
-// 3. Función que se activa al cambiar de opción en el menú desplegable del GP
-function cambiarGpCuenta() {
-    const selectHistory = document.getElementById('gpHistorySelect');
-    const index = selectHistory.value;
-
-    if (index === "" || !misPrediccionesUsuario[index]) {
-        limpiarDesgloseCuentaZeros();
-        return;
-    }
-
-    const predSeleccionada = misPrediccionesUsuario[index];
-
-    // Pintar los valores específicos del GP seleccionado en la interfaz
-    document.getElementById('accPolePts').innerText = `${predSeleccionada.puntos_qualy || 0} pts`;
-    document.getElementById('accSprintPts').innerText = `${predSeleccionada.puntos_sprint || 0} pts`;
-    document.getElementById('accRacePts').innerText = `${predSeleccionada.puntos_carrera || 0} pts`;
-    document.getElementById('accTotalGpPts').innerText = `${predSeleccionada.total_fin_de_semana || 0} pts`;
-}
-
-// 4. Función de respaldo para dejar en ceros si no hay datos
-function limpiarDesgloseCuentaZeros() {
-    document.getElementById('accPolePts').innerText = "0 pts";
-    document.getElementById('accSprintPts').innerText = "0 pts";
-    document.getElementById('accRacePts').innerText = "0 pts";
-    document.getElementById('accTotalGpPts').innerText = "0 pts";
-}
-
-        async function guardarPrediccion() {
-            const feedback = document.getElementById('predictionFeedback');
-            const selectRace = document.getElementById('raceSelect');
-            const selectedRound = selectRace.value;
-
-            if (!selectedRound) {
-                feedback.textContent = "Selecciona un Gran Premio antes de guardar.";
-                feedback.className = "status-msg status-error";
-                return;
-            }
-
-            feedback.textContent = "¡Predicción guardada y sincronizada correctamente!";
-            feedback.className = "status-msg status-success";
-        }
-        async function cargarCalendario() {
-    try {
-        const { data, error } = await supabaseClient
-            .from('calendario')
-            .select('*')
-            .order('round', { ascending: true });
+    function poblarSelectoresPilotos() {
+        const poleSelect = document.getElementById('poleSelect');
+        if (!poleSelect) return;
+        poleSelect.innerHTML = '<option value="">Selecciona Poleman</option>';
         
-        if (error) throw error;
-        calendarData = data;
-        
-        const selectRace = document.getElementById('raceSelect');
-        const historySelect = document.getElementById('gpHistorySelect');
-        
-        selectRace.innerHTML = '<option value="">Selecciona un Gran Premio</option>';
-        historySelect.innerHTML = '<option value="">Selecciona un GP para consultar</option>';
-        
-        calendarData.forEach(race => {
-            const option = document.createElement('option');
-            option.value = race.round;
-            const hasSprint = race.sprint === true || race.isSprint === true;
-            option.dataset.isSprint = hasSprint ? 'true' : 'false';
-            option.dataset.gpName = race.name;
-            option.textContent = `Ronda ${race.round}: ${race.name} (${race.date})`;
-            selectRace.appendChild(option);
-
-            const historyOpt = option.cloneNode(true);
-            historySelect.appendChild(historyOpt);
+        const raceSelects = document.querySelectorAll('.driver-select');
+        raceSelects.forEach(select => {
+            select.innerHTML = '<option value="">Selecciona piloto</option>';
         });
-           } catch (error) {
-        console.error("Error al cargar calendario desde Supabase:", error);
+
+        driversList.forEach(d => {
+            const optText = `${d.code} - ${d.name} (${d.team})`;
+            
+            const optPole = document.createElement('option');
+            optPole.value = d.code;
+            optPole.textContent = optText;
+            poleSelect.appendChild(optPole);
+
+            raceSelects.forEach(select => {
+                const optRace = document.createElement('option');
+                optRace.value = d.code;
+                optRace.textContent = optText;
+                select.appendChild(optRace);
+            });
+        });
     }
-}
-    </script>
+
+    function verificarDuplicadosCarrera() {
+        const raceSlots = document.querySelectorAll('.race-slot');
+        const selectedCodes = Array.from(raceSlots).map(s => s.value).filter(v => v !== "");
+
+        raceSlots.forEach(select => {
+            const currentValue = select.value;
+            Array.from(select.options).forEach(option => {
+                if (option.value === "") return;
+                if (selectedCodes.includes(option.value) && option.value !== currentValue) {
+                    option.disabled = true;
+                } else {
+                    option.disabled = false;
+                }
+            });
+        });
+    }
+
+    function abrirModalRegistro() {
+        document.getElementById('registerModal').classList.remove('hidden');
+    }
+
+    function cerrarModalRegistro() {
+        document.getElementById('registerModal').classList.add('hidden');
+    }
+
+    // Registro de Usuario
+    async function manejarRegistro(event) {
+        event.preventDefault();
+
+        const email = document.getElementById('reg-email').value;
+        const password = document.getElementById('reg-password').value;
+        const passwordConfirm = document.getElementById('reg-password-confirm').value;
+        const username = document.getElementById('reg-username').value;
+        const pais = document.getElementById('reg-pais').value;
+        const idioma = document.getElementById('reg-idioma').value || 'es';
+        const feedback = document.getElementById('registerFeedback');
+        feedback.className = "hidden";
+
+        try {
+            if (password !== passwordConfirm) throw new Error("Las contraseñas no coinciden.");
+
+            const { data: authData, error: authError } = await supabaseClient.auth.signUp({
+                email: email,
+                password: password
+            });
+
+            if (authError) throw authError;
+
+            const userId = authData.user.id; 
+
+            const { error: profileError } = await supabaseClient
+                .from('usuarios')
+                .insert([
+                    { 
+                        id: userId, 
+                        username: username, 
+                        pais: pais, 
+                        idioma_preferido: idioma, 
+                        puntos_globales: 0,
+                        escuderia_id: null 
+                    }
+                ]);
+
+            if (profileError) throw profileError;
+
+            userIdActual = userId;
+            usuarioActual = email;
+            cerrarModalRegistro();
+            entrarAlSistema(email);
+
+        } catch (error) {
+            console.error('Error en el registro:', error.message);
+            feedback.textContent = 'Hubo un error al registrarse: ' + error.message;
+            feedback.className = "status-msg status-error";
+        }
+    }
+
+    async function procesarLogin(event) {
+        event.preventDefault();
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+        const feedback = document.getElementById('authFeedback');
+        feedback.className = "hidden";
+
+        try {
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            if (error) throw error;
+
+            userIdActual = data.user ? data.user.id : null;
+            usuarioActual = email;
+            entrarAlSistema(email);
+        } catch (err) {
+            feedback.textContent = "Error al iniciar sesión: " + err.message;
+            feedback.className = "status-msg status-error";
+        }
+    }
+
+    function entrarAlSistema(email) {
+        document.getElementById('userEmailDisplay').innerText = email;
+        document.getElementById('authView').classList.add('hidden');
+        document.getElementById('dashboardView').classList.remove('hidden');
+        document.getElementById('bottomNavBar').classList.remove('hidden');
+        document.getElementById('navUserArea').classList.remove('hidden');
+        cargarStandingsIndividuales();
+        cargarDatosMiCuenta();
+    }
+
+    function cerrarSesion() {
+        usuarioActual = null;
+        userIdActual = null;
+        if (supabaseClient) supabaseClient.auth.signOut();
+        document.getElementById('dashboardView').classList.add('hidden');
+        document.getElementById('bottomNavBar').classList.add('hidden');
+        document.getElementById('navUserArea').classList.add('hidden');
+        document.getElementById('authView').classList.remove('hidden');
+    }
+
+    function switchDashboardTab(tabName) {
+        document.querySelectorAll('.dashboard-tab').forEach(tab => tab.classList.add('hidden'));
+        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+
+        const lowerTab = tabName.toLowerCase();
+        if (lowerTab === 'home') {
+            document.getElementById('tabHome').classList.remove('hidden');
+            document.getElementById('navHomeBtn').classList.add('active');
+        } else if (lowerTab === 'standings') {
+            document.getElementById('tabStandings').classList.remove('hidden');
+            document.getElementById('navStandingsBtn').classList.add('active');
+            cargarStandingsIndividuales();
+        } else if (lowerTab === 'account') {
+            document.getElementById('tabAccount').classList.remove('hidden');
+            document.getElementById('navAccountBtn').classList.add('active');
+            cargarDatosMiCuenta();
+        } else if (lowerTab === 'info') {
+            document.getElementById('tabInfo').classList.remove('hidden');
+            document.getElementById('navInfoBtn').classList.add('active');
+        }
+    }
+
+    function switchStandingsSub(subType) {
+        document.getElementById('subIndBtn').classList.remove('active');
+        document.getElementById('subEscBtn').classList.remove('active');
+        document.getElementById('subStandingsIndividual').classList.add('hidden');
+        document.getElementById('subStandingsEscuderias').classList.add('hidden');
+
+        if (subType === 'individual') {
+            document.getElementById('subIndBtn').classList.add('active');
+            document.getElementById('subStandingsIndividual').classList.remove('hidden');
+            cargarStandingsIndividuales();
+        } else {
+            document.getElementById('subEscBtn').classList.add('active');
+            document.getElementById('subStandingsEscuderias').classList.remove('hidden');
+        }
+    }
+
+    async function cargarStandingsIndividuales() {
+        const container = document.getElementById('subStandingsIndividual');
+        container.innerHTML = '<p class="text-center" style="color: var(--color-turquoise);">Cargando ranking...</p>';
+
+        let usuarios = [];
+
+        try {
+            if (supabaseClient) {
+                const { data, error } = await supabaseClient
+                    .from('usuarios')
+                    .select('username, pais, puntos_globales')
+                    .order('puntos_globales', { ascending: false });
+                if (!error && data) usuarios = data;
+            }
+        } catch (e) {
+            console.warn("Error al cargar standings.");
+        }
+
+        if (usuarios.length === 0) {
+            usuarios = [
+                { username: 'efeh8581', pais: 'ES', puntos_globales: 390 },
+                { username: 'elvisfeh', pais: 'VE', puntos_globales: 249 }
+            ];
+        }
+
+        let html = '<table>';
+        html += '<tr><th>Pos</th><th>Usuario</th><th>País</th><th class="text-right">Puntos</th></tr>';
+        
+        usuarios.forEach((u, index) => {
+            html += `<tr>
+                <td>#${index + 1}</td>
+                <td style="color: var(--text-main); font-weight: bold;">${u.username || 'Usuario'}</td>
+                <td>${u.pais || 'VE'}</td>
+                <td class="text-right" style="color: var(--color-turquoise); font-weight: bold;">${u.puntos_globales || 0} pts</td>
+            </tr>`;
+        });
+        html += '</table>';
+
+        container.innerHTML = html;
+    }
+
+    // ==========================================
+    // MÓDULO DE MI CUENTA Y HISTORIAL DE GP
+    // ==========================================
+
+    let misPrediccionesUsuario = [];
+
+    async function cargarDatosMiCuenta() {
+        let puntosGlobales = 0;
+        misPrediccionesUsuario = [];
+
+        try {
+            if (supabaseClient && userIdActual) {
+                const { data: userData, error: userError } = await supabaseClient
+                    .from('usuarios')
+                    .select('puntos_globales')
+                    .eq('id', userIdActual)
+                    .single();
+
+                if (!userError && userData) {
+                    puntosGlobales = userData.puntos_globales || 0;
+                }
+
+                const { data: predList, error: predError } = await supabaseClient
+                    .from('predicciones')
+                    .select('*')
+                    .eq('usuario_id', userIdActual);
+
+                if (!predError && predList) {
+                    misPrediccionesUsuario = predList;
+                }
+            }
+        } catch (e) {
+            console.warn("Error al sincronizar datos de la cuenta:", e);
+        }
+
+        document.getElementById('statGlobalPts').innerText = `${puntosGlobales} Pts`;
+
+        const selectHistory = document.getElementById('gpHistorySelect');
+        if (!selectHistory) return;
+
+        selectHistory.innerHTML = '';
+
+        if (misPrediccionesUsuario.length === 0) {
+            selectHistory.innerHTML = '<option value="">No hay predicciones registradas aún</option>';
+            limpiarDesgloseCuentaZeros();
+            return;
+        }
+
+        misPrediccionesUsuario.forEach((pred, index) => {
+            const option = document.createElement('option');
+            option.value = index; 
+            option.textContent = `${pred.gran_premio} (Total: ${pred.total_fin_de_semana || 0} pts)`;
+            selectHistory.appendChild(option);
+        });
+
+        selectHistory.selectedIndex = 0;
+        cambiarGpCuenta();
+    }
+
+    function cambiarGpCuenta() {
+        const selectHistory = document.getElementById('gpHistorySelect');
+        if (!selectHistory) return;
+        
+        const index = selectHistory.value;
+
+        if (index === "" || !misPrediccionesUsuario[index]) {
+            limpiarDesgloseCuentaZeros();
+            return;
+        }
+
+        const predSeleccionada = misPrediccionesUsuario[index];
+
+        document.getElementById('accPolePts').innerText = `${predSeleccionada.puntos_qualy || 0} pts`;
+        document.getElementById('accSprintPts').innerText = `${predSeleccionada.puntos_sprint || 0} pts`;
+        document.getElementById('accRacePts').innerText = `${predSeleccionada.puntos_carrera || 0} pts`;
+        document.getElementById('accTotalGpPts').innerText = `${predSeleccionada.total_fin_de_semana || 0} pts`;
+    }
+
+    function limpiarDesgloseCuentaZeros() {
+        document.getElementById('accPolePts').innerText = "0 pts";
+        document.getElementById('accSprintPts').innerText = "0 pts";
+        document.getElementById('accRacePts').innerText = "0 pts";
+        document.getElementById('accTotalGpPts').innerText = "0 pts";
+    }
+
+    function actualizarModalidadGranPremio() {
+        const selectRace = document.getElementById('raceSelect');
+        const selectedOption = selectRace.options[selectRace.selectedIndex];
+        const isSprint = selectedOption && selectedOption.dataset.isSprint === 'true';
+        
+        const sprintSection = document.getElementById('sprintSection');
+        if (isSprint) {
+            sprintSection.classList.remove('hidden');
+        } else {
+            sprintSection.classList.add('hidden');
+            document.querySelectorAll('.sprint-slot').forEach(s => s.value = "");
+        }
+        verificarDuplicadosCarrera();
+    }
+
+    async function guardarPrediccion() {
+        const feedback = document.getElementById('predictionFeedback');
+        const selectRace = document.getElementById('raceSelect');
+        const selectedRound = selectRace.value;
+
+        if (!selectedRound) {
+            feedback.textContent = "Selecciona un Gran Premio antes de guardar.";
+            feedback.className = "status-msg status-error";
+            return;
+        }
+
+        feedback.textContent = "¡Predicción guardada y sincronizada correctamente!";
+        feedback.className = "status-msg status-success";
+    }
+</script>
 </body>
 </html>
