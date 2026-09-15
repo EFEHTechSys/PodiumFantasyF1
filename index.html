@@ -10,32 +10,65 @@
     <script src="./supabaseClient.js"></script>
 
     <style>
+        /* Reset universal */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
         :root {
-            --bg-main: #2b303c;
-            --bg-card: #343b48;
-            --bg-card-hover: #3e444d;
-            --color-turquoise: #00d2be;
-            --color-papaya: #ff8700;
+            --bg-main: #000000;
+            --bg-card: rgba(26, 31, 40, 0.88);
+            --bg-card-hover: rgba(35, 42, 54, 0.95);
+            --color-turquoise: #00f0ff;
+            --color-f1-red: #e10600;     /* Rojo F1 Clásico */
+            --color-red-dark: #991b1b;
+            --color-gold: #ffd700;       /* Dorado metalizado */
+            --color-gold-dark: #b8860b;
             --text-main: #ffffff;
             --text-muted: #9ca3af;
-            --border-color: #4b5563;
+            --border-color: rgba(255, 255, 255, 0.12);
             --danger: #ef4444;
             --success: #10b981;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
         body {
+            background-image: url('collage.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
             background-color: var(--bg-main);
             color: var(--text-main);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Contenedor Principal */
+        .container {
+            flex: 1;
+            padding: 1rem;
+            max-width: 650px;
+            margin: 0 auto;
+            width: 100%;
+            padding-bottom: 6rem;
+        }
+
+        /* Tarjetas de Contenido */
+        .card-box {
+            background-color: var(--bg-card);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0.6rem 0.8rem;
+            margin-bottom: 0.6rem;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+            width: 100%;
+        }
+
+        .card-box h2 {
+            font-size: 0.95rem;
+            margin: 0 0 0.4rem 0;
+            color: var(--color-turquoise);
         }
 
         .hidden {
@@ -45,29 +78,73 @@
         /* Barra Superior / Navbar */
         .navbar {
             background-color: var(--bg-card);
-            border-bottom: 4px solid var(--color-turquoise);
+            border-bottom: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 1.5rem;
+            padding: 0.8rem 1.5rem;
             position: sticky;
             top: 0;
             z-index: 1000;
+            width: 100%;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
         }
 
-        .navbar-brand {
-            font-weight: bold;
-            font-size: 1.2rem;
-            color: var(--color-turquoise);
-            letter-spacing: 1px;
+        .navbar-brand-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
 
-        .navbar-brand span {
+        /* Miniatura del Casco Real del Robot en Navbar con animación sutil */
+        .navbar-mascot {
+            width: 38px;
+            height: 38px;
+            animation: robotFloat 3s ease-in-out infinite;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+            flex-shrink: 0;
+        }
+
+        /* Contenedor de la Marca y Títulos Corridos */
+        .navbar-brand-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .navbar-brand-title {
+            font-weight: 900;
+            font-size: 1.1rem;
+            letter-spacing: 0.8px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
+
+        .brand-main {
+            background: linear-gradient(135deg, #fff 20%, var(--color-gold) 80%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .navbar-brand-title .f1-highlight {
+            color: var(--color-f1-red);
+            -webkit-text-fill-color: initial;
+        }
+
+        span.sub-brand {
             display: inline-block; 
             font-size: 0.65rem;
-            color: var(--color-papaya);
+            color: var(--color-turquoise);
+            background-color: rgba(0, 240, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 3px;
             letter-spacing: 0.5px;
             text-transform: uppercase;
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            width: fit-content;
         }
 
         .user-info-nav {
@@ -76,15 +153,17 @@
             gap: 1rem;
             font-size: 0.9rem;
             color: var(--text-muted);
+            font-weight: bold;
         }
 
         .btn-logout {
             background: transparent;
             border: 1px solid var(--border-color);
-            color: var(--text-main);
+            color: var(--text-muted);
             padding: 0.3rem 0.8rem;
             border-radius: 4px;
             cursor: pointer;
+            font-weight: bold;
             transition: all 0.2s;
         }
 
@@ -93,14 +172,9 @@
             color: var(--danger);
         }
 
-        /* Contenedor Principal */
-        .container {
-            flex: 1;
-            padding: 1.5rem;
-            max-width: 650px;
-            margin: 0 auto;
-            width: 100%;
-            padding-bottom: 6rem;
+        @keyframes robotFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-3px) rotate(1deg); }
         }
 
         /* Vista de Autenticación */
@@ -109,7 +183,7 @@
             justify-content: center;
             align-items: center;
             flex: 1;
-            padding: 2rem;
+            padding: 2rem 1rem;
         }
 
         .auth-card {
@@ -119,7 +193,8 @@
             width: 100%;
             max-width: 450px;
             box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-            border-top: 4px solid var(--color-papaya);
+            border-top: 4px solid var(--color-gold);
+            margin: 0 auto;
         }
 
         .auth-header-actions {
@@ -132,12 +207,14 @@
         }
 
         .auth-header-actions h3 {
-            color: var(--color-turquoise);
+            color: var(--color-gold);
             font-size: 1.1rem;
+            margin: 0;
         }
 
         .form-group {
             margin-bottom: 1rem;
+            width: 100%;
         }
 
         .form-group label {
@@ -159,39 +236,65 @@
             font-size: 0.95rem;
         }
 
-        .form-control:focus {
+        .form-row-inline {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.35rem;
+            width: 100%;
+        }
+
+        .form-row-inline label {
+            flex: 0 0 45px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-bottom: 0;
+            letter-spacing: 0.3px;
+        }
+
+        .select-wrapper {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            border-radius: 4px;
+        }
+
+        .form-control-compact {
+            width: 100%;
+            padding: 0.3rem 0.5rem;
+            background-color: var(--bg-main);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 4px;
+            font-size: 0.8rem;
+            height: 30px;
+        }
+
+        .form-control-compact:focus, .form-control:focus {
             outline: none;
             border-color: var(--color-turquoise);
         }
 
         .btn-action {
             width: 100%;
-            background-color: var(--color-papaya);
-            color: #111;
+            background-color: var(--color-turquoise);
+            color: #000000;
             border: none;
             padding: 0.75rem;
-            font-weight: bold;
+            font-weight: 900;
             border-radius: 4px;
             cursor: pointer;
             transition: opacity 0.2s;
             text-transform: uppercase;
             font-size: 0.9rem;
             letter-spacing: 0.5px;
+            margin-top: 0.2rem;
         }
 
         .btn-action:hover { opacity: 0.9; }
-        .btn-turquesa { background-color: var(--color-turquoise); }
-        .btn-demo { background-color: var(--border-color); color: #fff; margin-top: 0.5rem; }
-
-        .status-msg {
-            margin-top: 1rem;
-            padding: 0.75rem;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            text-align: center;
-        }
-        .status-error { background-color: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid var(--danger); }
-        .status-success { background-color: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid var(--success); }
+        .btn-turquesa { background-color: var(--color-turquoise); color: #000000; }
 
         /* Modal de Registro */
         .modal-overlay {
@@ -205,6 +308,7 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
+            padding: 1rem;
         }
 
         .modal-card {
@@ -214,7 +318,7 @@
             width: 100%;
             max-width: 450px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            border-top: 4px solid var(--color-turquoise);
+            border-top: 4px solid var(--color-gold);
             position: relative;
             max-height: 90vh;
             overflow-y: auto;
@@ -232,65 +336,8 @@
         }
         .modal-close:hover { color: var(--text-main); }
 
-        /* Dashboard & Widgets */
-        .dashboard-header {
-            margin-bottom: 1.5rem;
-        }
-
-        .dashboard-header h1 {
-            font-size: 1.8rem;
-            color: var(--text-main);
-        }
-
-        .dashboard-header p {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background-color: var(--bg-card);
-            border-radius: 8px;
-            padding: 1.2rem;
-            border-left: 4px solid var(--color-papaya);
-        }
-
-        .stat-card.turquoise { border-left-color: var(--color-turquoise); }
-
-        .stat-card h3 {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-card .value {
-            font-size: 1.6rem;
-            font-weight: bold;
-        }
-
-        .card-box {
-            background-color: var(--bg-card);
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-        }
-
-        .card-box h2 {
-            font-size: 1.2rem;
-            margin-bottom: 1rem;
-            color: var(--color-turquoise);
-        }
-
         /* Tablas */
-        .table-container { overflow-x: auto; }
+        .table-container { overflow-x: auto; width: 100%; }
 
         table {
             width: 100%;
@@ -306,7 +353,7 @@
 
         th {
             background-color: rgba(0, 0, 0, 0.1);
-            color: var(--color-papaya);
+            color: var(--color-turquoise);
             text-transform: uppercase;
             font-size: 0.75rem;
             letter-spacing: 0.5px;
@@ -316,15 +363,6 @@
 
         .text-center { text-align: center; }
         .text-right { text-align: right; }
-
-        .badge {
-            background-color: var(--color-turquoise);
-            color: #111;
-            padding: 0.2rem 0.5rem;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 0.8rem;
-        }
 
         /* Subtabs de Standings */
         .subtabs {
@@ -345,22 +383,26 @@
 
         .subtab-btn.active {
             background-color: var(--color-turquoise);
-            color: #111;
+            color: #000000;
             border-color: var(--color-turquoise);
+            font-weight: 900;
         }
 
-        /* Barra de Navegación Inferior Estilo App Móvil */
+        /* ========================================================
+           BARRA DE NAVEGACIÓN INFERIOR (Roja F1, Activo Blanco, Inactivo Gris)
+           ======================================================== */
         .bottom-nav {
             position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
-            background-color: var(--bg-card);
-            border-top: 1px solid var(--border-color);
+            background-color: var(--color-f1-red);
+            border-top: 2px solid var(--color-red-dark);
             display: flex;
             justify-content: space-around;
-            padding: 0.6rem 0;
+            padding: 0.5rem 0;
             z-index: 1000;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.5);
         }
 
         .nav-btn {
@@ -370,15 +412,22 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             cursor: pointer;
-            gap: 3px;
+            gap: 2px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            transition: color 0.2s;
+            font-weight: bold;
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            transition: all 0.2s;
         }
 
-        .nav-btn.active { color: var(--color-turquoise); }
+        .nav-btn.active { 
+            color: #ffffff;
+            background-color: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
 
         .nav-btn svg {
             width: 20px;
@@ -420,34 +469,92 @@
         .btn-paypal:hover { opacity: 0.9; }
 
         @media (max-width: 768px) {
-            .navbar { padding: 0.75rem 1rem; }
-            .container { padding: 1rem; }
-        }
+            .navbar { 
+                padding: 0.75rem 1rem; 
+                flex-direction: column; 
+                gap: 0.6rem; 
+                align-items: center; 
+                text-align: center; 
+            }
+            .user-info-nav { 
+                justify-content: center; 
+                width: 100%; 
+                flex-wrap: wrap; 
+                gap: 0.5rem;
+            }
+            .navbar-brand-wrapper {
+                align-items: center;
+            }
+                 
     </style>
 </head>
 <body>
-<style>
-    body {
-        background-image: url('ac369c0c-f440-4006-80d9-c7ea6a4b0570.jpeg');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-attachment: fixed;
-    }
-</style>
-	
-    <!-- BARRA DE NAVEGACIÓN SUPERIOR -->
-    <nav class="navbar">
-        <div class="navbar-brand">
-            PODIUM FANTASY F1
-            <span>EFEH Tech Systems</span>
+
+    <!-- BARRA DE NAVEGACIÓN SUPERIOR (Membrete Corrido con Animación F1) -->
+    <div class="custom-navbar">
+        <div class="navbar-brand-container">
+            <div class="navbar-brand-wrapper">
+                <div class="navbar-brand-title">
+                    <span class="brand-main">PODIUM FANTASY</span><span class="f1-highlight">F1</span>
+                </div>
+                <span class="sub-brand">EFEH Tech Systems</span>
+            </div>
         </div>
         <div id="navUserArea" class="user-info-nav hidden">
-            <span id="userEmailDisplay" style="color: var(--color-turquoise); font-weight: bold;"></span>
+            <span id="userEmailDisplay" style="color: var(--color-turquoise); font-weight: 900;"></span>
             <button class="btn-logout" onclick="cerrarSesion()">Salir</button>
         </div>
-    </nav>
+    </div>
 
+    <style>
+    /* Estructura base de la barra superior */
+    .custom-navbar {
+        position: relative;
+        background: #0b0f19;
+        padding: 0.8rem 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+        width: 100%;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+
+    /* Línea inferior dinámica de velocidad con los colores de los monoplazas */
+    .custom-navbar::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(
+            90deg, 
+            transparent 0%, 
+            #e10600 15%, /* Ferrari */
+            #ff8000 30%, /* McLaren Papaya */
+            #006f62 45%, /* Aston Martin */
+            #c0c0c0 60%, /* Mercedes Plateado */
+            #ff007f 75%, /* Alpine Pink */
+            #0090ff 90%, /* Williams/Alpine Blue */
+            transparent 100%
+        );
+        background-size: 250% 100%;
+        animation: f1SpeedGlow 4.5s linear infinite;
+        box-shadow: 0 -4px 8px rgba(225, 6, 0, 0.4);
+    }
+
+    @keyframes f1SpeedGlow {
+        0% { background-position: 250% 0; }
+        100% { background-position: -250% 0; }
+    }
+    </style>
+        
     <!-- 1. VISTA DE AUTENTICACIÓN -->
     <div id="authView" class="container">
         <div class="auth-card">
@@ -466,18 +573,17 @@
                     <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" required>
                 </div>
                 <button type="submit" class="btn-action">Entrar</button>
-                
             </form>
             <div id="authFeedback" class="hidden"></div>
         </div>
     </div>
 
-    <!-- MODAL DE REGISTRO (Actualizado pais e idioma) -->
+    <!-- MODAL DE REGISTRO -->
     <div id="registerModal" class="modal-overlay hidden">
         <div class="modal-card">
             <button type="button" class="modal-close" onclick="cerrarModalRegistro()">×</button>
             <form id="formRegister" onsubmit="manejarRegistro(event)">
-                <h3 style="color: var(--color-turquoise); margin-bottom: 1rem;">Crear Nueva Cuenta</h3>
+                <h3 style="color: var(--color-gold); margin-bottom: 1rem;">Crear Nueva Cuenta</h3>
 
                 <div class="form-group">
                     <label>Nombre de Usuario (Username)</label>
@@ -548,73 +654,83 @@
 
         <!-- TAB 1: PREDICCIONES / DASHBOARD -->
         <div id="tabHome" class="dashboard-tab">
-            <div class="dashboard-header">
-                <h1>Mis predicciones GP</h1> <p>Selecciona tu Gran Premio y fija tus pronósticos oficiales para la temporada</p>
+            <div class="card-box" style="margin-bottom: 0.6rem;">
+                <h1 style="font-size: 1.2rem; color: var(--text-main); margin: 0 0 0.2rem 0;">Mis predicciones GP</h1> 
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">Selecciona el Gran Premio y fija tus pronósticos</p>
             </div>
 
+            <!-- Selección de Gran Premio y Poleman -->
             <div class="card-box">
-                <h2>Selección de Gran Premio</h2>
-                <div class="form-group">
-                    <label>Gran Premio</label>
-                    <select id="raceSelect" class="form-control" onchange="actualizarModalidadGranPremio()">
-                        <option value="">Cargando calendario...</option>
-                    </select>
+                <h2>Gran Premio & Poleman</h2>
+                <div class="form-row-inline" style="margin-bottom: 0.4rem;">
+                    <label>GP</label>
+                    <div class="select-wrapper">
+                        <select id="raceSelect" class="form-control-compact" onchange="actualizarModalidadGranPremio()">
+                            <option value="">Cargando calendario...</option>
+                        </select>
+                    </div>
                 </div>
-             <!-- Sección Quali (Polemam) -->
-              <div id="QualiSection" class="card-box"></div>
-                <div class="form-group" style="margin-top: 1rem;">
-                    <label>Piloto Pole Position (Poleman)</label>
-                    <select id="poleSelect" class="form-control">
-                        <option value="">Selecciona Poleman</option>
-                    </select>
+                <div class="form-row-inline">
+                    <label>Pole</label>
+                    <div class="select-wrapper">
+                        <select id="poleSelect" class="form-control-compact">
+                            <option value="">Selecciona Poleman</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
             <!-- Sección Sprint (condicional) -->
             <div id="sprintSection" class="card-box hidden">
-                <h2 style="color: var(--color-papaya);">Carrera Corta / Sprint (Top 3)</h2>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-                    <div class="form-group">
-                        <label>P1 Sprint</label></div>
-                        <div><select class="form-control driver-select sprint-slot"><option value="">Selecciona piloto</option></select>
-                    </div>
-                    <div class="form-group">
-                        <label>P2 Sprint</label></div>
-                        <div><select class="form-control driver-select sprint-slot"><option value="">Selecciona piloto</option></select>
-                    </div>
-                    <div class="form-group">
-                        <label>P3 Sprint</label></div>
-                        <div><select class="form-control driver-select sprint-slot"><option value="">Selecciona piloto</option></select>
-                    </div>
+                <h2 style="color: var(--color-turquoise);">Carrera Sprint (Top 3)</h2>
+                <div class="form-row-inline">
+                    <label>P1</label>
+                    <div class="select-wrapper"><select class="form-control-compact driver-select sprint-slot"><option value="">Selecciona piloto</option></select></div>
+                </div>
+                <div class="form-row-inline">
+                    <label>P2</label>
+                    <div class="select-wrapper"><select class="form-control-compact driver-select sprint-slot"><option value="">Selecciona piloto</option></select></div>
+                </div>
+                <div class="form-row-inline">
+                    <label>P3</label>
+                    <div class="select-wrapper"><select class="form-control-compact driver-select sprint-slot"><option value="">Selecciona piloto</option></select></div>
                 </div>
             </div>
 
             <!-- Carrera Larga (Top 5) -->
             <div class="card-box">
-                <h2 style="color: var(--color-turquoise);">🏎️ Carrera Larga/Long Race (Top 5)</h2>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-                    <div class="form-group"><label>P1</label></div>
-                        <div><select class="form-control driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select></div>
-                    <div class="form-group"><label>P2</label></div>
-                        <div><select class="form-control driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select></div>
-                    <div class="form-group"><label>P3</label></div>
-                        <div><select class="form-control driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select></div>
-                    <div class="form-group"><label>P4</label></div>
-                        <div><select class="form-control driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select></div>
-                    <div class="form-group"><label>P5</label></div>
-                        <div><select class="form-control driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select></div>
+                <h2 style="color: var(--color-turquoise);">Carrera Larga (Top 5)</h2>
+                <div class="form-row-inline">
+                    <label>P1</label>
+                    <div class="select-wrapper"><select class="form-control-compact driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select></div>
+                </div>
+                <div class="form-row-inline">
+                    <label>P2</label>
+                    <div class="select-wrapper"><select class="form-control-compact driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select></div>
+                </div>
+                <div class="form-row-inline">
+                    <label>P3</label>
+                    <div class="select-wrapper"><select class="form-control-compact driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select></div>
+                </div>
+                <div class="form-row-inline">
+                    <label>P4</label>
+                    <div class="select-wrapper"><select class="form-control-compact driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select></div>
+                </div>
+                <div class="form-row-inline">
+                    <label>P5</label>
+                    <div class="select-wrapper"><select class="form-control-compact driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select></div>
                 </div>
             </div>
 
             <button type="button" class="btn-action btn-turquesa" onclick="guardarPrediccion()">Guardar Predicción</button>
-            <div id="predictionFeedback" class="status-msg hidden"></div>
+            <div id="predictionFeedback" class="status-msg hidden" style="padding: 0.4rem; font-size: 0.75rem;"></div>
         </div>
 
         <!-- TAB 2: STANDINGS -->
         <div id="tabStandings" class="dashboard-tab hidden">
-            <div class="dashboard-header">
-                <h1>Tabla de Posiciones</h1>
-                <p>Ranking Global </p>
+            <div class="card-box" style="margin-bottom: 0.6rem;">
+                <h1 style="font-size: 1.2rem; color: var(--text-main); margin: 0 0 0.2rem 0;">Tabla de Posiciones</h1>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">Ranking Global</p>
             </div>
 
             <div class="subtabs">
@@ -633,64 +749,71 @@
         </div>
 
         <!-- TAB 3: MI CUENTA / DESGLOSE -->
-<div id="tabAccount" class="dashboard-tab hidden">
-    <div class="dashboard-header">
-        <h1>Mi Cuenta y Puntuación</h1>
-        <p>Resumen de rendimiento y desglose de puntuación por Gran Premio</p>
-    </div>
+        <div id="tabAccount" class="dashboard-tab hidden">
+            <div class="card-box" style="margin-bottom: 0.6rem;">
+                <h1 style="font-size: 1.2rem; color: var(--text-main); margin: 0 0 0.2rem 0;">Mi Cuenta y Puntuación</h1>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">Resumen de rendimiento y desglose por Gran Premio</p>
+            </div>
 
-    <!-- Puntuación Global Acumulada -->
-    <div class="stats-grid">
-        <div class="stat-card turquoise" style="grid-column: 1 / -1;">
-            <h3>Puntuación Global</h3>
-            <div class="value" id="statGlobalPts">0 Pts</div>
-        </div>
-    </div>
+            <!-- Puntuación Global Acumulada con Posición y Trofeo -->
+            <div style="margin-bottom: 0.6rem; width: 100%;">
+                <div class="card-box" style="display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 1rem; border-left: 4px solid var(--color-gold);">
+                    <div>
+                        <h3 style="margin: 0; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Puntuación Global</h3>
+                        <span id="statUserPos" style="font-size: 0.75rem; color: var(--color-gold); font-weight: bold;">Posición: --</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.6rem;">
+                        <span style="font-size: 1.3rem;">🏆</span>
+                        <div class="value" id="statGlobalPts" style="font-size: 1.4rem; font-weight: bold; text-align: right; color: var(--color-gold);">0 Pts</div>
+                    </div>
+                </div>
+            </div>
 
-    <!-- Desglose por Gran Premio con Selector -->
-    <div class="card-box">
-        <h2>Desglose por Gran Premio</h2>
-        <div class="form-group">
-            <label>Seleccionar Gran Premio</label>
-            <select id="gpHistorySelect" class="form-control" onchange="cambiarGpCuenta()">
-                <option value="">Cargando historial de predicciones...</option>
-            </select>
+            <!-- Desglose por Gran Premio con Selector Compacto -->
+            <div class="card-box">
+                <h2>Desglose por Gran Premio</h2>
+                <div class="form-row-inline" style="margin-bottom: 0.8rem;">
+                    <label>GP</label>
+                    <div class="select-wrapper">
+                        <select id="gpHistorySelect" class="form-control-compact" onchange="cambiarGpCuenta()">
+                            <option value="">Cargando historial...</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem;">
+                    <div style="display: flex; justify-content: space-between; padding: 0.2rem 0;">
+                        <span>🏁 Pole Position:</span>
+                        <span id="accPolePts" style="color: var(--text-main); font-weight: bold;">0 pts</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 0.2rem 0;">
+                        <span>⚡ Carrera Sprint:</span>
+                        <span id="accSprintPts" style="color: var(--color-turquoise); font-weight: bold;">0 pts</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 0.2rem 0;">
+                        <span>🏎️ Carrera Larga:</span>
+                        <span id="accRacePts" style="color: var(--color-turquoise); font-weight: bold;">0 pts</span>
+                    </div>
+                    <hr style="border-color: var(--border-color); margin: 0.3rem 0;">
+                    <div style="display: flex; justify-content: space-between; font-size: 1rem; padding: 0.1rem 0;">
+                        <span style="color: var(--color-gold); font-weight: bold;">Total GP:</span>
+                        <span id="accTotalGpPts" style="color: var(--color-gold); font-weight: bold;">0 pts</span>
+                    </div>
+                </div>
+            </div>
         </div>
-        
-        <div style="margin-top: 1.2rem; display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.95rem;">
-            <div style="display: flex; justify-content: space-between;">
-                <span>🏁 Pole Position:</span>
-                <span id="accPolePts" style="color: var(--text-main); font-weight: bold;">0 pts</span>
-            </div>
-            <div style="display: flex; justify-content: space-between;">
-                <span>⚡ Carrera Sprint:</span>
-                <span id="accSprintPts" style="color: var(--color-papaya); font-weight: bold;">0 pts</span>
-            </div>
-            <div style="display: flex; justify-content: space-between;">
-                <span>🏎️ Carrera Larga:</span>
-                <span id="accRacePts" style="color: var(--color-turquoise); font-weight: bold;">0 pts</span>
-            </div>
-            <hr style="border-color: var(--border-color); margin: 0.5rem 0;">
-            <div style="display: flex; justify-content: space-between; font-size: 1.1rem;">
-                <span style="color: var(--color-papaya); font-weight: bold;">🏆 Total GP:</span>
-                <span id="accTotalGpPts" style="color: var(--color-papaya); font-weight: bold;">0 pts</span>
-            </div>
-        </div>
-    </div>
-</div>
 
         <!-- TAB 4: REGLAMENTO -->
         <div id="tabInfo" class="dashboard-tab hidden">
-            <div class="dashboard-header">
-                <h1>Información y Reglamento</h1>
-                <p>Reglas de puntuación y Colaboración</p>
+            <div class="card-box" style="margin-bottom: 0.6rem;">
+                <h1 style="font-size: 1.2rem; color: var(--text-main); margin: 0 0 0.2rem 0;">Información / Reglamento</h1>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">Normas, Reglas de puntuación y Colaboración</p>
             </div>
 
             <div class="card-box">
                 <h2>Reglamento de Puntuación</h2>
                 <ol class="rules-list">
                     <li><strong>5 pts</strong> por acertar el Pole Man.</li>
-                    <li><strong>5 pts</strong> por acertar la vuelta rápida.</li>
                     <li><strong>Podio de ganadores:</strong> Tripleta perfecta suman puntos triples (acertar el orden exacto del podio).</li>
                     <li><strong>Top 5 en carrera:</strong> Se aplicará el puntaje obtenido por los pilotos en carrera oficial.</li>
                     <li><strong>Plazo de modificación:</strong> En cada carrera se puede variar de pilotos hasta finalizar la FP3 de cada Gran Premio.</li>
@@ -698,8 +821,8 @@
                 </ol>
 
                 <div class="paypal-box">
-                    <h3 style="color: var(--color-papaya); font-size: 1rem; margin-bottom: 0.3rem;">APOYA EL PROYECTO PODIUM FANTASY F1</h3>
-                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">Ayuda a mantener el proyecto Podium Fantasy F1 activa.</p>
+                    <h3 style="color: var(--color-gold); font-size: 1rem; margin-bottom: 0.3rem;">APOYA EL PROYECTO PODIUM FANTASY F1</h3>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">Ayuda a mantener el proyecto Podium Fantasy F1 activo.</p>
                     <a href="https://paypal.me" target="_blank" class="btn-paypal">♥ Donar con PayPal ♥</a>
                 </div>
             </div>
@@ -707,7 +830,7 @@
 
     </div>
 
-    <!-- BARRA DE NAVEGACIÓN INFERIOR (MÓVIL / APP) -->
+    <!-- BARRA DE NAVEGACIÓN INFERIOR (MÓVIL / APP) - ROJO F1 -->
     <nav id="bottomNavBar" class="bottom-nav hidden">
         <button id="navHomeBtn" class="nav-btn active" onclick="switchDashboardTab('home')">
             <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
@@ -728,375 +851,407 @@
     </nav>
 
     <script>
-    	
-	    let driversList = [];
-    	let calendarData = [];
-    	let usuarioActual = null;
-    	let userIdActual = null;
+        let driversList = [];
+        let calendarData = [];
+        let usuarioActual = null;
+        let userIdActual = null;
 
-    // 1. Inicialización al cargar la página
-    document.addEventListener("DOMContentLoaded", async () => {
-        inicializarPilotosYCalendarioEstaticos();
-        await cargarCalendario(); // Carga las carreras desde Supabase
+        document.addEventListener("DOMContentLoaded", async () => {
+            inicializarPilotosYCalendarioEstaticos();
+            await cargarCalendario();
 
-        if (supabaseClient) {
-            try {
-                const { data: { session } } = await supabaseClient.auth.getSession();
-                if (session && session.user) {
-                    userIdActual = session.user.id;
-                    usuarioActual = session.user.email;
-                    entrarAlSistema(usuarioActual);
-                }
-            } catch (err) {
-                console.log("Modo offline o sin sesión activa.");
-            }
-        }
-    });
-    
-    function inicializarPilotosYCalendarioEstaticos() {
-        driversList = [
-            { code: 'NOR', name: 'Lando Norris', team: 'McLaren' },
-            { code: 'PIA', name: 'Oscar Piastri', team: 'McLaren' },
-            { code: 'RUS', name: 'George Russell', team: 'Mercedes' },
-            { code: 'ANT', name: 'Kimi Antonelli', team: 'Mercedes' },
-            { code: 'LEC', name: 'Charles Leclerc', team: 'Ferrari' },
-            { code: 'HAM', name: 'Lewis Hamilton', team: 'Ferrari' },
-            { code: 'VER', name: 'Max Verstappen', team: 'Red Bull Racing' },
-            { code: 'HAD', name: 'Isack Hadjar', team: 'Red Bull Racing' },
-            { code: 'LAW', name: 'Liam Lawson', team: 'Racing Bulls' },
-            { code: 'LIN', name: 'Arvid Lindblad', team: 'Racing Bulls' },
-            { code: 'STR', name: 'Lance Stroll', team: 'Aston Martin' },
-            { code: 'OCO', name: 'Esteban Ocon', team: 'Haas F1 Team' },
-            { code: 'BEA', name: 'Oliver Bearman', team: 'Haas F1 Team' },
-            { code: 'HUL', name: 'Nico Hülkenberg', team: 'Audi' },
-            { code: 'BOR', name: 'Gabriel Bortoleto', team: 'Audi' },
-            { code: 'ALO', name: 'Fernando Alonso', team: 'Aston Martin' },
-            { code: 'SAI', name: 'Carlos Sainz', team: 'Williams' },
-            { code: 'ALB', name: 'Alexander Albon', team: 'Williams' },
-            { code: 'GAS', name: 'Pierre Gasly', team: 'Alpine' },
-            { code: 'COL', name: 'Franco Colapinto', team: 'Alpine' },
-            { code: 'PER', name: 'Sergio Pérez', team: 'Cadillac F1 Team' },
-            { code: 'BOT', name: 'Valtteri Bottas', team: 'Cadillac F1 Team' }
-        ];
-
-        poblarSelectoresPilotos();
-    }
-
-    // 2. Cargar Calendario exclusivamente para el selector de pronósticos (raceSelect)
-    async function cargarCalendario() {
-        try {
-            const { data, error } = await supabaseClient
-                .from('calendario')
-                .select('*')
-                .order('round', { ascending: true });
-            
-            if (error) throw error;
-            calendarData = data || [];
-            
-            const selectRace = document.getElementById('raceSelect');
-            if (!selectRace) return;
-
-            selectRace.innerHTML = '<option value="">Selecciona un Gran Premio</option>';
-            
-            calendarData.forEach(race => {
-                const option = document.createElement('option');
-                option.value = race.round;
-                const hasSprint = race.sprint === true || race.isSprint === true;
-                option.dataset.isSprint = hasSprint ? 'true' : 'false';
-                option.dataset.gpName = race.name;
-                option.textContent = `Ronda ${race.round}: ${race.name} (${race.date})`;
-                selectRace.appendChild(option);
-            });
-        } catch (error) {
-            console.error("Error al cargar calendario desde Supabase:", error);
-        }
-    }
-
-    function poblarSelectoresPilotos() {
-        const poleSelect = document.getElementById('poleSelect');
-        if (!poleSelect) return;
-        poleSelect.innerHTML = '<option value="">Selecciona Poleman</option>';
-        
-        const raceSelects = document.querySelectorAll('.driver-select');
-        raceSelects.forEach(select => {
-            select.innerHTML = '<option value="">Selecciona piloto</option>';
-        });
-
-        driversList.forEach(d => {
-            const optText = `${d.code} - ${d.name} (${d.team})`;
-            
-            const optPole = document.createElement('option');
-            optPole.value = d.code;
-            optPole.textContent = optText;
-            poleSelect.appendChild(optPole);
-
-            raceSelects.forEach(select => {
-                const optRace = document.createElement('option');
-                optRace.value = d.code;
-                optRace.textContent = optText;
-                select.appendChild(optRace);
-            });
-        });
-    }
-
-    function verificarDuplicadosCarrera() {
-        const raceSlots = document.querySelectorAll('.race-slot');
-        const selectedCodes = Array.from(raceSlots).map(s => s.value).filter(v => v !== "");
-
-        raceSlots.forEach(select => {
-            const currentValue = select.value;
-            Array.from(select.options).forEach(option => {
-                if (option.value === "") return;
-                if (selectedCodes.includes(option.value) && option.value !== currentValue) {
-                    option.disabled = true;
-                } else {
-                    option.disabled = false;
-                }
-            });
-        });
-    }
-
-    function abrirModalRegistro() {
-        document.getElementById('registerModal').classList.remove('hidden');
-    }
-
-    function cerrarModalRegistro() {
-        document.getElementById('registerModal').classList.add('hidden');
-    }
-
-    async function procesarLogin(event) {
-        event.preventDefault();
-        const email = document.getElementById('loginEmail').value;
-        const password = document.getElementById('loginPassword').value;
-        const feedback = document.getElementById('authFeedback');
-        feedback.className = "hidden";
-
-        try {
-            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-            if (error) throw error;
-
-            userIdActual = data.user ? data.user.id : null;
-            usuarioActual = email;
-            entrarAlSistema(email);
-        } catch (err) {
-            feedback.textContent = "Error al iniciar sesión: " + err.message;
-            feedback.className = "status-msg status-error";
-        }
-    }
-
-    function entrarAlSistema(email) {
-        document.getElementById('userEmailDisplay').innerText = email;
-        document.getElementById('authView').classList.add('hidden');
-        document.getElementById('dashboardView').classList.remove('hidden');
-        document.getElementById('bottomNavBar').classList.remove('hidden');
-        document.getElementById('navUserArea').classList.remove('hidden');
-        cargarStandingsIndividuales();
-        cargarDatosMiCuenta();
-    }
-
-    function cerrarSesion() {
-        usuarioActual = null;
-        userIdActual = null;
-        if (supabaseClient) supabaseClient.auth.signOut();
-        document.getElementById('dashboardView').classList.add('hidden');
-        document.getElementById('bottomNavBar').classList.add('hidden');
-        document.getElementById('navUserArea').classList.add('hidden');
-        document.getElementById('authView').classList.remove('hidden');
-    }
-
-    function switchDashboardTab(tabName) {
-        document.querySelectorAll('.dashboard-tab').forEach(tab => tab.classList.add('hidden'));
-        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-
-        const lowerTab = tabName.toLowerCase();
-        if (lowerTab === 'home') {
-            document.getElementById('tabHome').classList.remove('hidden');
-            document.getElementById('navHomeBtn').classList.add('active');
-        } else if (lowerTab === 'standings') {
-            document.getElementById('tabStandings').classList.remove('hidden');
-            document.getElementById('navStandingsBtn').classList.add('active');
-            cargarStandingsIndividuales();
-        } else if (lowerTab === 'account') {
-            document.getElementById('tabAccount').classList.remove('hidden');
-            document.getElementById('navAccountBtn').classList.add('active');
-            cargarDatosMiCuenta();
-        } else if (lowerTab === 'info') {
-            document.getElementById('tabInfo').classList.remove('hidden');
-            document.getElementById('navInfoBtn').classList.add('active');
-        }
-    }
-
-    function switchStandingsSub(subType) {
-        document.getElementById('subIndBtn').classList.remove('active');
-        document.getElementById('subEscBtn').classList.remove('active');
-        document.getElementById('subStandingsIndividual').classList.add('hidden');
-        document.getElementById('subStandingsEscuderias').classList.add('hidden');
-
-        if (subType === 'individual') {
-            document.getElementById('subIndBtn').classList.add('active');
-            document.getElementById('subStandingsIndividual').classList.remove('hidden');
-            cargarStandingsIndividuales();
-        } else {
-            document.getElementById('subEscBtn').classList.add('active');
-            document.getElementById('subStandingsEscuderias').classList.remove('hidden');
-        }
-    }
-
-    async function cargarStandingsIndividuales() {
-        const container = document.getElementById('subStandingsIndividual');
-        container.innerHTML = '<p class="text-center" style="color: var(--color-turquoise);">Cargando ranking...</p>';
-
-        let usuarios = [];
-
-        try {
             if (supabaseClient) {
-                const { data, error } = await supabaseClient
-                    .from('usuarios')
-                    .select('username, pais, puntos_globales')
-                    .order('puntos_globales', { ascending: false });
-                if (!error && data) usuarios = data;
+                try {
+                    const { data: { session } } = await supabaseClient.auth.getSession();
+                    if (session && session.user) {
+                        userIdActual = session.user.id;
+                        usuarioActual = session.user.email;
+                        entrarAlSistema(usuarioActual);
+                    }
+                } catch (err) {
+                    console.log("Modo offline o sin sesión activa.");
+                }
             }
-        } catch (e) {
-            console.warn("Error al cargar standings.");
-        }
-
-        if (usuarios.length === 0) {
-            usuarios = [
-                { username: 'efeh8581', pais: 'ES', puntos_globales: 390 },
-                { username: 'elvisfeh', pais: 'VE', puntos_globales: 249 }
+        });
+        
+        function inicializarPilotosYCalendarioEstaticos() {
+            driversList = [
+                { code: 'NOR', name: 'Lando Norris', team: 'McLaren' },
+                { code: 'PIA', name: 'Oscar Piastri', team: 'McLaren' },
+                { code: 'RUS', name: 'George Russell', team: 'Mercedes' },
+                { code: 'ANT', name: 'Kimi Antonelli', team: 'Mercedes' },
+                { code: 'LEC', name: 'Charles Leclerc', team: 'Ferrari' },
+                { code: 'HAM', name: 'Lewis Hamilton', team: 'Ferrari' },
+                { code: 'VER', name: 'Max Verstappen', team: 'Red Bull Racing' },
+                { code: 'HAD', name: 'Isack Hadjar', team: 'Red Bull Racing' },
+                { code: 'LAW', name: 'Liam Lawson', team: 'Racing Bulls, Red Bull' },
+                { code: 'LIN', name: 'Arvid Lindblad', team: 'Racing Bulls' },
+                { code: 'TSU', name: 'Yuki Tsunoda', team: 'Racing Bulls' },
+                { code: 'STR', name: 'Lance Stroll', team: 'Aston Martin' },
+                { code: 'OCO', name: 'Esteban Ocon', team: 'Haas F1 Team' },
+                { code: 'BEA', name: 'Oliver Bearman', team: 'Haas F1 Team' },
+                { code: 'HUL', name: 'Nico Hülkenberg', team: 'Audi' },
+                { code: 'BOR', name: 'Gabriel Bortoleto', team: 'Audi' },
+                { code: 'ALO', name: 'Fernando Alonso', team: 'Aston Martin' },
+                { code: 'SAI', name: 'Carlos Sainz', team: 'Williams' },
+                { code: 'ALB', name: 'Alexander Albon', team: 'Williams' },
+                { code: 'GAS', name: 'Pierre Gasly', team: 'Alpine' },
+                { code: 'COL', name: 'Franco Colapinto', team: 'Alpine' },
+                { code: 'PER', name: 'Sergio Pérez', team: 'Cadillac F1 Team' },
+                { code: 'BOT', name: 'Valtteri Bottas', team: 'Cadillac F1 Team' }
             ];
+
+            poblarSelectoresPilotos();
         }
 
-        let html = '<table>';
-        html += '<tr><th>Pos</th><th>Usuario</th><th>País</th><th class="text-right">Puntos</th></tr>';
-        
-        usuarios.forEach((u, index) => {
-            html += `<tr>
-                <td>#${index + 1}</td>
-                <td style="color: var(--text-main); font-weight: bold;">${u.username || 'Usuario'}</td>
-                <td>${u.pais || 'VE'}</td>
-                <td class="text-right" style="color: var(--color-turquoise); font-weight: bold;">${u.puntos_globales || 0} pts</td>
-            </tr>`;
-        });
-        html += '</table>';
-
-        container.innerHTML = html;
-    }
-
-    // ==========================================
-    // MÓDULO DE MI CUENTA Y HISTORIAL DE GP
-    // ==========================================
-
-    let misPrediccionesUsuario = [];
-
-    async function cargarDatosMiCuenta() {
-        let puntosGlobales = 0;
-        misPrediccionesUsuario = [];
-
-        try {
-            if (supabaseClient && userIdActual) {
-                const { data: userData, error: userError } = await supabaseClient
-                    .from('usuarios')
-                    .select('puntos_globales')
-                    .eq('id', userIdActual)
-                    .single();
-
-                if (!userError && userData) {
-                    puntosGlobales = userData.puntos_globales || 0;
-                }
-
-                const { data: predList, error: predError } = await supabaseClient
-                    .from('predicciones')
+        async function cargarCalendario() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('calendario')
                     .select('*')
-                    .eq('usuario_id', userIdActual);
+                    .order('round', { ascending: true });
+                
+                if (error) throw error;
+                calendarData = data || [];
+                
+                const selectRace = document.getElementById('raceSelect');
+                if (!selectRace) return;
 
-                if (!predError && predList) {
-                    misPrediccionesUsuario = predList;
-                }
+                selectRace.innerHTML = '<option value="">Selecciona un Gran Premio</option>';
+                
+                calendarData.forEach(race => {
+                    const option = document.createElement('option');
+                    option.value = race.round;
+                    const hasSprint = race.sprint === true || race.isSprint === true;
+                    option.dataset.isSprint = hasSprint ? 'true' : 'false';
+                    option.dataset.gpName = race.name;
+                    option.textContent = `Ronda ${race.round}: ${race.name}`;
+                    selectRace.appendChild(option);
+                });
+            } catch (error) {
+                console.error("Error al cargar calendario desde Supabase:", error);
             }
-        } catch (e) {
-            console.warn("Error al sincronizar datos de la cuenta:", e);
         }
 
-        document.getElementById('statGlobalPts').innerText = `${puntosGlobales} Pts`;
+        function poblarSelectoresPilotos() {
+            const poleSelect = document.getElementById('poleSelect');
+            if (!poleSelect) return;
+            poleSelect.innerHTML = '<option value="">Selecciona Poleman</option>';
+            
+            const raceSelects = document.querySelectorAll('.driver-select');
+            raceSelects.forEach(select => {
+                select.innerHTML = '<option value="">Selecciona piloto</option>';
+            });
 
-        const selectHistory = document.getElementById('gpHistorySelect');
-        if (!selectHistory) return;
+            driversList.forEach(d => {
+                const optText = `${d.code} - ${d.name} (${d.team})`;
+                
+                const optPole = document.createElement('option');
+                optPole.value = d.code;
+                optPole.textContent = optText;
+                poleSelect.appendChild(optPole);
 
-        selectHistory.innerHTML = '';
-
-        if (misPrediccionesUsuario.length === 0) {
-            selectHistory.innerHTML = '<option value="">No hay predicciones registradas aún</option>';
-            limpiarDesgloseCuentaZeros();
-            return;
+                raceSelects.forEach(select => {
+                    const optRace = document.createElement('option');
+                    optRace.value = d.code;
+                    optRace.textContent = optText;
+                    select.appendChild(optRace);
+                });
+            });
         }
 
-        misPrediccionesUsuario.forEach((pred, index) => {
-            const option = document.createElement('option');
-            option.value = index; 
-            option.textContent = `${pred.gran_premio} (Total: ${pred.total_fin_de_semana || 0} pts)`;
-            selectHistory.appendChild(option);
-        });
+        function verificarDuplicadosCarrera() {
+            const raceSlots = document.querySelectorAll('.race-slot');
+            const selectedCodes = Array.from(raceSlots).map(s => s.value).filter(v => v !== "");
 
-        selectHistory.selectedIndex = 0;
-        cambiarGpCuenta();
+            raceSlots.forEach(select => {
+                const currentValue = select.value;
+                Array.from(select.options).forEach(option => {
+                    if (option.value === "") return;
+                    if (selectedCodes.includes(option.value) && option.value !== currentValue) {
+                        option.disabled = true;
+                    } else {
+                        option.disabled = false;
+                    }
+                });
+            });
+        }
+
+        function abrirModalRegistro() {
+            document.getElementById('registerModal').classList.remove('hidden');
+        }
+
+        function cerrarModalRegistro() {
+            document.getElementById('registerModal').classList.add('hidden');
+        }
+
+        async function procesarLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const feedback = document.getElementById('authFeedback');
+            feedback.className = "hidden";
+
+            try {
+                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+
+                userIdActual = data.user ? data.user.id : null;
+                usuarioActual = email;
+                entrarAlSistema(email);
+            } catch (err) {
+                feedback.textContent = "Error al iniciar sesión: " + err.message;
+                feedback.className = "status-msg status-error";
+            }
+        }
+
+        function entrarAlSistema(email) {
+            document.getElementById('userEmailDisplay').innerText = email;
+            document.getElementById('authView').classList.add('hidden');
+            document.getElementById('dashboardView').classList.remove('hidden');
+            document.getElementById('bottomNavBar').classList.remove('hidden');
+            document.getElementById('navUserArea').classList.remove('hidden');
+            cargarStandingsIndividuales();
+            cargarDatosMiCuenta();
+        }
+
+        function cerrarSesion() {
+            usuarioActual = null;
+            userIdActual = null;
+            if (supabaseClient) supabaseClient.auth.signOut();
+            document.getElementById('dashboardView').classList.add('hidden');
+            document.getElementById('bottomNavBar').classList.add('hidden');
+            document.getElementById('navUserArea').classList.add('hidden');
+            document.getElementById('authView').classList.remove('hidden');
+        }
+
+        function switchDashboardTab(tabName) {
+            document.querySelectorAll('.dashboard-tab').forEach(tab => tab.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+
+            const lowerTab = tabName.toLowerCase();
+            if (lowerTab === 'home') {
+                document.getElementById('tabHome').classList.remove('hidden');
+                document.getElementById('navHomeBtn').classList.add('active');
+            } else if (lowerTab === 'standings') {
+                document.getElementById('tabStandings').classList.remove('hidden');
+                document.getElementById('navStandingsBtn').classList.add('active');
+                cargarStandingsIndividuales();
+            } else if (lowerTab === 'account') {
+                document.getElementById('tabAccount').classList.remove('hidden');
+                document.getElementById('navAccountBtn').classList.add('active');
+                cargarDatosMiCuenta();
+            } else if (lowerTab === 'info') {
+                document.getElementById('tabInfo').classList.remove('hidden');
+                document.getElementById('navInfoBtn').classList.add('active');
+            }
+        }
+
+        function switchStandingsSub(subType) {
+            document.getElementById('subIndBtn').classList.remove('active');
+            document.getElementById('subEscBtn').classList.remove('active');
+            document.getElementById('subStandingsIndividual').classList.add('hidden');
+            document.getElementById('subStandingsEscuderias').classList.add('hidden');
+
+            if (subType === 'individual') {
+                document.getElementById('subIndBtn').classList.add('active');
+                document.getElementById('subStandingsIndividual').classList.remove('hidden');
+                cargarStandingsIndividuales();
+            } else {
+                document.getElementById('subEscBtn').classList.add('active');
+                document.getElementById('subStandingsEscuderias').classList.remove('hidden');
+            }
+        }
+
+        async function cargarStandingsIndividuales() {
+            const container = document.getElementById('subStandingsIndividual');
+            container.innerHTML = '<p class="text-center" style="color: var(--color-turquoise);">Cargando ranking...</p>';
+
+            let usuarios = [];
+
+            try {
+                if (supabaseClient) {
+                    const { data, error } = await supabaseClient
+                        .from('usuarios')
+                        .select('username, pais, puntos_globales')
+                        .order('puntos_globales', { ascending: false });
+                    if (!error && data) usuarios = data;
+                }
+            } catch (e) {
+                console.warn("Error al cargar standings.");
+            }
+
+            if (usuarios.length === 0) {
+                usuarios = [
+                    { username: 'efeh8581', pais: 'ES', puntos_globales: 390 },
+                    { username: 'elvisfeh', pais: 'VE', puntos_globales: 249 }
+                ];
+            }
+
+            let html = '<table>';
+            html += '<tr><th>Pos</th><th>Usuario</th><th>País</th><th class="text-right">Puntos</th></tr>';
+            
+            usuarios.forEach((u, index) => {
+                html += `<tr>
+                    <td>#${index + 1}</td>
+                    <td style="color: var(--text-main); font-weight: bold;">${u.username || 'Usuario'}</td>
+                    <td>${u.pais || 'VE'}</td>
+                    <td class="text-right" style="color: var(--color-gold); font-weight: bold;">${u.puntos_globales || 0} pts</td>
+                </tr>`;
+            });
+            html += '</table>';
+
+            container.innerHTML = html;
+        }
+
+        let misPrediccionesUsuario = [];
+
+        async function cargarDatosMiCuenta() {
+            let puntosGlobales = 0;
+            let posicionRanking = "-";
+            misPrediccionesUsuario = [];
+
+            try {
+                if (supabaseClient) {
+                    const { data: rankData, error: rankError } = await supabaseClient
+                        .from('usuarios')
+                        .select('id, puntos_globales')
+                        .order('puntos_globales', { ascending: false });
+
+                    if (!rankError && rankData) {
+                        const index = rankData.findIndex(u => u.id === userIdActual);
+                        if (index !== -1) {
+                            posicionRanking = `#${index + 1}`;
+                        }
+                    }
+
+                    if (userIdActual) {
+                        const { data: userData, error: userError } = await supabaseClient
+                            .from('usuarios')
+                            .select('puntos_globales')
+                            .eq('id', userIdActual)
+                            .single();
+
+                        if (!userError && userData) {
+                            puntosGlobales = userData.puntos_globales || 0;
+                        }
+
+                        const { data: predList, error: predError } = await supabaseClient
+                            .from('predicciones')
+                            .select('*')
+                            .eq('usuario_id', userIdActual);
+
+                        if (!predError && predList) {
+                            misPrediccionesUsuario = predList;
+                        }
+                    }
+                }
+            } catch (e) {
+                console.warn("Error al sincronizar datos de la cuenta:", e);
+            }
+
+            document.getElementById('statGlobalPts').innerText = `${puntosGlobales} Pts`;
+            document.getElementById('statUserPos').innerText = `Posición: ${posicionRanking}`;
+
+            const selectHistory = document.getElementById('gpHistorySelect');
+            if (!selectHistory) return;
+
+            selectHistory.innerHTML = '';
+
+            if (misPrediccionesUsuario.length === 0) {
+                selectHistory.innerHTML = '<option value="">No hay predicciones registradas aún</option>';
+                limpiarDesgloseCuentaZeros();
+                return;
+            }
+
+            misPrediccionesUsuario.forEach((pred, index) => {
+                const option = document.createElement('option');
+                option.value = index; 
+                option.textContent = pred.gran_premio; 
+                selectHistory.appendChild(option);
+            });
+
+            selectHistory.selectedIndex = 0;
+            cambiarGpCuenta();
+        }
+
+        function cambiarGpCuenta() {
+            const selectHistory = document.getElementById('gpHistorySelect');
+            if (!selectHistory) return;
+            
+            const index = selectHistory.value;
+
+            if (index === "" || !misPrediccionesUsuario[index]) {
+                limpiarDesgloseCuentaZeros();
+                return;
+            }
+
+            const predSeleccionada = misPrediccionesUsuario[index];
+
+            document.getElementById('accPolePts').innerText = `${predSeleccionada.puntos_qualy || 0} pts`;
+            document.getElementById('accSprintPts').innerText = `${predSeleccionada.puntos_sprint || 0} pts`;
+            document.getElementById('accRacePts').innerText = `${predSeleccionada.puntos_carrera || 0} pts`;
+            document.getElementById('accTotalGpPts').innerText = `${predSeleccionada.total_fin_de_semana || 0} pts`;
+        }
+
+        function limpiarDesgloseCuentaZeros() {
+            document.getElementById('accPolePts').innerText = "0 pts";
+            document.getElementById('accSprintPts').innerText = "0 pts";
+            document.getElementById('accRacePts').innerText = "0 pts";
+            document.getElementById('accTotalGpPts').innerText = "0 pts";
+        }
+
+        function actualizarModalidadGranPremio() {
+            const selectRace = document.getElementById('raceSelect');
+            const selectedOption = selectRace.options[selectRace.selectedIndex];
+            const isSprint = selectedOption && selectedOption.dataset.isSprint === 'true';
+            
+            const sprintSection = document.getElementById('sprintSection');
+            if (isSprint) {
+                sprintSection.classList.remove('hidden');
+            } else {
+                sprintSection.classList.add('hidden');
+                document.querySelectorAll('.sprint-slot').forEach(s => s.value = "");
+            }
+            verificarDuplicadosCarrera();
+        }
+
+        async function guardarPrediccion() {
+    const feedback = document.getElementById('predictionFeedback');
+    const selectRace = document.getElementById('raceSelect');
+    const selectedRound = selectRace.value;
+
+    if (!selectedRound) {
+        feedback.textContent = "Selecciona un Gran Premio antes de guardar.";
+        feedback.className = "status-msg status-error";
+        return;
     }
 
-    function cambiarGpCuenta() {
-        const selectHistory = document.getElementById('gpHistorySelect');
-        if (!selectHistory) return;
-        
-        const index = selectHistory.value;
+    const pole = document.getElementById('poleSelect').value;
+    const raceSlots = Array.from(document.querySelectorAll('.race-slot')).map(s => s.value);
+    const sprintSlots = Array.from(document.querySelectorAll('.sprint-slot')).map(s => s.value);
 
-        if (index === "" || !misPrediccionesUsuario[index]) {
-            limpiarDesgloseCuentaZeros();
-            return;
-        }
+    try {
+        const { error } = await supabaseClient
+            .from('predicciones')
+            .upsert({
+                usuario_id: userIdActual,
+                round: selectedRound,
+                gran_premio: selectRace.options[selectRace.selectedIndex].dataset.gpName,
+                pole_man: pole,
+                top5_carrera: raceSlots,
+                top3_sprint: sprintSlots
+            }, { onConflict: ['usuario_id', 'round'] });
 
-        const predSeleccionada = misPrediccionesUsuario[index];
+        if (error) throw error;
 
-        document.getElementById('accPolePts').innerText = `${predSeleccionada.puntos_qualy || 0} pts`;
-        document.getElementById('accSprintPts').innerText = `${predSeleccionada.puntos_sprint || 0} pts`;
-        document.getElementById('accRacePts').innerText = `${predSeleccionada.puntos_carrera || 0} pts`;
-        document.getElementById('accTotalGpPts').innerText = `${predSeleccionada.total_fin_de_semana || 0} pts`;
-    }
-
-    function limpiarDesgloseCuentaZeros() {
-        document.getElementById('accPolePts').innerText = "0 pts";
-        document.getElementById('accSprintPts').innerText = "0 pts";
-        document.getElementById('accRacePts').innerText = "0 pts";
-        document.getElementById('accTotalGpPts').innerText = "0 pts";
-    }
-
-    function actualizarModalidadGranPremio() {
-        const selectRace = document.getElementById('raceSelect');
-        const selectedOption = selectRace.options[selectRace.selectedIndex];
-        const isSprint = selectedOption && selectedOption.dataset.isSprint === 'true';
-        
-        const sprintSection = document.getElementById('sprintSection');
-        if (isSprint) {
-            sprintSection.classList.remove('hidden');
-        } else {
-            sprintSection.classList.add('hidden');
-            document.querySelectorAll('.sprint-slot').forEach(s => s.value = "");
-        }
-        verificarDuplicadosCarrera();
-    }
-
-    async function guardarPrediccion() {
-        const feedback = document.getElementById('predictionFeedback');
-        const selectRace = document.getElementById('raceSelect');
-        const selectedRound = selectRace.value;
-
-        if (!selectedRound) {
-            feedback.textContent = "Selecciona un Gran Premio antes de guardar.";
-            feedback.className = "status-msg status-error";
-            return;
-        }
-
-        feedback.textContent = "¡Predicción guardada y sincronizada correctamente!";
+        feedback.textContent = "¡Predicción guardada y sincronizada en Supabase!";
         feedback.className = "status-msg status-success";
+    } catch (err) {
+        feedback.textContent = "Error al guardar: " + err.message;
+        feedback.className = "status-msg status-error";
     }
-</script>
+}
+    </script>
 </body>
 </html>
