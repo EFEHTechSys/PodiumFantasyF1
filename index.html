@@ -1230,18 +1230,24 @@
     const pole = document.getElementById('poleSelect').value;
     const raceSlots = Array.from(document.querySelectorAll('.race-slot')).map(s => s.value);
     const sprintSlots = Array.from(document.querySelectorAll('.sprint-slot')).map(s => s.value);
+    const gpName = selectRace.options[selectRace.selectedIndex].dataset.gpName;
 
     try {
         const { error } = await supabaseClient
             .from('predicciones')
             .upsert({
                 usuario_id: userIdActual,
-                round: selectedRound,
-                gran_premio: selectRace.options[selectRace.selectedIndex].dataset.gpName,
-                pole_man: pole,
-                top5_carrera: raceSlots,
-                top3_sprint: sprintSlots
-            }, { onConflict: ['usuario_id', 'round'] });
+                gran_premio: gpName,
+                poleman: pole,
+                sprint_p1: sprintSlots[0] || null,
+                sprint_p2: sprintSlots[1] || null,
+                sprint_p3: sprintSlots[2] || null,
+                carrera_p1: raceSlots[0] || null,
+                carrera_p2: raceSlots[1] || null,
+                carrera_p3: raceSlots[2] || null,
+                carrera_p4: raceSlots[3] || null,
+                carrera_p5: raceSlots[4] || null
+            }, { onConflict: ['usuario_id', 'gran_premio'] });
 
         if (error) throw error;
 
