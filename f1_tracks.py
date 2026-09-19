@@ -33,7 +33,7 @@ CALENDARIO_2026_SPRINT = {
     "canada": True,
     "austin": True,
     "paises bajos": True,
-    "qatar": True
+    "singapur": True
 }
 
 def tiene_sprint(gran_premio):
