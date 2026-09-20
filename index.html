@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Podium Fantasy F1 - EFEH Tech Systems</title>
+    <title>Podium Fantasy F1 - EFEH Systems</title>
     <!-- SDK de Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Script de Conexión Independiente -->
     <script src="./supabaseClient.js"></script>
 	<link rel="manifest" href="./manifest.json">
 	<!-- Soporte específico para iOS / Apple -->
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="apple-touch-icon" href="nombre_exacto_de_tu_imagen.jpg">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="watermarked_img_912634837354469644.jpg">
     <style>
       /* Reset universal */
         *, *::before, *::after {
@@ -91,6 +91,18 @@
 
         .hidden {
             display: none !important;
+        }
+
+        /* Animación y estilo de bomba para la última hora del contador */
+        @keyframes bombPulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.03); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .bomb-red {
+            color: var(--color-f1-red) !important;
+            animation: bombPulse 0.8s infinite ease-in-out;
+            text-shadow: 0 0 8px rgba(225, 6, 0, 0.6);
         }
 
         /* Mensajes de Estado */
@@ -194,13 +206,13 @@
         }
 
         @keyframes telemetryBlocksA {
-            0% { background-position: 480% 0; }
-            100% { background-position: -480% 0; }
+            0% { background-position: 520% 0; }
+            100% { background-position: -350% 0; }
         }
 
         @keyframes telemetryBlocksB {
-            0% { background-position: -480% 0; }
-            100% { background-position: 480% 0; }
+            0% { background-position: -520% 0; }
+            100% { background-position: 350% 0; }
         }
 
         .navbar-brand-container {
@@ -502,7 +514,7 @@
                 <div class="navbar-brand-title">
                     <span class="brand-main">PODIUM FANTASY</span><span class="f1-highlight">F1</span>
                 </div>
-                <span class="sub-brand">EFEH Tech Systems</span>
+                <span class="sub-brand">EFEH Systems</span>
             </div>
         </div>
         <div id="navUserArea" class="user-info-nav hidden">
@@ -614,18 +626,16 @@
         <!-- TAB 1: PREDICCIONES / DASHBOARD  -->
         <div id="tabHome" class="dashboard-tab">
             
-            <!-- CAJA 1: TÍTULO E INFORMACIÓN ESTÁTICA DE LA RONDA ACTUAL -->
-            <div class="card-box" style="border-left: 4px solid var(--color-turquoise);">
-                <h1 style="font-size: 1.1rem; color: var(--text-main); margin: 0 0 0.15rem 0;">Mis predicciones GP</h1> 
-                <p style="font-size: 0.7rem; color: var(--text-muted); margin: 0 0 0.6rem 0;">Gran Premio activo y fijado para pronóstico</p>
+            <!-- CAJA 1: TÍTULO, RONDA DINÁMICA Y RELOJ PLANO (OPTIMIZADO VERTICALMENTE) -->
+            <div class="card-box" style="border-left: 4px solid var(--color-turquoise); padding-bottom: 8px !important;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
+                    <h1 style="font-size: 1.05rem; color: var(--text-main); margin: 0;">Mis predicciones GP</h1> 
+                    <span id="activeRoundTitle" style="color: var(--color-gold); font-weight: bold; font-size: 0.85rem; text-align: right;">Cargando ronda...</span>
+                </div>
 
-                <hr style="border-color: var(--border-color); margin: 0.6rem 0;">
-
-                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem;">
-                    <div>
-                        <span style="color: var(--text-muted); text-transform: uppercase; font-size: 0.7rem; display: block; font-weight: bold;">Ronda Vigente</span>
-                        <span id="activeRoundTitle" style="color: var(--color-gold); font-weight: bold; font-size: 0.95rem;">Cargando ronda actual...</span>
-                    </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; padding-top: 6px; border-top: 1px solid var(--border-color);">
+                    <span id="countdownTimer" style="font-family: monospace; font-weight: bold; font-size: 0.9rem; color: var(--color-turquoise);">--:--:--</span>
+                    <span id="lockStatusText" style="color: var(--text-muted); font-size: 0.75rem; text-align: right;">Cierra 48h antes</span>
                 </div>
             </div>
 
@@ -899,14 +909,12 @@
 1. <strong>5 pts</strong> por acertar el PoleMan de cada Gran Premio.
 2. <strong>Podio de ganadores:</strong> Tripleta perfecta suman puntos triples.
 3. <strong>Top 5 en carrera:</strong> Se aplicará el puntaje obtenido por los pilotos.
-4. <strong>Plazo de modificación:</strong> Antes de iniciar la sesión de FP1.
+4. <strong>Plazo de modificación:</strong> Antes de iniciar el cierre (2 días antes de la carrera).
 5. <strong>Puntos dobles:</strong> Bonificación por acierto exacto en grilla de salida.
 6. <strong>Campeonato de Escuderías:</strong> Comparte tu código de invitación para sumar puntos globales.
-7. <strong>Tambien podras competir por el liderato de tu grupo Familiar/Amigos, compitiendo y reacionando a sus predicciones</strong>
+7. <strong>Tambien podras competir por: </strong> el liderato de tu grupo Familiar/Amigos, compitiendo como Escuderia con (maximo 12) integrantes o contra ellos en un standing grupal y privado en tu sección "Mi Cuenta".
 
-
-
-<em>--- EFEH Tech Systems ---</em>
+<em>--- EFEH Systems ---</em>
                     </div>
                 </div>
             </div>
@@ -918,10 +926,15 @@
                         <p style="color: var(--text-muted); font-size: 0.7rem; margin: 0;">¿Tienes alguna idea o propuesta?</p>
                     </div>
                     <a href="mailto:tu-correo-programable@dominio.com?subject=Sugerencia%20Podium%20Fantasy%20F1" class="btn-action btn-turquesa" style="width: auto; padding: 0.35rem 0.7rem; font-size: 0.7rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.2rem;">
-                        📧 Sugerencias
-                    </a>
+                       📧 Sugerencias                    </a>
                 </div>
             </div>
+           	<!-- COPYRIGHT EFEH SYSTEM -->
+<div style="text-align: center; margin: 1.5rem 0 1rem 0;">
+    <span style="display: inline-block; background-color: rgba(0, 0, 0, 0.7); padding: 6px 16px; border-radius: 20px; font-size: 0.75rem; color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.15); text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);">
+        EFEH Systems &copy; 2026 — Todos los derechos reservados
+    </span>
+</div>
         </div>
 
         <!-- BARRA DE NAVEGACIÓN INFERIOR -->
@@ -953,6 +966,8 @@
         let rondaActivaId = null;
         let rondaActivaEsSprint = false;
         let rondaActivaNombre = "";
+        let fechaCierreRonda = null;
+        let countdownInterval = null;
 
         document.addEventListener("DOMContentLoaded", async () => {
             inicializarPilotosYCalendarioEstaticos();
@@ -1017,7 +1032,7 @@
             } catch (error) {
                 console.error("Error al cargar calendario desde Supabase:", error);
                 const titleEl = document.getElementById('activeRoundTitle');
-                if (titleEl) titleEl.innerText = "Error al conectar con calendario";
+                if (titleEl) titleEl.innerText = "Error al conectar";
             }
         }
 
@@ -1045,7 +1060,14 @@
                 rondaActivaNombre = raceObjetivo.name;
                 rondaActivaEsSprint = raceObjetivo.sprint === true || raceObjetivo.isSprint === true;
 
-                // Actualizar la interfaz estática de la Caja 1
+                // Calcular la fecha de cierre: 2 días antes de la ejecución de la carrera
+                const fechaRaceStr = raceObjetivo.date || raceObjetivo.fecha || raceObjetivo.race_date;
+                if (fechaRaceStr) {
+                    const raceDateObj = new Date(fechaRaceStr + "T00:00:00");
+                    fechaCierreRonda = new Date(raceDateObj.getTime() - (2 * 24 * 60 * 60 * 1000));
+                }
+
+                // Actualizar la interfaz plana de la Caja 1 dinámicamente
                 const titleEl = document.getElementById('activeRoundTitle');
                 if (titleEl) titleEl.innerText = `Ronda ${rondaActivaId}: ${rondaActivaNombre}`;
 
@@ -1057,6 +1079,149 @@
                     sprintSection.classList.add('hidden');
                     document.querySelectorAll('.sprint-slot').forEach(s => s.value = "");
                 }
+
+                // Cargar predicción previa automática si el usuario ya está autenticado
+                if (userIdActual) {
+                    cargarPrediccionActual();
+                }
+
+                // Iniciar el temporizador regresivo de cierre
+                iniciarContadorRegresivo();
+            }
+        }
+
+        function iniciarContadorRegresivo() {
+            if (countdownInterval) clearInterval(countdownInterval);
+
+            const timerEl = document.getElementById('countdownTimer');
+            const lockStatusEl = document.getElementById('lockStatusText');
+
+            function actualizar() {
+                if (!fechaCierreRonda) {
+                    if (timerEl) timerEl.innerText = "--:--:--";
+                    return;
+                }
+
+                const ahora = new Date().getTime();
+                const distancia = fechaCierreRonda.getTime() - ahora;
+
+                if (distancia <= 0) {
+                    if (timerEl) {
+                        timerEl.innerText = "00:00:00";
+                        timerEl.classList.add('bomb-red');
+                    }
+                    if (lockStatusEl) {
+                        lockStatusEl.innerText = "Cerrado (Plazo vencido)";
+                        lockStatusEl.style.color = "var(--color-f1-red)";
+                    }
+                    bloquearFormularioPredicciones(true);
+                    clearInterval(countdownInterval);
+                    return;
+                }
+
+                bloquearFormularioPredicciones(false);
+                if (lockStatusEl) {
+                    lockStatusEl.innerText = "Cierra 48h antes";
+                    lockStatusEl.style.color = "var(--text-muted)";
+                }
+
+                const dias = Math.floor(distancia / (1000 * 60 * 60 * 24));
+                const horas = Math.floor((distancia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutos = Math.floor((distancia % (1000 * 60 * 60)) / (1000 * 60));
+                const segundos = Math.floor((distancia % (1000 * 60)) / 1000);
+
+                let tiempoTexto = "";
+                if (dias > 0) {
+                    tiempoTexto += `${dias}d `;
+                }
+                tiempoTexto += `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`;
+                if (timerEl) timerEl.innerText = tiempoTexto;
+
+                // Condición de la última hora (menos de 60 minutos) -> Modo bomba en rojo
+                if (distancia <= 3600000) {
+                    if (timerEl) timerEl.classList.add('bomb-red');
+                } else {
+                    if (timerEl) timerEl.classList.remove('bomb-red');
+                }
+            }
+
+            actualizar();
+            countdownInterval = setInterval(actualizar, 1000);
+        }
+
+        function bloquearFormularioPredicciones(bloquear) {
+            const poleSelect = document.getElementById('poleSelect');
+            const raceSlots = document.querySelectorAll('.race-slot');
+            const sprintSlots = document.querySelectorAll('.sprint-slot');
+            const btnGuardar = document.querySelector('#tabHome button.btn-turquesa');
+
+            if (poleSelect) poleSelect.disabled = bloquear;
+            raceSlots.forEach(s => s.disabled = bloquear);
+            sprintSlots.forEach(s => s.disabled = bloquear);
+            if (btnGuardar) {
+                btnGuardar.disabled = bloquear;
+                if (bloquear) {
+                    btnGuardar.style.opacity = "0.5";
+                    btnGuardar.style.cursor = "not-allowed";
+                } else {
+                    btnGuardar.style.opacity = "1";
+                    btnGuardar.style.cursor = "pointer";
+                }
+            }
+        }
+
+        async function cargarPrediccionActual() {
+            if (!userIdActual || !rondaActivaNombre) return;
+
+            document.getElementById('poleSelect').value = "";
+            document.querySelectorAll('.race-slot').forEach(s => s.value = "");
+            document.querySelectorAll('.sprint-slot').forEach(s => s.value = "");
+
+            const feedback = document.getElementById('predictionFeedback');
+            if (feedback) {
+                feedback.className = "hidden";
+                feedback.innerText = "";
+            }
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('predicciones')
+                    .select('*')
+                    .eq('usuario_id', userIdActual)
+                    .eq('gran_premio', rondaActivaNombre)
+                    .maybeSingle();
+
+                if (error) throw error;
+
+                if (data) {
+                    if (data.poleman) document.getElementById('poleSelect').value = data.poleman;
+
+                    const raceSlots = document.querySelectorAll('.race-slot');
+                    if (raceSlots[0] && data.carrera_p1) raceSlots[0].value = data.carrera_p1;
+                    if (raceSlots[1] && data.carrera_p2) raceSlots[1].value = data.carrera_p2;
+                    if (raceSlots[2] && data.carrera_p3) raceSlots[2].value = data.carrera_p3;
+                    if (raceSlots[3] && data.carrera_p4) raceSlots[3].value = data.carrera_p4;
+                    if (raceSlots[4] && data.carrera_p5) raceSlots[4].value = data.carrera_p5;
+                    verificarDuplicadosCarrera();
+
+                    if (rondaActivaEsSprint) {
+                        const sprintSlots = document.querySelectorAll('.sprint-slot');
+                        if (sprintSlots[0] && data.sprint_p1) sprintSlots[0].value = data.sprint_p1;
+                        if (sprintSlots[1] && data.sprint_p2) sprintSlots[1].value = data.sprint_p2;
+                        if (sprintSlots[2] && data.sprint_p3) sprintSlots[2].value = data.sprint_p3;
+                    }
+
+                    if (feedback) {
+                        feedback.textContent = "ℹ️ Tienes una predicción guardada para este GP. Puedes modificarla y guardar cambios.";
+                        feedback.className = "status-msg";
+                        feedback.style.backgroundColor = "rgba(255, 255, 255, 0.04)";
+                        feedback.style.border = "1px solid rgba(255, 255, 255, 0.1)";
+                        feedback.style.color = "var(--text-muted)";
+                        feedback.classList.remove('hidden');
+                    }
+                }
+            } catch (err) {
+                console.error("Error al cargar predicción actual:", err);
             }
         }
 
@@ -1138,6 +1303,7 @@
             document.getElementById('navUserArea').classList.remove('hidden');
             cargarStandingsIndividuales();
             cargarDatosMiCuenta();
+            cargarPrediccionActual();
         }
 
         function cerrarSesion() {
@@ -1423,6 +1589,13 @@
         async function guardarPrediccion() {
             const feedback = document.getElementById('predictionFeedback');
 
+            // Verificar si el plazo ya expiró (candado de 2 días antes de la carrera)
+            if (fechaCierreRonda && new Date().getTime() >= fechaCierreRonda.getTime()) {
+                feedback.textContent = "⚠️ El plazo para realizar o modificar predicciones ha caducado (cierre 2 días antes de la carrera).";
+                feedback.className = "status-msg status-error";
+                return;
+            }
+
             if (!rondaActivaNombre) {
                 feedback.textContent = "No hay una ronda activa identificada.";
                 feedback.className = "status-msg status-error";
@@ -1433,7 +1606,6 @@
             const raceSlots = Array.from(document.querySelectorAll('.race-slot')).map(s => s.value);
             const sprintSlots = Array.from(document.querySelectorAll('.sprint-slot')).map(s => s.value);
 
-            // Validar que estén seleccionados los campos obligatorios
             if (!pole || raceSlots.some(slot => !slot)) {
                 feedback.textContent = "Por favor selecciona el Poleman y los 5 puestos de la carrera larga.";
                 feedback.className = "status-msg status-error";
@@ -1441,7 +1613,6 @@
             }
 
             try {
-                // Verificar si ya existe una predicción previa para este usuario y GP
                 const { data: existingPred, error: searchError } = await supabaseClient
                     .from('predicciones')
                     .select('id')
@@ -1451,7 +1622,6 @@
 
                 if (searchError) throw searchError;
 
-                // Objeto adaptado exactamente a las columnas de Supabase
                 const datosPrediccion = {
                     usuario_id: userIdActual,
                     gran_premio: rondaActivaNombre,
@@ -1468,13 +1638,11 @@
 
                 let result;
                 if (existingPred) {
-                    // Actualizar si ya existe registro para este GP
                     result = await supabaseClient
                         .from('predicciones')
                         .update(datosPrediccion)
                         .eq('id', existingPred.id);
                 } else {
-                    // Insertar nuevo registro si no existe
                     result = await supabaseClient
                         .from('predicciones')
                         .insert([datosPrediccion]);
@@ -1482,9 +1650,11 @@
 
                 if (result.error) throw result.error;
 
+                feedback.style = "";
                 feedback.textContent = "¡Predicción guardada con éxito!";
                 feedback.className = "status-msg status-success";
             } catch (err) {
+                feedback.style = "";
                 feedback.textContent = "Error al guardar: " + err.message;
                 feedback.className = "status-msg status-error";
             }
@@ -1611,31 +1781,31 @@
 
             try {
                 const { data: usuarios, error } = await supabaseClient.from('usuarios').select('id, username, puntos_globales, nombre_escuderia, escuderia_id, codigo_invitacion');
-                if (error) throw error;
-                if (!usuarios || usuarios.length === 0) return;
+            if (error) throw error;
+            if (!usuarios || usuarios.length === 0) return;
 
-                const me = usuarios.find(u => u.id === userIdActual);
-                const noTeamSection = document.getElementById('no-team-section');
-                const hasTeamSection = document.getElementById('has-team-section');
-                const inputCodigoMiCuenta = document.getElementById('miCodigoInvitacion');
+            const me = usuarios.find(u => u.id === userIdActual);
+            const noTeamSection = document.getElementById('no-team-section');
+            const hasTeamSection = document.getElementById('has-team-section');
+            const inputCodigoMiCuenta = document.getElementById('miCodigoInvitacion');
 
-                if (!me || (!me.nombre_escuderia && !me.escuderia_id)) {
+            if (!me || (!me.nombre_escuderia && !me.escuderia_id)) {
                     teamNameDisplay.innerText = "Sin Escudería";
                     teamPosDisplay.innerText = "Crea o únete a una escudería";
                     teamPtsDisplay.innerText = "0";
                     teamMedalDisplay.innerText = "🏁";
                     membersTbody.innerHTML = '<tr><td colspan="3" class="text-center" style="color: var(--text-muted); padding: 0.8rem;">No estás en ninguna escudería.</td></tr>';
-                    if (noTeamSection) noTeamSection.style.display = 'flex';
-                    if (hasTeamSection) hasTeamSection.style.display = 'none';
-                    return;
-                }
+            if (noTeamSection) noTeamSection.style.display = 'flex';
+            if (hasTeamSection) hasTeamSection.style.display = 'none';
+            return;
+            }
 
-                if (noTeamSection) noTeamSection.style.display = 'none';
-                if (hasTeamSection) hasTeamSection.style.display = 'block';
+            if (noTeamSection) noTeamSection.style.display = 'none';
+            if (hasTeamSection) hasTeamSection.style.display = 'block';
 
-                const miEscuderiaNombre = me.nombre_escuderia;
-                const miEscuderiaId = me.escuderia_id || me.id;
-                if (inputCodigoMiCuenta) inputCodigoMiCuenta.value = me.codigo_invitacion || userIdActual.substring(0, 8).toUpperCase();
+            const miEscuderiaNombre = me.nombre_escuderia;
+            const miEscuderiaId = me.escuderia_id || me.id;
+            if (inputCodigoMiCuenta) inputCodigoMiCuenta.value = me.codigo_invitacion || userIdActual.substring(0, 8).toUpperCase();
 
                 const equiposMap = {};
                 usuarios.forEach(u => {
@@ -1684,12 +1854,11 @@
             if (typeof cargarDatosEscuderiaMiCuenta === 'function') cargarDatosEscuderiaMiCuenta();
         }
 		
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js')
-      .then(() => console.log("Service Worker registrado con éxito"))
-      .catch((err) => console.log("Error al registrar Service Worker", err));
-  }
-		
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js')
+            .then(() => console.log("Service Worker registrado con éxito"))
+            .catch((err) => console.log("Error al registrar Service Worker", err));
+        }
 	</script>
 </body>
 </html>
