@@ -1,0 +1,15 @@
+{
+  "name": "Podium Fantasy F1",
+  "short_name": "PodiumF1",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#e10600",
+  "icons": [
+    {
+      "src": "watermarked_img_912634837354469644.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
