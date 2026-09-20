@@ -1,6 +1,6 @@
 {
   "name": "Podium Fantasy F1",
-  "short_name": "PodiumF1",
+  "short_name": "PodiumFantasyF1",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#000000",
