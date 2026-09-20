@@ -1419,7 +1419,7 @@
         async function guardarPrediccion() {
             const feedback = document.getElementById('predictionFeedback');
 
-            if (!rondaActivaId) {
+            if (!rondaActivaNombre) {
                 feedback.textContent = "No hay una ronda activa identificada.";
                 feedback.className = "status-msg status-error";
                 return;
@@ -1429,19 +1429,54 @@
             const raceSlots = Array.from(document.querySelectorAll('.race-slot')).map(s => s.value);
             const sprintSlots = Array.from(document.querySelectorAll('.sprint-slot')).map(s => s.value);
 
-            try {
-                const { error } = await supabaseClient
-                    .from('predicciones')
-                    .upsert({
-                        usuario_id: userIdActual,
-                        round: rondaActivaId,
-                        gran_premio: rondaActivaNombre,
-                        pole_man: pole,
-                        top5_carrera: raceSlots,
-                        top3_sprint: sprintSlots
-                    }, { onConflict: ['usuario_id', 'round'] });
+            // Validar que estén seleccionados los campos obligatorios
+            if (!pole || raceSlots.some(slot => !slot)) {
+                feedback.textContent = "Por favor selecciona el Poleman y los 5 puestos de la carrera larga.";
+                feedback.className = "status-msg status-error";
+                return;
+            }
 
-                if (error) throw error;
+            try {
+                // Verificar si ya existe una predicción previa para este usuario y GP
+                const { data: existingPred, error: searchError } = await supabaseClient
+                    .from('predicciones')
+                    .select('id')
+                    .eq('usuario_id', userIdActual)
+                    .eq('gran_premio', rondaActivaNombre)
+                    .maybeSingle();
+
+                if (searchError) throw searchError;
+
+                // Objeto adaptado exactamente a las columnas de Supabase
+                const datosPrediccion = {
+                    usuario_id: userIdActual,
+                    gran_premio: rondaActivaNombre,
+                    poleman: pole,
+                    carrera_p1: raceSlots[0],
+                    carrera_p2: raceSlots[1],
+                    carrera_p3: raceSlots[2],
+                    carrera_p4: raceSlots[3],
+                    carrera_p5: raceSlots[4],
+                    sprint_p1: rondaActivaEsSprint ? sprintSlots[0] : null,
+                    sprint_p2: rondaActivaEsSprint ? sprintSlots[1] : null,
+                    sprint_p3: rondaActivaEsSprint ? sprintSlots[2] : null
+                };
+
+                let result;
+                if (existingPred) {
+                    // Actualizar si ya existe registro para este GP
+                    result = await supabaseClient
+                        .from('predicciones')
+                        .update(datosPrediccion)
+                        .eq('id', existingPred.id);
+                } else {
+                    // Insertar nuevo registro si no existe
+                    result = await supabaseClient
+                        .from('predicciones')
+                        .insert([datosPrediccion]);
+                }
+
+                if (result.error) throw result.error;
 
                 feedback.textContent = "¡Predicción guardada con éxito!";
                 feedback.className = "status-msg status-success";
