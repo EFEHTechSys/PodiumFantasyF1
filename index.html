@@ -100,11 +100,25 @@
             100% { opacity: 1; transform: scale(1); }
         }
         .bomb-red {
-            color: var(--color-f1-red) !important;
+            color: #ff5500; /* naranja fuego vivo */
             animation: bombPulse 0.8s infinite ease-in-out;
-            text-shadow: 0 0 8px rgba(225, 6, 0, 0.6);
+            text-shadow: 0 0 8px rgba(225, 0, 0, 0.6); /* Añade un sutil resplandor que separa el texto del fondo */
+            font-weight: bold;
         }
-
+       .bomb-red {
+            background-color: #ffffff !important; /* Fondo blanco sólido para contraste total */
+            color: #d32f2f !important;            /* Rojo oscuro de alta visibilidad */
+            font-weight: bold !important;
+            padding: 8px 16px !important;
+            border-radius: 8px !important;
+            display: inline-block !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important; /* Sombra sombreada para separar del fondo translúcido */
+        }
+        
+        /* Forzamos a que los números y textos dentro de la caja de alerta cojan el color rojo y no hereden el turquesa */
+        .bomb-red *, .bomb-red span {
+            color: #d32f2f !important;
+        }
         /* Mensajes de Estado */
         .status-msg {
             padding: 0.4rem;
@@ -1036,119 +1050,135 @@
             }
         }
 
-        function determinarRondaVigente() {
-            if (!calendarData || calendarData.length === 0) return;
-
-            const hoyStr = new Date().toISOString().split('T')[0];
-            let raceObjetivo = null;
-
-            for (const race of calendarData) {
-                const fechaRace = race.date || race.fecha || race.race_date;
-                if (fechaRace && fechaRace >= hoyStr) {
-                    raceObjetivo = race;
-                    break;
+            function determinarRondaVigente() {
+                if (!calendarData || calendarData.length === 0) return;
+            
+                const hoyStr = new Date().toISOString().split('T')[0];
+                let raceObjetivo = null;
+            
+                for (const race of calendarData) {
+                    const fechaRace = race.date || race.fecha || race.race_date;
+                    if (fechaRace && fechaRace >= hoyStr) {
+                        raceObjetivo = race;
+                        break;
+                    }
+                }
+            
+                if (!raceObjetivo && calendarData.length > 0) {
+                    raceObjetivo = calendarData[calendarData.length - 1];
+                }
+            
+                if (raceObjetivo) {
+                    rondaActivaId = raceObjetivo.round;
+                    rondaActivaNombre = raceObjetivo.name;
+                    rondaActivaEsSprint = raceObjetivo.sprint === true || raceObjetivo.isSprint === true;
+            
+                    // Tomar la fecha y la hora exacta desde Supabase (con respaldo por defecto a las 05:00:00)
+                    const fechaRaceStr = raceObjetivo.date || raceObjetivo.fecha || raceObjetivo.race_date;
+                    const horaRaceStr = raceObjetivo.hora || "05:00:00";
+            
+                    if (fechaRaceStr) {
+                        // Construir el objeto de fecha y hora exacta de la carrera
+                        const raceDateObj = new Date(`${fechaRaceStr}T${horaRaceStr}`);
+                        // Restar exactamente 48 horas para fijar el cierre de pronósticos
+                        fechaCierreRonda = new Date(raceDateObj.getTime() - (2 * 24 * 60 * 60 * 1000));
+                    }
+            
+                    // Actualizar la interfaz plana de la Caja 1 dinámicamente
+                    const titleEl = document.getElementById('activeRoundTitle');
+                    if (titleEl) titleEl.innerText = `Ronda ${rondaActivaId}: ${rondaActivaNombre}`;
+            
+                    // Configurar sección Sprint de la Caja 2
+                    const sprintSection = document.getElementById('sprintSection');
+                    if (rondaActivaEsSprint) {
+                        sprintSection.classList.remove('hidden');
+                    } else {
+                        sprintSection.classList.add('hidden');
+                        document.querySelectorAll('.sprint-slot').forEach(s => s.value = "");
+                    }
+            
+                    if (userIdActual) {
+                        cargarPrediccionActual();
+                    }
+            
+                    iniciarContadorRegresivo();
                 }
             }
 
-            // Si ya pasaron todas, toma la última
-            if (!raceObjetivo && calendarData.length > 0) {
-                raceObjetivo = calendarData[calendarData.length - 1];
+            function iniciarContadorRegresivo() {
+            if (typeof countdownInterval !== 'undefined' && countdownInterval) {
+                clearInterval(countdownInterval);
             }
-
-            if (raceObjetivo) {
-                rondaActivaId = raceObjetivo.round;
-                rondaActivaNombre = raceObjetivo.name;
-                rondaActivaEsSprint = raceObjetivo.sprint === true || raceObjetivo.isSprint === true;
-
-                // Calcular la fecha de cierre: 2 días antes de la ejecución de la carrera
-                const fechaRaceStr = raceObjetivo.date || raceObjetivo.fecha || raceObjetivo.race_date;
-                if (fechaRaceStr) {
-                    const raceDateObj = new Date(fechaRaceStr + "T00:00:00");
-                    fechaCierreRonda = new Date(raceDateObj.getTime() - (2 * 24 * 60 * 60 * 1000));
-                }
-
-                // Actualizar la interfaz plana de la Caja 1 dinámicamente
-                const titleEl = document.getElementById('activeRoundTitle');
-                if (titleEl) titleEl.innerText = `Ronda ${rondaActivaId}: ${rondaActivaNombre}`;
-
-                // Configurar sección Sprint de la Caja 2
-                const sprintSection = document.getElementById('sprintSection');
-                if (rondaActivaEsSprint) {
-                    sprintSection.classList.remove('hidden');
-                } else {
-                    sprintSection.classList.add('hidden');
-                    document.querySelectorAll('.sprint-slot').forEach(s => s.value = "");
-                }
-
-                // Cargar predicción previa automática si el usuario ya está autenticado
-                if (userIdActual) {
-                    cargarPrediccionActual();
-                }
-
-                // Iniciar el temporizador regresivo de cierre
-                iniciarContadorRegresivo();
-            }
-        }
-
-        function iniciarContadorRegresivo() {
-            if (countdownInterval) clearInterval(countdownInterval);
-
+        
             const timerEl = document.getElementById('countdownTimer');
             const lockStatusEl = document.getElementById('lockStatusText');
-
+        
             function actualizar() {
-                if (!fechaCierreRonda) {
-                    if (timerEl) timerEl.innerText = "--:--:--";
+                // 1. Validación de seguridad: si no existe la variable, evitamos el NaN
+                if (typeof fechaCierreRonda === 'undefined' || !fechaCierreRonda) {
+                    if (timerEl) timerEl.innerText = "--:--:--.---";
                     return;
                 }
-
+        
+                // 2. Nos aseguramos de que sea un objeto Date válido por si viene como texto
+                const fechaCierre = fechaCierreRonda instanceof Date 
+                    ? fechaCierreRonda 
+                    : new Date(fechaCierreRonda);
+        
                 const ahora = new Date().getTime();
-                const distancia = fechaCierreRonda.getTime() - ahora;
-
-                if (distancia <= 0) {
+                const distancia = fechaCierre.getTime() - ahora;
+        
+                // 3. Si la fecha es inválida o el tiempo ya pasó
+                if (isNaN(distancia) || distancia <= 0) {
                     if (timerEl) {
-                        timerEl.innerText = "00:00:00";
+                        timerEl.innerText = "00:00:00.000";
                         timerEl.classList.add('bomb-red');
                     }
                     if (lockStatusEl) {
                         lockStatusEl.innerText = "Cerrado (Plazo vencido)";
                         lockStatusEl.style.color = "var(--color-f1-red)";
                     }
-                    bloquearFormularioPredicciones(true);
                     clearInterval(countdownInterval);
                     return;
                 }
-
-                bloquearFormularioPredicciones(false);
-                if (lockStatusEl) {
-                    lockStatusEl.innerText = "Cierra 48h antes";
-                    lockStatusEl.style.color = "var(--text-muted)";
-                }
-
+        
+                // Cálculos de tiempo exactos
                 const dias = Math.floor(distancia / (1000 * 60 * 60 * 24));
                 const horas = Math.floor((distancia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const minutos = Math.floor((distancia % (1000 * 60 * 60)) / (1000 * 60));
                 const segundos = Math.floor((distancia % (1000 * 60)) / 1000);
-
+                const milisegundos = Math.floor(distancia % 1000); // Los 3 dígitos exactos
+        
+                // Construcción limpia del texto
                 let tiempoTexto = "";
                 if (dias > 0) {
                     tiempoTexto += `${dias}d `;
                 }
-                tiempoTexto += `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`;
-                if (timerEl) timerEl.innerText = tiempoTexto;
-
-                // Condición de la última hora (menos de 60 minutos) -> Modo bomba en rojo
+        
+                const hStr = String(horas).padStart(2, '0');
+                const mStr = String(minutos).padStart(2, '0');
+                const sStr = String(segundos).padStart(2, '0');
+                const msStr = String(milisegundos).padStart(3, '0'); // Fuerza los 3 dígitos (ej: 005)
+        
+                tiempoTexto += `${hStr}:${mStr}:${sStr}.${msStr}`;
+        
+                if (timerEl) {
+                    timerEl.innerText = tiempoTexto;
+                }
+        
+                // Modo alerta si queda menos de 1 hora
                 if (distancia <= 3600000) {
                     if (timerEl) timerEl.classList.add('bomb-red');
                 } else {
                     if (timerEl) timerEl.classList.remove('bomb-red');
                 }
             }
-
+        
             actualizar();
-            countdownInterval = setInterval(actualizar, 1000);
+            // Actualizamos cada 40ms para que los milisegundos corran fluidos
+            countdownInterval = setInterval(actualizar, 1);
         }
-
+    
         function bloquearFormularioPredicciones(bloquear) {
             const poleSelect = document.getElementById('poleSelect');
             const raceSlots = document.querySelectorAll('.race-slot');
