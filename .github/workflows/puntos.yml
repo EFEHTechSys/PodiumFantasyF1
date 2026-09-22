@@ -1,7 +1,10 @@
 name: Calcular Puntos EFEH Tech
 
 on:
-  workflow_dispatch: 
+  workflow_dispatch: # Te permite seguir ejecutándolo manualmente cuando quieras
+  schedule:
+    # Se ejecuta automáticamente cada 3 horas los domingos (0) y lunes (1)
+    - cron: '0 */3 * * 0,1'
 
 jobs:
   run-logic:
