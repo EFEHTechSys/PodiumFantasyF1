@@ -69,7 +69,7 @@ def calcular_puntos_sesion(pred_text, real_text, limite_puestos, es_sprint=False
 def procesar_todo(supabase):
     print("🚀 [EFEH TECH] Iniciando motor de cálculo con datos manuales...")
 
-    preds_res = supabase.table("predicciones").select("*").execute()
+    preds_res = supabase.table("predicciones").select("*").eq("estado", "pendiente").execute()
     if not preds_res.data:
         print("⚠️ No hay predicciones registradas en la base de datos.")
         return
@@ -129,13 +129,14 @@ def procesar_todo(supabase):
 
         puntos_total_fin_de_semana = puntos_quali + puntos_sprint + puntos_carrera
 
-        # Guardar parciales en predicciones
-        supabase.table("predicciones").update({
-            "puntos_qualy": puntos_quali,
-            "puntos_sprint": puntos_sprint,
-            "puntos_carrera": puntos_carrera,
-            "total_fin_de_semana": puntos_total_fin_de_semana
-        }).eq("id", pred_id).execute()
+        # Guardar parciales en predicciones y sellar como procesado
+            supabase.table("predicciones").update({
+                "puntos_qualy": puntos_quali,
+                "puntos_sprint": puntos_sprint,
+                "puntos_carrera": puntos_carrera,
+                "total_fin_de_semana": puntos_total_fin_de_semana,
+                "estado": "procesado"
+            }).eq("id", pred_id).execute()
 
         # Upsert en puntuaciones_gp
         try:
