@@ -1983,6 +1983,71 @@
             .then(() => console.log("Service Worker registrado con éxito"))
             .catch((err) => console.log("Error al registrar Service Worker", err));
         }
+async function cargarPrediccionActual() {
+            if (!userIdActual || !rondaActivaNombre) return;
+
+            // Limpiar valores previos y sus etiquetas visuales
+            document.getElementById('poleSelect').value = "";
+            actualizarOpcionesCustomDropdown('poleSelect');
+
+            document.querySelectorAll('.race-slot').forEach(s => {
+                s.value = "";
+                actualizarOpcionesCustomDropdown(s.id);
+            });
+
+            document.querySelectorAll('.sprint-slot').forEach(s => {
+                s.value = "";
+                actualizarOpcionesCustomDropdown(s.id);
+            });
+
+            const feedback = document.getElementById('predictionFeedback');
+            if (feedback) {
+                feedback.className = "hidden";
+                feedback.innerText = "";
+            }
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('predicciones')
+                    .select('*')
+                    .eq('usuario_id', userIdActual)
+                    .eq('gran_premio', rondaActivaNombre)
+                    .maybeSingle();
+
+                if (error) throw error;
+
+                if (data) {
+                    // Cargar Pole Position
+                    if (data.poleman) {
+                        document.getElementById('poleSelect').value = data.poleman;
+                        actualizarOpcionesCustomDropdown('poleSelect');
+                    }
+
+                    // Cargar Carrera Larga (Top 5)
+                    const raceSlots = document.querySelectorAll('.race-slot');
+                    if (raceSlots[0] && data.carrera_p1) raceSlots[0].value = data.carrera_p1;
+                    if (raceSlots[1] && data.carrera_p2) raceSlots[1].value = data.carrera_p2;
+                    if (raceSlots[2] && data.carrera_p3) raceSlots[2].value = data.carrera_p3;
+                    if (raceSlots[3] && data.carrera_p4) raceSlots[3].value = data.carrera_p4;
+                    if (raceSlots[4] && data.carrera_p5) raceSlots[4].value = data.carrera_p5;
+                    
+                    raceSlots.forEach(s => actualizarOpcionesCustomDropdown(s.id));
+                    verificarDuplicadosCarrera();
+
+                    // Cargar Carrera Sprint (Top 3) si aplica
+                    if (rondaActivaEsSprint) {
+                        const sprintSlots = document.querySelectorAll('.sprint-slot');
+                        if (sprintSlots[0] && data.sprint_p1) sprintSlots[0].value = data.sprint_p1;
+                        if (sprintSlots[1] && data.sprint_p2) sprintSlots[1].value = data.sprint_p2;
+                        if (sprintSlots[2] && data.sprint_p3) sprintSlots[2].value = data.sprint_p3;
+                        
+                        sprintSlots.forEach(s => actualizarOpcionesCustomDropdown(s.id));
+                    }
+                }
+            } catch (err) {
+                console.error("Error al cargar la predicción actual:", err);
+            }
+        }
 	</script>
 </body>
 </html>
