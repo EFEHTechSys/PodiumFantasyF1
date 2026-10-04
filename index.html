@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Importamos la fuente caligráfica y Montserrat -->
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
-    <title>Podium Fantasy F1 - EFEH Systems</title>
+    <title>Perfect Podium Fantasy F1 - EFEH Systems</title>
     <!-- SDK de Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Script de Conexión Independiente -->
@@ -14,9 +14,12 @@
 	<!-- Soporte específico para iOS / Apple -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="watermarked_img_912634837354469644.jpg">
+    <link rel="apple-touch-icon" href="d5s1wld5s1wld5s1-removebg.png">
     <style>
-      /* Reset universal */
+
+/* ========================================================
+           1. RESET UNIVERSAL Y VARIABLES GLOBALES
+           ======================================================== */
         *, *::before, *::after {
             box-sizing: border-box;
         }
@@ -43,7 +46,7 @@
             padding: 0;
             position: relative;
             overflow-x: hidden;
-            *font-family: 'Montserrat', sans-serif;
+            font-size: 0.7rem; 
         }
 
         /* Fondo estático sin bugs de scroll */
@@ -62,180 +65,56 @@
             pointer-events: none;
         }
 
-        /* Contenedor Principal */
-        .container {
-            flex: 1;
-            padding: 0.8rem;
-            max-width: 650px;
-            margin: 0 auto;
-            width: 100%;
-            padding-bottom: 6rem;
-        }
-
-        /* Tarjetas de Contenido unificadas y optimizadas */
-        .card-box, 
-        .account-section-box {
-            background: var(--bg-card) !important;
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
-            border-left: 4px solid var(--color-gold) !important;
-            border-radius: 10px !important;
-            padding: 12px !important;
-            margin-bottom: 12px !important;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-            width: 100%;
-        }
-
-        .card-box h2 {
-            font-size: 0.9rem;
-            margin: 0 0 0.4rem 0;
-            color: var(--color-turquoise);
-        }
-
         .hidden {
             display: none !important;
         }
 
-        /* Animación y estilo de bomba para la última hora del contador */
-        @keyframes bombPulse {
-            0% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.7; transform: scale(1.03); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-        .bomb-red {
-            color: #ff5500; /* naranja fuego vivo */
-            animation: bombPulse 0.8s infinite ease-in-out;
-            text-shadow: 0 0 8px rgba(225, 0, 0, 0.6); /* Añade un sutil resplandor que separa el texto del fondo */
-            font-weight: bold;
-        }
-       .bomb-red {
-            background-color: #ffffff !important; /* Fondo blanco sólido para contraste total */
-            color: #d32f2f !important;            /* Rojo oscuro de alta visibilidad */
-            font-weight: bold !important;
-            padding: 8px 16px !important;
-            border-radius: 8px !important;
-            display: inline-block !important;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important; /* Sombra sombreada para separar del fondo translúcido */
-        }
-        
-        /* Forzamos a que los números y textos dentro de la caja de alerta cojan el color rojo y no hereden el turquesa */
-        .bomb-red *, .bomb-red span {
-            color: #d32f2f !important;
-        }
-        /* Mensajes de Estado */
-        .status-msg {
-            padding: 0.4rem;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            margin-top: 0.4rem;
-            text-align: center;
-        }
-        .status-success {
-            background-color: rgba(16, 185, 129, 0.2);
-            border: 1px solid var(--success);
-            color: var(--success);
-        }
-        .status-error {
-            background-color: rgba(239, 68, 68, 0.2);
-            border: 1px solid var(--danger);
-            color: var(--danger);
-        }
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
 
         /* ========================================================
-           BARRA DE NAVEGACIÓN - PPFF1 FINAL
+           2. BANNER SUPERIOR (CUSTOM NAVBAR)
            ======================================================== */
-        .custom-navbar {
-        	height: 1px;
-        	margin-top: 10px; /*Separacion del top del banner con el borde superior*/        	
-        	padding-bottom: 100px;
-            /*position: sticky;*/
-            position: relative;
+        .custom-navbar {  	
+            position: sticky;
             top: 0;
-            z-index: 1000;
+            z-index: 650;
+            max-width: 650px;
+            width: 100%;
+            margin: 0 auto;
             background: #0b0f19;
-            /* Padding superior ligeramente mayor para darle aire al Perfect coronando */
-            padding: 2.2rem 0.6rem 2.1rem 0.6rem; 
+            padding: 1.5rem 0.8rem 0.6rem 0.8rem; 
             display: flex;
             align-items: center;
             justify-content: space-between;
-            *border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            overflow: visible; /* CRUCIAL: Permite que Perfect sobresalga sin recortarse */
+            overflow: visible;
             backdrop-filter: blur(10px);
-            width: 100%;
             box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            box-sizing: border-box;
         }
 
-         /* Carril Superior de Telemetría con animación restaurada */
         .custom-navbar::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 0.5px;
-            background: linear-gradient(
-                90deg,
-                transparent 0%,
-                transparent 10%,
-                #e10600 10%,       /* 1. Rojo */
-                #e10600 17%,
-                transparent 17%,
-                transparent 34%,
-                #00f584 34%,      /* 2. Verde Aguamarina */
-                #00f584 41%,
-                transparent 41%,
-                transparent 58%,
-                #00f0ff 58%,      /* 3. Cian (Racing Bulls / ) */
-                #00f0ff 65%,
-                transparent 65%,
-                transparent 82%,
-                #3b82f6 82%,      /* 4. Azul (Williams) */
-                #3b82f6 89%,
-                transparent 89%,
-                transparent 100%
-            );
+            top: 0; left: 0; width: 100%; height: 0.5px;
+            background: linear-gradient(90deg, transparent 0%, transparent 10%, #e10600 10%, #e10600 17%, transparent 17%, transparent 34%, #00f584 34%, #00f584 41%, transparent 41%, transparent 58%, #00f0ff 58%, #00f0ff 65%, transparent 65%, transparent 82%, #3b82f6 82%, #3b82f6 89%, transparent 89%, transparent 100%);
             background-size: 350% 100%;
             animation: telemetryBlocksA 6.550s linear infinite;
             box-shadow: 0 0 6px rgba(0, 245, 132, 0.4);
             z-index: 2;
         }
         
-        /* Carril Inferior de Telemetría con animación restaurada */
         .custom-navbar::after {
             content: '';
             position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 0.5px;
-            background: linear-gradient(
-                90deg,
-                transparent 0%,
-                transparent 10%,
-                #ff8000 10%,      /* 1. Naranja Papaya */
-                #ff8000 17%,
-                transparent 17%,
-                transparent 34%,
-                #ffd700 34%,      /* 2. Amarillo Cadillac */
-                #ffd700 41%,
-                transparent 41%,
-                transparent 58%,
-                #c0c0c0 58%,      /* 3. Plata */
-                #c0c0c0 65%,
-                transparent 65%,
-                transparent 82%,
-                #ff007f 82%,      /* 4. Rosa Alpine */
-                #ff007f 89%,
-                transparent 89%,
-                transparent 100%
-            );
+            bottom: 0; left: 0; width: 100%; height: 0.5px;
+            background: linear-gradient(90deg, transparent 0%, transparent 10%, #ff8000 10%, #ff8000 17%, transparent 17%, transparent 34%, #ffd700 34%, #ffd700 41%, transparent 41%, transparent 58%, #c0c0c0 58%, #c0c0c0 65%, transparent 65%, transparent 82%, #ff007f 82%, #ff007f 89%, transparent 89%, transparent 100%);
             background-size: 350% 100%;
             animation: telemetryBlocksB 6.6s linear infinite;
             box-shadow: 0 0 6px rgba(255, 132, 0, 0.4);
             z-index: 1;
         }
 
-        /* Keyframes de animación para la telemetría */
         @keyframes telemetryBlocksA {
             0% { background-position: 520% 75%; }
             100% { background-position: -260% 75%; }
@@ -253,24 +132,20 @@
         
         .navbar-brand-wrapper {
             display: flex;
+            position: relative;
             flex-direction: column;
-            *gap: 2px;
-            *position: relative;
-            *margin-top: 1px; /* Ajustado para que el banner baje un poco y Perfect respire seguro dentro de la página */
         }
         
         .navbar-brand-title {
-            font-weight: 775;
-            font-size: 0.8rem;
-            letter-spacing: 0.4px;
+            font-weight: 900;
+            font-size: 1.1rem !important;
+            letter-spacing: 0.8px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 4px;
             white-space: nowrap;
-            position: relative;
         }
 
-        /* Gradiente principal */
         .brand-main {
             color: var(--color-gold); 
             background: linear-gradient(135deg, #fff 20%, var(--color-gold) 80%);
@@ -283,10 +158,9 @@
             -webkit-text-fill-color: initial;
         }
         
-        /* "PERFECT": Caligrafía corrida, elegante y con espacio superior controlado */
         .brand-perfect-crown {
             position: absolute;
-            top: -20px; /* para que sobresalga el ~30% */
+            top: -22px;
             left: 46%;
             transform: translateX(-39%);
             font-family: 'Great Vibes', cursive;
@@ -295,9 +169,7 @@
             font-style: italic;
             letter-spacing: 3.2px;
             color: var(--color-gold);
-            text-shadow: 0 0 15px rgba(255, 215, 255, 0.6), 
-                         0 0 8px rgba(255, 215, 0, 0.9),
-                         0 2px 4px rgba(0, 0, 0, 0.9);
+            text-shadow: 0 0 15px rgba(255, 215, 255, 0.6), 0 0 8px rgba(255, 215, 0, 0.9), 0 2px 4px rgba(0, 0, 0, 0.9);
             z-index: 10;
         }
         
@@ -312,7 +184,7 @@
             text-transform: uppercase;
             border: 1px solid rgba(0, 240, 255, 0.25);
             width: fit-content;
-            margin: 5px auto 0 auto; /* 'auto' en los lados asegura el centrado absoluto dentro del flex */
+            margin: 5px auto 0 auto;
             text-align: center;
         }
 
@@ -327,7 +199,7 @@
             color: #ffffff;
             border: 1px solid rgba(255, 255, 255, 0.25);
             padding: 0.12rem 0.25rem;
-            border-radius: 3px; /* Forma rectangular limpia */
+            border-radius: 3px;
             display: flex;
             align-items: center;
             gap: 6px;
@@ -352,7 +224,9 @@
             fill: currentColor;
         }
 
-        /* Vista de Autenticación */
+        /* ========================================================
+           3. VISTA DE AUTENTICACIÓN
+           ======================================================== */
         #authView {
             display: flex;
             justify-content: center;
@@ -387,98 +261,9 @@
             margin: 0;
         }
 
-        .form-group {
-            margin-bottom: 0.8rem;
-            width: 100%;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            margin-bottom: 0.2rem;
-        }
-
-        .form-control, .form-control-compact {
-            width: 100%;
-            background-color: var(--bg-main);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            border-radius: 4px;
-        }
-
-        .form-control { padding: 0.6rem; font-size: 0.9rem; }
-        .form-control-compact { padding: 0.3rem 0.5rem; font-size: 0.78rem; height: 32px; }
-
-        .form-row-inline {
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            margin-bottom: 0.4rem;
-            width: 100%;
-        }
-
-        .form-row-inline label {
-            flex: 0 0 45px;
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            font-weight: bold;
-        }
-
-        .select-wrapper { flex: 1; min-width: 0; }
-
-        .btn-action {
-            width: 100%;
-            background-color: var(--color-turquoise);
-            color: #000000;
-            border: none;
-            padding: 0.65rem;
-            font-weight: 900;
-            border-radius: 4px;
-            cursor: pointer;
-            text-transform: uppercase;
-            font-size: 0.85rem;
-        }
-        .btn-action:hover { opacity: 0.9; }
-        .btn-turquesa { background-color: var(--color-turquoise); color: #000000; }
-
-        /* Botones de gestión de equipo */
-        .escuderia-box-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-        
-        .f1-input-compact {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #fff;
-            padding: 6px 8px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            width: 200px;
-            max-width: 100%;
-            margin-bottom: 5px;
-            text-align: center;
-        }
-
-        .btn-f1-compact-primary, .btn-f1-compact-alt, .btn-f1-compact-danger {
-            font-weight: bold;
-            border: none;
-            padding: 5px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            width: 200px;
-        }
-        .btn-f1-compact-primary { background: #ffc107; color: #121212; }
-        .btn-f1-compact-alt { background: rgba(255, 255, 255, 0.1); color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.2); }
-        .btn-f1-compact-danger { background: #dc3545; color: white; }
-
-        /* Modales */
+        /* ========================================================
+           4. MODALES (REGISTRO Y OTROS)
+           ======================================================== */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -496,42 +281,38 @@
             color: var(--text-muted); font-size: 1.1rem; cursor: pointer;
         }
 
-        /* Tablas compactas */
-        .table-container { 
-            width: 100%; 
-            overflow: hidden;
-        }
-
-        table {
+        /* ========================================================
+           5. VISTA PRINCIPAL DEL DASHBOARD Y CONTENEDORES
+           ======================================================== */
+        .container {
+            flex: 1;
+            padding: 0.8rem;
+            max-width: 650px;
+            margin: 0 auto;
             width: 100%;
-            border-collapse: collapse;
-            text-align: left;
+            padding-bottom: 6rem;
         }
 
-        th, td {
-            padding: 0.4rem 0.5rem !important;
-            border-bottom: 1px solid var(--border-color);
-            vertical-align: middle;
+        .card-box, 
+        .account-section-box {
+            background: var(--bg-card) !important;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-left: 4px solid var(--color-gold) !important;
+            border-radius: 10px !important;
+            padding: 12px !important;
+            margin-bottom: 12px !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+            width: 100%;
         }
 
-        th {
-            background-color: rgba(0, 0, 0, 0.2);
+        .card-box h2 {
+            font-size: 0.9rem;
+            margin: 0 0 0.4rem 0;
             color: var(--color-turquoise);
-            text-transform: uppercase;
-            font-size: 0.68rem !important;
-            letter-spacing: 0.3px;
         }
 
-        td {
-            font-size: 0.8rem !important;
-        }
-
-        tr:hover { background-color: rgba(255, 255, 255, 0.02); }
-
-        .text-center { text-align: center; }
-        .text-right { text-align: right; }
-
-        /* Subtabs */
+        /* Subtabs (Pestañas internas) */
         .subtabs { display: flex; gap: 0.8rem; margin-bottom: 0.8rem; }
         .subtab-btn {
             background-color: var(--bg-main); border: 1px solid var(--border-color);
@@ -541,50 +322,260 @@
             background-color: var(--color-turquoise); color: #000000; border-color: var(--color-turquoise); font-weight: 900;
         }
 
-        /* Documento Reglamento TXT */
+        /* --- TAB 1: PREDICCIONES / HOME --- */
+        /* Animación y estilo de bomba para la última hora del contador */
+        @keyframes bombPulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.03); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .bomb-red {
+            background-color: #ffffff !important;
+            color: #d32f2f !important;
+            font-weight: bold !important;
+            padding: 8px 16px !important;
+            border-radius: 8px !important;
+            display: inline-block !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+            animation: bombPulse 0.8s infinite ease-in-out;
+        }
+        .bomb-red *, .bomb-red span {
+            color: #d32f2f !important;
+        }
+
+        /* --- TAB 2: STANDINGS --- */
+        .table-container { 
+            width: 100%; 
+            overflow: hidden;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.7rem; 
+        }
+        th, td {
+            padding: 0.4rem 0.5rem !important;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+        th {
+            background-color: rgba(0, 0, 0, 0.2);
+            color: var(--color-turquoise);
+            text-transform: uppercase;
+            font-size: 0.68rem !important;
+            letter-spacing: 0.3px;
+        }
+        td {
+            font-size: 0.8rem !important;
+        }
+        tr:hover { background-color: rgba(255, 255, 255, 0.02); }
+
+        /* --- TAB 3: MI CUENTA / DESGLOSE Y ESCUDERÍAS --- */
+        .escuderia-box-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .f1-input-compact {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 6px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            width: 200px;
+            max-width: 100%;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+        .btn-f1-compact-primary, .btn-f1-compact-alt, .btn-f1-compact-danger {
+            font-weight: bold;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            width: 200px;
+        }
+        .btn-f1-compact-primary { background: #ffc107; color: #121212; }
+        .btn-f1-compact-alt { background: rgba(255, 255, 255, 0.1); color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.2); }
+        .btn-f1-compact-danger { background: #dc3545; color: white; }
+
+        /* --- TAB 4: REGLAMENTO E INFO --- */
         .txt-document-box {
             background-color: #1a1a1a; color: #e2e8f0;
             font-size: 0.95rem;
-            font-family: 'Courier New', Courier, monospace; /*font-size: 0.78rem*/;
+            font-family: 'Courier New', Courier, monospace;
             line-height: 1.6; padding: 1.6rem; border-radius: 4px; border: 1px solid #cbd5e1;
             max-height: 280px; overflow-y: auto; white-space: pre-line; margin-top: 0.4rem;
         }
 
-        /* Barra de Navegación Inferior */
+        /* ========================================================
+           6. BARRA DE NAVEGACIÓN INFERIOR (BOTTOM NAV)
+           ======================================================== */
         .bottom-nav {
-            position: fixed; bottom: 0; left: 0; width: 100%;
-            background-color: var(--color-f1-red); border-top: 2px solid var(--color-red-dark);
-            display: flex; justify-content: space-around; padding: 0.4rem 0; z-index: 1000;
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            right: 0;
+            max-width: 650px;
+            width: 100%;
+            margin: 0 auto;
+            background-color: var(--color-f1-red); 
+            border-top: 0px solid var(--color-red-dark);
+            display: flex; 
+            justify-content: space-around; 
+            padding: 0.2rem 0; 
+            z-index: 1000;
             box-shadow: 0 -4px 12px rgba(0,0,0,0.5);
+            box-sizing: border-box;
         }
         .nav-btn {
             background: none; border: none; color: var(--text-muted);
-            display: flex; flex-direction: column; align-items: center; font-size: 0.65rem;
-            cursor: pointer; gap: 1px; text-transform: uppercase; font-weight: bold; padding: 0.2rem 0.5rem; border-radius: 4px;
+            margin: 0 auto;
+            display: flex; flex-direction: column; align-items: center; 
+            font-size: 0.65rem;
+            cursor: pointer; gap: 1px; text-transform: uppercase; font-weight: bold; 
+            padding: 0.2rem 0.5rem; border-radius: 4px;
         }
         .nav-btn.active { color: #ffffff; background-color: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.3); }
         .nav-btn svg { width: 18px; height: 18px; fill: currentColor; }
 
-        .btn-icon-logout {
-            background: rgba(239, 68, 68, 0.15); border: 1px solid var(--danger); color: var(--danger);
-            display: flex; align-items: center; gap: 0.3rem; padding: 0.3rem 0.6rem; border-radius: 4px;
-            cursor: pointer; font-weight: bold; font-size: 0.7rem; text-transform: uppercase;
+        /* ========================================================
+           7. COMPONENTES GLOBALES Y UTILIDADES (FORMULARIOS, DROPDOWNS, ETC.)
+           ======================================================== */
+        .form-group {
+            margin-bottom: 0.8rem;
+            width: 100%;
         }
-        .btn-icon-logout svg { width: 14px; height: 14px; fill: currentColor; }
-        .btn-icon-logout:hover { background-color: var(--danger); color: #ffffff; }
-
-        body, table, .form-control, .btn-action, .nav-btn {
-            font-size: 0.8rem; 
+        .form-group label {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 0.2rem;
         }
+        .form-control, .form-control-compact {
+            width: 100%;
+            background-color: var(--bg-main);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 4px;
+            font-size: 0.7rem; 
+        }
+        .form-control { padding: 0.6rem; font-size: 0.9rem; }
+        .form-control-compact { padding: 0.3rem 0.5rem; font-size: 0.78rem; height: 32px; }
 
-        .navbar-brand-title {
-            font-weight: 900;
-            font-size: 1.1rem !important;
-            letter-spacing: 0.8px;
+        .form-row-inline {
             display: flex;
             align-items: center;
-            gap: 4px;
-            white-space: nowrap;
+            gap: 0.4rem;
+            margin-bottom: 0.4rem;
+            width: 100%;
+        }
+        .form-row-inline label {
+            flex: 0 0 45px;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+        .select-wrapper { flex: 1; min-width: 0; }
+
+        /* Custom Dropdown Estilizado - Limitado exactamente a 5 elementos visibles con scroll */
+        .custom-dropdown {
+            position: relative;
+            width: 100%;
+            font-family: inherit;
+        }
+        .dropdown-trigger {
+            background-color: var(--bg-main);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 0.3rem 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            height: 32px;
+            width: auto;
+        }
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: #141414;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            max-height: 145px; /* Estrictamente limitado para mostrar ~5 elementos y evitar invadir la pantalla */
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.6);
+            margin-top: 2px;
+        }
+        .dropdown-item {
+            padding: 7px 10px;
+            color: var(--text-main);
+            cursor: pointer;
+            font-size: 0.78rem;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            transition: background 0.15s;
+        }
+        .dropdown-item:hover {
+            background-color: rgba(0, 240, 255, 0.15);
+            color: var(--color-turquoise);
+        }
+        .dropdown-menu::-webkit-scrollbar {
+            width: 5px;
+        }
+        .dropdown-menu::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.25);
+            border-radius: 3px;
+        }
+
+        /* Botones de acción principales */
+        .btn-action {
+            display: block;
+            width: 220px;
+            max-width: 100%;
+            margin: 12px auto;
+            background-color: var(--color-turquoise);
+            color: #000000;
+            border: none;
+            padding: 0.65rem;
+            font-weight: 900;
+            border-radius: 4px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+        .btn-action:hover { opacity: 0.9; }
+        .btn-turquesa { background-color: var(--color-turquoise); color: #000000; }	
+
+        /* Mensajes de Estado */
+        .status-msg {
+            padding: 0.4rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-top: 0.4rem;
+            text-align: center;
+        }
+        .status-success {
+            background-color: rgba(16, 185, 129, 0.2);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+        .status-error {
+            background-color: rgba(239, 68, 68, 0.2);
+            border: 1px solid var(--danger);
+            color: var(--danger);
         }
     </style>
 </head>
@@ -595,8 +586,8 @@
     <div class="navbar-brand-container">
         <div class="navbar-brand-wrapper">
             <div class="navbar-brand-title">
-                <span class="brand-main">PODIUM FANTASY</span>
-                <span class="brand-perfect-crown">Perfect</span>
+            	<span class="brand-perfect-crown">Perfect</span>
+                <span class="brand-main">PODIUM FANTASY</span>                
                 <span class="f1-highlight">F1</span>
             </div>
             <span class="sub-brand">EFEH Systems</span>
@@ -645,7 +636,7 @@
 
                 <div class="form-group">
                     <label>Nombre de Usuario (Username)</label>
-                    <input type="text" id="reg-username" class="form-control" placeholder="ej. efeh8581" required>
+                    <input type="text" id="reg-username" class="form-control" placeholder="ej. username" required>
                 </div>
                 <div class="form-group">
                     <label>Email</label>
@@ -713,7 +704,7 @@
         <!-- TAB 1: PREDICCIONES / DASHBOARD  -->
         <div id="tabHome" class="dashboard-tab">
             
-            <!-- CAJA 1: TÍTULO, RONDA DINÁMICA Y RELOJ PLANO (OPTIMIZADO VERTICALMENTE) -->
+            <!-- CAJA 1: TÍTULO, RONDA DINÁMICA Y RELOJ PLANO -->
             <div class="card-box" style="border-left: 4px solid var(--color-turquoise); padding-bottom: 8px !important;">
                 <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
                     <h1 style="font-size: 1.05rem; color: var(--text-main); margin: 0;">Mis predicciones GP</h1> 
@@ -735,8 +726,8 @@
                 <div class="form-row-inline" style="margin-bottom: 0.6rem;">
                     <label>Pole</label>
                     <div class="select-wrapper">
-                        <select id="poleSelect" class="form-control-compact">
-                            <option value="">Selecciona Poleman</option>
+                        <select id="poleSelect" class="form-control-compact driver-select">
+                            <option value="">Selecciona piloto</option>
                         </select>
                     </div>
                 </div>
@@ -747,15 +738,15 @@
                     <div style="font-size: 0.72rem; color: var(--color-turquoise); font-weight: bold; margin-bottom: 0.3rem; text-transform: uppercase;">⚡ Carrera Sprint (Top 3)</div>
                     <div class="form-row-inline">
                         <label>P1</label>
-                        <div class="select-wrapper"><select class="form-control-compact driver-select sprint-slot"><option value="">Selecciona piloto</option></select></div>
+                        <div class="select-wrapper"><select id="sprint_p1" class="form-control-compact driver-select sprint-slot"><option value="">Selecciona piloto</option></select></div>
                     </div>
                     <div class="form-row-inline">
                         <label>P2</label>
-                        <div class="select-wrapper"><select class="form-control-compact driver-select sprint-slot"><option value="">Selecciona piloto</option></select></div>
+                        <div class="select-wrapper"><select id="sprint_p2" class="form-control-compact driver-select sprint-slot"><option value="">Selecciona piloto</option></select></div>
                     </div>
                     <div class="form-row-inline" style="margin-bottom: 0.6rem;">
                         <label>P3</label>
-                        <div class="select-wrapper"><select class="form-control-compact driver-select sprint-slot"><option value="">Selecciona piloto</option></select></div>
+                        <div class="select-wrapper"><select id="sprint_p3" class="form-control-compact driver-select sprint-slot"><option value="">Selecciona piloto</option></select></div>
                     </div>
                 </div>
 
@@ -764,23 +755,23 @@
                 <div style="font-size: 0.72rem; color: var(--color-gold); font-weight: bold; margin-bottom: 0.3rem; text-transform: uppercase;">🏎️ Carrera Larga (Top 5)</div>
                 <div class="form-row-inline">
                     <label>P1</label>
-                    <div class="select-wrapper"><select class="form-control-compact driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select></div>
+                    <div class="select-wrapper"><select id="race_p1" class="form-control-compact driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select></div>
                 </div>
                 <div class="form-row-inline">
                     <label>P2</label>
-                    <div class="select-wrapper"><select class="form-control-compact driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select></div>
+                    <div class="select-wrapper"><select id="race_p2" class="form-control-compact driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select></div>
                 </div>
                 <div class="form-row-inline">
                     <label>P3</label>
-                    <div class="select-wrapper"><select class="form-control-compact driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select></div>
+                    <div class="select-wrapper"><select id="race_p3" class="form-control-compact driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select></div>
                 </div>
                 <div class="form-row-inline">
                     <label>P4</label>
-                    <div class="select-wrapper"><select class="form-control-compact driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select></div>
+                    <div class="select-wrapper"><select id="race_p4" class="form-control-compact driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select></div>
                 </div>
                 <div class="form-row-inline" style="margin-bottom: 0.8rem;">
                     <label>P5</label>
-                    <div class="select-wrapper"><select class="form-control-compact driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select></div>
+                    <div class="select-wrapper"><select id="race_p5" class="form-control-compact driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select></div>
                 </div>
 
                 <button type="button" class="btn-action btn-turquesa" onclick="guardarPrediccion()">Guardar Predicción</button>
@@ -982,8 +973,10 @@
             </div>
 
             <div class="card-box">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem; gap: 0.4rem; flex-wrap: wrap;">
-                    <h2 style="margin: 0; font-size: 0.9rem;">Reglamento Podium Fantasy F1</h2>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem; gap: 0.8rem; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 180px;">
+                        <h2 style="margin: 0; font-size: 0.9rem;">Reglamento Perfect Podium Fantasy F1</h2>
+                    </div>
                     <button type="button" class="btn-action btn-turquesa" style="width: auto; padding: 0.25rem 0.5rem; font-size: 0.7rem;" onclick="toggleReglamento()">
                         <span id="btnReglamentoText">📄 Reglamento</span>
                     </button>
@@ -991,17 +984,15 @@
                 
                 <div id="reglamentoContainer" class="hidden">
                     <div class="txt-document-box">
-<strong>=== REGLAMENTO OFICIAL - PODIUM FANTASY F1 ===</strong>
+1. <strong>Plazo de modificación:</strong> 48 horas antes de la carrera (inicio en las PL2 o la clasificación Shootout de la carrera Sprint, según el formato del GP).
+2. <strong>5 pts</strong> por acertar el Poleman de cada Gran Premio en <strong>Perfect Podium Fantasy F1</strong>
+3. <strong>Podio de ganadores:</strong> La tripleta perfecta otorga puntos triples.
+4. <strong>Puntos dobles:</strong> Bonificación por acierto exacto de la grilla de llegada.
+5. <strong>Top5 para la carrera:</strong> Aplicará el puntaje simple si no coinciden con tu predicción, siempre que sea parte de los resultados oficiales en el Top 5.
+6. <strong>Campeonato de Escuderías:</strong> Comparte tu código de invitación para sumar puntos globales en equipo.
+7. <strong>También podrás competir por:</strong> El liderato del standing de escudería con (máximo 12) integrantes, o divertirte luchando por el liderato de tu grupo de familiares y amigos en el standing grupal y privado dentro de tu sección "Mi Cuenta".
 
-1. <strong>5 pts</strong> por acertar el PoleMan de cada Gran Premio.
-2. <strong>Podio de ganadores:</strong> Tripleta perfecta suman puntos triples.
-3. <strong>Top 5 en carrera:</strong> Se aplicará el puntaje obtenido por los pilotos.
-4. <strong>Plazo de modificación:</strong> Antes de iniciar el cierre (2 días antes de la carrera).
-5. <strong>Puntos dobles:</strong> Bonificación por acierto exacto en grilla de salida.
-6. <strong>Campeonato de Escuderías:</strong> Comparte tu código de invitación para sumar puntos globales.
-7. <strong>Tambien podras competir por: </strong> el liderato de tu grupo Familiar/Amigos, compitiendo como Escuderia con (maximo 12) integrantes o contra ellos en un standing grupal y privado en tu sección "Mi Cuenta".
-
-<em>--- EFEH Systems ---</em>
+<strong><em>--- EFEH Systems ---</em></strong>
                     </div>
                 </div>
             </div>
@@ -1012,7 +1003,7 @@
                         <h3 style="color: var(--color-turquoise); font-size: 0.9rem; margin: 0 0 0.15rem 0;">Buzón de Sugerencias</h3>
                         <p style="color: var(--text-muted); font-size: 0.7rem; margin: 0;">¿Tienes alguna idea o propuesta?</p>
                     </div>
-                    <a href="mailto:tu-correo-programable@dominio.com?subject=Sugerencia%20Podium%20Fantasy%20F1" class="btn-action btn-turquesa" style="width: auto; padding: 0.35rem 0.7rem; font-size: 0.7rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.2rem;">
+                    <a href="mailto:franco.spinozze@gmail.com?subject=Sugerencia%20Podium%20Fantasy%20F1" class="btn-action btn-turquesa" style="width: auto; padding: 0.35rem 0.7rem; font-size: 0.7rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.2rem;">
                        📧 Sugerencias                    </a>
                 </div>
             </div>
@@ -1055,6 +1046,7 @@
         let rondaActivaNombre = "";
         let fechaCierreRonda = null;
         let countdownInterval = null;
+        let mostrandoResultadosOficiales = false;
 
         document.addEventListener("DOMContentLoaded", async () => {
             inicializarPilotosYCalendarioEstaticos();
@@ -1113,7 +1105,6 @@
                 if (error) throw error;
                 calendarData = data || [];
                 
-                // Determinar y fijar la ronda actual según fecha
                 determinarRondaVigente();
 
             } catch (error) {
@@ -1123,62 +1114,60 @@
             }
         }
 
-            function determinarRondaVigente() {
-                if (!calendarData || calendarData.length === 0) return;
-            
-                const hoyStr = new Date().toISOString().split('T')[0];
-                let raceObjetivo = null;
-            
-                for (const race of calendarData) {
-                    const fechaRace = race.date || race.fecha || race.race_date;
-                    if (fechaRace && fechaRace >= hoyStr) {
-                        raceObjetivo = race;
-                        break;
-                    }
-                }
-            
-                if (!raceObjetivo && calendarData.length > 0) {
-                    raceObjetivo = calendarData[calendarData.length - 1];
-                }
-            
-                if (raceObjetivo) {
-                    rondaActivaId = raceObjetivo.round;
-                    rondaActivaNombre = raceObjetivo.name;
-                    rondaActivaEsSprint = raceObjetivo.sprint === true || raceObjetivo.isSprint === true;
-            
-                    // Tomar la fecha y la hora exacta desde Supabase (con respaldo por defecto a las 05:00:00)
-                    const fechaRaceStr = raceObjetivo.date || raceObjetivo.fecha || raceObjetivo.race_date;
-                    const horaRaceStr = raceObjetivo.hora || "05:00:00";
-            
-                    if (fechaRaceStr) {
-                        // Construir el objeto de fecha y hora exacta de la carrera
-                        const raceDateObj = new Date(`${fechaRaceStr}T${horaRaceStr}`);
-                        // Restar exactamente 48 horas para fijar el cierre de pronósticos
-                        fechaCierreRonda = new Date(raceDateObj.getTime() - (2 * 24 * 60 * 60 * 1000));
-                    }
-            
-                    // Actualizar la interfaz plana de la Caja 1 dinámicamente
-                    const titleEl = document.getElementById('activeRoundTitle');
-                    if (titleEl) titleEl.innerText = `Ronda ${rondaActivaId}: ${rondaActivaNombre}`;
-            
-                    // Configurar sección Sprint de la Caja 2
-                    const sprintSection = document.getElementById('sprintSection');
-                    if (rondaActivaEsSprint) {
-                        sprintSection.classList.remove('hidden');
-                    } else {
-                        sprintSection.classList.add('hidden');
-                        document.querySelectorAll('.sprint-slot').forEach(s => s.value = "");
-                    }
-            
-                    if (userIdActual) {
-                        cargarPrediccionActual();
-                    }
-            
-                    iniciarContadorRegresivo();
+        function determinarRondaVigente() {
+            if (!calendarData || calendarData.length === 0) return;
+        
+            const hoyStr = new Date().toISOString().split('T')[0];
+            let raceObjetivo = null;
+        
+            for (const race of calendarData) {
+                const fechaRace = race.date || race.fecha || race.race_date;
+                if (fechaRace && fechaRace >= hoyStr) {
+                    raceObjetivo = race;
+                    break;
                 }
             }
+        
+            if (!raceObjetivo && calendarData.length > 0) {
+                raceObjetivo = calendarData[calendarData.length - 1];
+            }
+        
+            if (raceObjetivo) {
+                rondaActivaId = raceObjetivo.round;
+                rondaActivaNombre = raceObjetivo.name;
+                rondaActivaEsSprint = raceObjetivo.sprint === true || raceObjetivo.isSprint === true;
+        
+                const fechaRaceStr = raceObjetivo.date || raceObjetivo.fecha || raceObjetivo.race_date;
+                const horaRaceStr = raceObjetivo.hora || "05:00:00";
+        
+                if (fechaRaceStr) {
+                    const raceDateObj = new Date(`${fechaRaceStr}T${horaRaceStr}`);
+                    fechaCierreRonda = new Date(raceDateObj.getTime() - (2 * 24 * 60 * 60 * 1000));
+                }
+        
+                const titleEl = document.getElementById('activeRoundTitle');
+                if (titleEl) titleEl.innerText = `Ronda ${rondaActivaId}: ${rondaActivaNombre}`;
+        
+                const sprintSection = document.getElementById('sprintSection');
+                if (rondaActivaEsSprint) {
+                    sprintSection.classList.remove('hidden');
+                    document.querySelectorAll('.sprint-slot').forEach(sel => {
+                        convertirSelectEnCustomDropdown(sel.id);
+                    });
+                } else {
+                    sprintSection.classList.add('hidden');
+                    document.querySelectorAll('.sprint-slot').forEach(s => s.value = "");
+                }
+        
+                if (userIdActual) {
+                    cargarPrediccionActual();
+                }
+        
+                iniciarContadorRegresivo();
+            }
+        }
 
-            function iniciarContadorRegresivo() {
+        function iniciarContadorRegresivo() {
             if (typeof countdownInterval !== 'undefined' && countdownInterval) {
                 clearInterval(countdownInterval);
             }
@@ -1187,21 +1176,15 @@
             const lockStatusEl = document.getElementById('lockStatusText');
         
             function actualizar() {
-                // 1. Validación de seguridad: si no existe la variable, evitamos el NaN
                 if (typeof fechaCierreRonda === 'undefined' || !fechaCierreRonda) {
                     if (timerEl) timerEl.innerText = "--:--:--.---";
                     return;
                 }
         
-                // 2. Nos aseguramos de que sea un objeto Date válido por si viene como texto
-                const fechaCierre = fechaCierreRonda instanceof Date 
-                    ? fechaCierreRonda 
-                    : new Date(fechaCierreRonda);
-        
+                const fechaCierre = fechaCierreRonda instanceof Date ? fechaCierreRonda : new Date(fechaCierreRonda);
                 const ahora = new Date().getTime();
                 const distancia = fechaCierre.getTime() - ahora;
         
-                // 3. Si la fecha es inválida o el tiempo ya pasó
                 if (isNaN(distancia) || distancia <= 0) {
                     if (timerEl) {
                         timerEl.innerText = "00:00:00.000";
@@ -1215,14 +1198,12 @@
                     return;
                 }
         
-                // Cálculos de tiempo exactos
                 const dias = Math.floor(distancia / (1000 * 60 * 60 * 24));
                 const horas = Math.floor((distancia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const minutos = Math.floor((distancia % (1000 * 60 * 60)) / (1000 * 60));
                 const segundos = Math.floor((distancia % (1000 * 60)) / 1000);
-                const milisegundos = Math.floor(distancia % 1000); // Los 3 dígitos exactos
+                const milisegundos = Math.floor(distancia % 1000);
         
-                // Construcción limpia del texto
                 let tiempoTexto = "";
                 if (dias > 0) {
                     tiempoTexto += `${dias}d `;
@@ -1231,7 +1212,7 @@
                 const hStr = String(horas).padStart(2, '0');
                 const mStr = String(minutos).padStart(2, '0');
                 const sStr = String(segundos).padStart(2, '0');
-                const msStr = String(milisegundos).padStart(3, '0'); // Fuerza los 3 dígitos (ej: 005)
+                const msStr = String(milisegundos).padStart(3, '0');
         
                 tiempoTexto += `${hStr}:${mStr}:${sStr}.${msStr}`;
         
@@ -1239,7 +1220,6 @@
                     timerEl.innerText = tiempoTexto;
                 }
         
-                // Modo alerta si queda menos de 1 hora
                 if (distancia <= 3600000) {
                     if (timerEl) timerEl.classList.add('bomb-red');
                 } else {
@@ -1248,94 +1228,106 @@
             }
         
             actualizar();
-            // Actualizamos cada 40ms para que los milisegundos corran fluidos
-            countdownInterval = setInterval(actualizar, 1);
+            countdownInterval = setInterval(actualizar, 149);
         }
+
+        // --- SISTEMA UNIFICADO DE CUSTOM DROPDOWNS CON SCROLL (5 ELEMENTOS MÁXIMO) ---
+        function convertirSelectEnCustomDropdown(selectId) {
+            const originalSelect = document.getElementById(selectId);
+            if (!originalSelect) return;
+
+            originalSelect.style.display = 'none';
+
+            let wrapper = document.getElementById(selectId + '_customWrapper');
+            if (!wrapper) {
+                wrapper = document.createElement('div');
+                wrapper.id = selectId + '_customWrapper';
+                wrapper.className = 'custom-dropdown';
+                
+                const trigger = document.createElement('div');
+                trigger.className = 'dropdown-trigger';
+                trigger.id = selectId + '_trigger';
+                trigger.innerHTML = `<span id="${selectId}_label">Selecciona piloto</span><span class="arrow-icon">▼</span>`;
+                trigger.onclick = () => toggleCustomDropdown(selectId);
+
+                const menu = document.createElement('div');
+                menu.className = 'dropdown-menu';
+                menu.id = selectId + '_menu';
+
+                wrapper.appendChild(trigger);
+                wrapper.appendChild(menu);
+                originalSelect.parentNode.insertBefore(wrapper, originalSelect.nextSibling);
+            }
+
+            actualizarOpcionesCustomDropdown(selectId);
+        }
+
+        function actualizarOpcionesCustomDropdown(selectId) {
+            const originalSelect = document.getElementById(selectId);
+            const menu = document.getElementById(selectId + '_menu');
+            const label = document.getElementById(selectId + '_label');
+            if (!originalSelect || !menu || !label) return;
+
+            menu.innerHTML = '';
+            
+            const selectedOption = originalSelect.options[originalSelect.selectedIndex];
+            if (selectedOption && selectedOption.value !== "") {
+                label.innerText = selectedOption.text;
+            } else {
+                label.innerText = originalSelect.options[0] ? originalSelect.options[0].text : "Selecciona piloto";
+            }
+
+            Array.from(originalSelect.options).forEach((opt) => {
+                const item = document.createElement('div');
+                item.className = 'dropdown-item';
+                item.dataset.value = opt.value;
+                item.innerText = opt.text;
+                if (opt.disabled) {
+                    item.style.opacity = '0.4';
+                    item.style.pointerEvents = 'none';
+                }
+                item.onclick = () => {
+                    if (opt.disabled) return;
+                    originalSelect.value = opt.value;
+                    label.innerText = opt.text;
+                    menu.style.display = 'none';
+                    if (typeof originalSelect.onchange === 'function') {
+                        originalSelect.onchange();
+                    }
+                    originalSelect.dispatchEvent(new Event('change'));
+                };
+                menu.appendChild(item);
+            });
+
+            if (selectId === 'gpHistorySelect') {
+                menu.scrollTop = menu.scrollHeight;
+            }
+        }
+
+        function toggleCustomDropdown(selectId) {
+            const menu = document.getElementById(selectId + '_menu');
+            const isOpen = menu.style.display === 'block';
+            
+            document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
+
+            if (!isOpen) {
+                menu.style.display = 'block';
+                actualizarOpcionesCustomDropdown(selectId);
+            } else {
+                menu.style.display = 'none';
+            }
+        }
+
+        window.addEventListener('click', (e) => {
+            if (!e.target.closest('.custom-dropdown')) {
+                document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
+            }
+        });
     
-        function bloquearFormularioPredicciones(bloquear) {
-            const poleSelect = document.getElementById('poleSelect');
-            const raceSlots = document.querySelectorAll('.race-slot');
-            const sprintSlots = document.querySelectorAll('.sprint-slot');
-            const btnGuardar = document.querySelector('#tabHome button.btn-turquesa');
-
-            if (poleSelect) poleSelect.disabled = bloquear;
-            raceSlots.forEach(s => s.disabled = bloquear);
-            sprintSlots.forEach(s => s.disabled = bloquear);
-            if (btnGuardar) {
-                btnGuardar.disabled = bloquear;
-                if (bloquear) {
-                    btnGuardar.style.opacity = "0.5";
-                    btnGuardar.style.cursor = "not-allowed";
-                } else {
-                    btnGuardar.style.opacity = "1";
-                    btnGuardar.style.cursor = "pointer";
-                }
-            }
-        }
-
-        async function cargarPrediccionActual() {
-            if (!userIdActual || !rondaActivaNombre) return;
-
-            document.getElementById('poleSelect').value = "";
-            document.querySelectorAll('.race-slot').forEach(s => s.value = "");
-            document.querySelectorAll('.sprint-slot').forEach(s => s.value = "");
-
-            const feedback = document.getElementById('predictionFeedback');
-            if (feedback) {
-                feedback.className = "hidden";
-                feedback.innerText = "";
-            }
-
-            try {
-                const { data, error } = await supabaseClient
-                    .from('predicciones')
-                    .select('*')
-                    .eq('usuario_id', userIdActual)
-                    .eq('gran_premio', rondaActivaNombre)
-                    .maybeSingle();
-
-                if (error) throw error;
-
-                if (data) {
-                    if (data.poleman) document.getElementById('poleSelect').value = data.poleman;
-
-                    const raceSlots = document.querySelectorAll('.race-slot');
-                    if (raceSlots[0] && data.carrera_p1) raceSlots[0].value = data.carrera_p1;
-                    if (raceSlots[1] && data.carrera_p2) raceSlots[1].value = data.carrera_p2;
-                    if (raceSlots[2] && data.carrera_p3) raceSlots[2].value = data.carrera_p3;
-                    if (raceSlots[3] && data.carrera_p4) raceSlots[3].value = data.carrera_p4;
-                    if (raceSlots[4] && data.carrera_p5) raceSlots[4].value = data.carrera_p5;
-                    verificarDuplicadosCarrera();
-
-                    if (rondaActivaEsSprint) {
-                        const sprintSlots = document.querySelectorAll('.sprint-slot');
-                        if (sprintSlots[0] && data.sprint_p1) sprintSlots[0].value = data.sprint_p1;
-                        if (sprintSlots[1] && data.sprint_p2) sprintSlots[1].value = data.sprint_p2;
-                        if (sprintSlots[2] && data.sprint_p3) sprintSlots[2].value = data.sprint_p3;
-                    }
-
-                    if (feedback) {
-                        feedback.textContent = "ℹ️ Tienes una predicción guardada para este GP. Puedes modificarla y guardar cambios.";
-                        feedback.className = "status-msg";
-                        feedback.style.backgroundColor = "rgba(255, 255, 255, 0.04)";
-                        feedback.style.border = "1px solid rgba(255, 255, 255, 0.1)";
-                        feedback.style.color = "var(--text-muted)";
-                        feedback.classList.remove('hidden');
-                    }
-                }
-            } catch (err) {
-                console.error("Error al cargar predicción actual:", err);
-            }
-        }
-
-        function agradecerColaboracionPayPal(event) {
-            alert("¡Mil gracias por tu generosidad y colaboración con Podium Fantasy F1! 🏎️💨 Tu apoyo es fundamental para mantener el proyecto en marcha.");
-        }
-
         function poblarSelectoresPilotos() {
             const poleSelect = document.getElementById('poleSelect');
             if (!poleSelect) return;
-            poleSelect.innerHTML = '<option value="">Selecciona Poleman</option>';
+            poleSelect.innerHTML = '<option value="">Selecciona piloto</option>';
             
             const raceSelects = document.querySelectorAll('.driver-select');
             raceSelects.forEach(select => {
@@ -1356,6 +1348,12 @@
                     select.appendChild(optRace);
                 });
             });
+
+            // Convertir de manera uniforme todos los selects de pilotos (Pole, Sprint y Carrera Larga)
+            convertirSelectEnCustomDropdown('poleSelect');
+            document.querySelectorAll('.driver-select').forEach(sel => {
+                convertirSelectEnCustomDropdown(sel.id);
+            });
         }
 
         function verificarDuplicadosCarrera() {
@@ -1372,6 +1370,7 @@
                         option.disabled = false;
                     }
                 });
+                actualizarOpcionesCustomDropdown(select.id);
             });
         }
 
@@ -1410,16 +1409,16 @@
         }
 
         function cerrarSesion() {
-    if (window.confirm("🏁 ¿Estás seguro de que deseas cerrar sesión?")) {
-        usuarioActual = null;
-        userIdActual = null;
-        if (supabaseClient) supabaseClient.auth.signOut();
-        document.getElementById('dashboardView').classList.add('hidden');
-        document.getElementById('bottomNavBar').classList.add('hidden');
-        document.getElementById('navUserArea').classList.add('hidden');
-        document.getElementById('authView').classList.remove('hidden');
+            if (window.confirm("🏁 ¿Estás seguro de que deseas cerrar sesión?")) {
+                usuarioActual = null;
+                userIdActual = null;
+                if (supabaseClient) supabaseClient.auth.signOut();
+                document.getElementById('dashboardView').classList.add('hidden');
+                document.getElementById('bottomNavBar').classList.add('hidden');
+                document.getElementById('navUserArea').classList.add('hidden');
+                document.getElementById('authView').classList.remove('hidden');
+            }
         }
-    }
 
         function switchDashboardTab(tabName) {
             document.querySelectorAll('.dashboard-tab').forEach(tab => tab.classList.add('hidden'));
@@ -1629,6 +1628,12 @@
                 console.warn("Error al sincronizar datos de la cuenta:", e);
             }
 
+            misPrediccionesUsuario.sort((a, b) => {
+                const rondaA = calendarData.find(c => c.name === a.gran_premio)?.round || 99;
+                const rondaB = calendarData.find(c => c.name === b.gran_premio)?.round || 99;
+                return rondaA - rondaB;
+            });
+
             const nameDisplayEl = document.getElementById('statUserNameDisplay');
             if (nameDisplayEl) nameDisplayEl.innerText = `Formulero: ${nombreUsuarioDisplay}`;
 
@@ -1654,15 +1659,30 @@
                     selectHistory.innerHTML = '<option value="">No hay predicciones registradas</option>';
                     limpiarDesgloseCuentaZeros();
                 } else {
+                    const hoyStr = new Date().toISOString().split('T')[0];
+                    let ultimaRondaRealizadaNombre = null;
+                    for (let i = calendarData.length - 1; i >= 0; i--) {
+                        const fRace = calendarData[i].date || calendarData[i].fecha || calendarData[i].race_date;
+                        if (fRace && fRace <= hoyStr) {
+                            ultimaRondaRealizadaNombre = calendarData[i].name;
+                            break;
+                        }
+                    }
+
+                    let targetIndex = 0;
                     misPrediccionesUsuario.forEach((pred, index) => {
                         const option = document.createElement('option');
                         option.value = index; 
                         option.textContent = pred.gran_premio; 
                         selectHistory.appendChild(option);
+                        if (ultimaRondaRealizadaNombre && pred.gran_premio === ultimaRondaRealizadaNombre) {
+                            targetIndex = index;
+                        }
                     });
-                    selectHistory.selectedIndex = 0;
+                    selectHistory.selectedIndex = targetIndex;
                     cambiarGpCuenta();
                 }
+                convertirSelectEnCustomDropdown('gpHistorySelect');
             }
             actualizarVistaEscuderiaControles();
         }
@@ -1694,7 +1714,6 @@
         async function guardarPrediccion() {
             const feedback = document.getElementById('predictionFeedback');
 
-            // Verificar si el plazo ya expiró (candado de 2 días antes de la carrera)
             if (fechaCierreRonda && new Date().getTime() >= fechaCierreRonda.getTime()) {
                 feedback.textContent = "⚠️ El plazo para realizar o modificar predicciones ha caducado (cierre 2 días antes de la carrera).";
                 feedback.className = "status-msg status-error";
@@ -1886,31 +1905,31 @@
 
             try {
                 const { data: usuarios, error } = await supabaseClient.from('usuarios').select('id, username, puntos_globales, nombre_escuderia, escuderia_id, codigo_invitacion');
-            if (error) throw error;
-            if (!usuarios || usuarios.length === 0) return;
+                if (error) throw error;
+                if (!usuarios || usuarios.length === 0) return;
 
-            const me = usuarios.find(u => u.id === userIdActual);
-            const noTeamSection = document.getElementById('no-team-section');
-            const hasTeamSection = document.getElementById('has-team-section');
-            const inputCodigoMiCuenta = document.getElementById('miCodigoInvitacion');
+                const me = usuarios.find(u => u.id === userIdActual);
+                const noTeamSection = document.getElementById('no-team-section');
+                const hasTeamSection = document.getElementById('has-team-section');
+                const inputCodigoMiCuenta = document.getElementById('miCodigoInvitacion');
 
-            if (!me || (!me.nombre_escuderia && !me.escuderia_id)) {
+                if (!me || (!me.nombre_escuderia && !me.escuderia_id)) {
                     teamNameDisplay.innerText = "Sin Escudería";
                     teamPosDisplay.innerText = "Crea o únete a una escudería";
                     teamPtsDisplay.innerText = "0";
                     teamMedalDisplay.innerText = "🏁";
                     membersTbody.innerHTML = '<tr><td colspan="3" class="text-center" style="color: var(--text-muted); padding: 0.8rem;">No estás en ninguna escudería.</td></tr>';
-            if (noTeamSection) noTeamSection.style.display = 'flex';
-            if (hasTeamSection) hasTeamSection.style.display = 'none';
-            return;
-            }
+                    if (noTeamSection) noTeamSection.style.display = 'flex';
+                    if (hasTeamSection) hasTeamSection.style.display = 'none';
+                    return;
+                }
 
-            if (noTeamSection) noTeamSection.style.display = 'none';
-            if (hasTeamSection) hasTeamSection.style.display = 'block';
+                if (noTeamSection) noTeamSection.style.display = 'none';
+                if (hasTeamSection) hasTeamSection.style.display = 'block';
 
-            const miEscuderiaNombre = me.nombre_escuderia;
-            const miEscuderiaId = me.escuderia_id || me.id;
-            if (inputCodigoMiCuenta) inputCodigoMiCuenta.value = me.codigo_invitacion || userIdActual.substring(0, 8).toUpperCase();
+                const miEscuderiaNombre = me.nombre_escuderia;
+                const miEscuderiaId = me.escuderia_id || me.id;
+                if (inputCodigoMiCuenta) inputCodigoMiCuenta.value = me.codigo_invitacion || userIdActual.substring(0, 8).toUpperCase();
 
                 const equiposMap = {};
                 usuarios.forEach(u => {
