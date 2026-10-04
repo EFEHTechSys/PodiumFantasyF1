@@ -17,7 +17,7 @@ def calcular_puntos_sesion(pred_text, real_text, limite_puestos, es_sprint=False
         return 0
         
     p_arr = [p.strip().lower() for p in pred_text.split(",") if p.strip()]
-    r_arr = [p.strip().lower() for p in real_text.split(",") if p.strip()]
+    r_arr = [r.strip().lower() for r in real_text.split(",") if r.strip()]
     
     if not p_arr or not r_arr:
         return 0
@@ -61,12 +61,12 @@ def calcular_puntos_sesion(pred_text, real_text, limite_puestos, es_sprint=False
     return pts
 
 def procesar_todo(supabase):
-    print("🚀 [EFEH TECH] Iniciando motor de cálculo oficial de puntos...")
+    print("🚀 [EFEH TECH] Iniciando motor de cálculo oficial de puntos (Modo Pendientes)...")
 
-    # 1. Obtener todas las predicciones registradas
-    preds_res = supabase.table("predicciones").select("*").execute()
+    # 1. Obtener únicamente las predicciones que estén pendientes por procesar
+    preds_res = supabase.table("predicciones").select("*").eq("estado", "pendiente").execute()
     if not preds_res.data:
-        print("⚠️ No hay predicciones registradas en la base de datos.")
+        print("⚠️ No hay predicciones pendientes registradas en la base de datos.")
         return
 
     # Diccionario para acumular los puntos globales de cada usuario
@@ -113,12 +113,13 @@ def procesar_todo(supabase):
 
         puntos_total_fin_de_semana = puntos_quali + puntos_sprint + puntos_carrera
 
-        # 2. Actualizar la tabla 'predicciones' con los parciales y el total (Estrategia funcional probada)
+        # 2. Actualizar la tabla 'predicciones' con los parciales, el total y marcar como 'procesado'
         supabase.table("predicciones").update({
             "puntos_qualy": puntos_quali,
             "puntos_sprint": puntos_sprint,
             "puntos_carrera": puntos_carrera,
-            "total_fin_de_semana": puntos_total_fin_de_semana
+            "total_fin_de_semana": puntos_total_fin_de_semana,
+            "estado": "procesado"
         }).eq("id", pred_id).execute()
 
         # Acumular para el global del usuario
@@ -126,14 +127,22 @@ def procesar_todo(supabase):
             puntos_acumulados_usuarios[usuario_id] = 0
         puntos_acumulados_usuarios[usuario_id] += puntos_total_fin_de_semana
 
-        print(f"🎯 GP: {gran_premio} | Usuario: {usuario_id[:8]}... -> Q: {puntos_quali} | S: {puntos_sprint} | C: {puntos_carrera} | Total GP: {puntos_total_fin_de_semana}")
+        print(f"🎯 GP: {gran_premio} | Usuario: {usuario_id[:8]}... -> Q: {puntos_quali} | S: {puntos_sprint} | C: {puntos_carrera} | Total GP: {puntos_total_fin_de_semana} [PROCESADO]")
 
-    # 3. Actualizar los puntos globales en la tabla 'usuarios' para cada participante
-    for u_id, pts_glob in puntos_acumulados_usuarios.items():
+    # 3. Actualizar los puntos globales en la tabla 'usuarios' sumando lo nuevo a lo que ya tenían
+    for u_id, pts_nuevos in puntos_acumulados_usuarios.items():
+        # Consultamos los puntos globales actuales del usuario para sumarlos correctamente
+        user_res = supabase.table("usuarios").select("puntos_globales").eq("id", u_id).execute()
+        puntos_actuales = 0
+        if user_res.data and user_res.data[0].get("puntos_globales") is not None:
+            puntos_actuales = user_res.data[0]["puntos_globales"]
+        
+        puntos_totales_globales = puntos_actuales + pts_nuevos
+
         supabase.table("usuarios").update({
-            "puntos_globales": pts_glob
+            "puntos_globales": puntos_totales_globales
         }).eq("id", u_id).execute()
-        print(f"👤 Usuario {u_id[:8]}... actualizado con Puntos Globales: {pts_glob}")
+        print(f"👤 Usuario {u_id[:8]}... actualizado con Puntos Globales Totales: {puntos_totales_globales}")
 
 if __name__ == "__main__":
     url = os.environ.get("SUPABASE_URL")
