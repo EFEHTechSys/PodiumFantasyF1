@@ -77,6 +77,16 @@ def procesar_todo(supabase):
         gran_premio = pred['gran_premio']
         pred_id = pred['id']
 
+        # 🛡️ BLINDAJE EFEH TECH (Soporte Multitabla y Transición):
+        # Verificar que la carrera tenga resultados en 'resultados_globales' o 'resultados_oficiales'
+        res_global = supabase.table("resultados_globales").select("*").eq("gran_premio", gran_premio).execute()
+        res_oficial = supabase.table("resultados_oficiales").select("carrera").eq("gran_premio", gran_premio).execute()
+        
+        if not res_global.data and not res_oficial.data:
+            print(f"⏳ [OMITIDO] El GP '{gran_premio}' aún no tiene resultados de carrera cargados. Se MANTIENE en 'pendiente'.")
+            continue
+        # ---------------------------------------------------------------------------------
+
         puntos_quali = 0
         puntos_sprint = 0
         puntos_carrera = 0
