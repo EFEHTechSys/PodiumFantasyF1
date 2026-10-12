@@ -3,9 +3,10 @@ name: Calcular Puntos EFEH Tech
 on:
   workflow_dispatch: # Te permite seguir disparándolo manualmente cuando lo necesites
   schedule:
-    # Se ejecuta cada 3 horas los domingos (0) y lunes (1), 
+    # Se ejecuta cada 2 horas los domingos desde las 16:00 UTC (12:00 PM VET) y los lunes todo el día,
     # EXCLUSIVAMENTE durante los meses de temporada activa: de marzo (3) a diciembre (12).
-    - cron: '0 */3 * 3-12 0,1'
+    - cron: '0 16-23/2 * 3-12 0'
+    - cron: '0 0-22/2 * 3-12 1'
 
 jobs:
   run-logic:
