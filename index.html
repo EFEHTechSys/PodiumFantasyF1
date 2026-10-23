@@ -1325,34 +1325,49 @@
         });
     
         function poblarSelectoresPilotos() {
-            const poleSelect = document.getElementById('poleSelect');
-            if (!poleSelect) return;
-            poleSelect.innerHTML = '<option value="">Selecciona piloto</option>';
-            
-            const raceSelects = document.querySelectorAll('.driver-select');
-            raceSelects.forEach(select => {
+            const allDriverSelects = document.querySelectorAll('.driver-select');
+            if (!allDriverSelects.length) return;
+        
+            // 1. Limpiar todos los selectores de pilotos de un solo golpe
+            allDriverSelects.forEach(select => {
                 select.innerHTML = '<option value="">Selecciona piloto</option>';
             });
-
+        
+            // 2. Poblar cada piloto de forma limpia y uniforme en todos los desplegables (incluyendo la pole)
             driversList.forEach(d => {
                 const optText = `${d.code} - ${d.name} (${d.team})`;
-                const optPole = document.createElement('option');
-                optPole.value = d.code;
-                optPole.textContent = optText;
-                poleSelect.appendChild(optPole);
-
-                raceSelects.forEach(select => {
-                    const optRace = document.createElement('option');
-                    optRace.value = d.code;
-                    optRace.textContent = optText;
-                    select.appendChild(optRace);
+                allDriverSelects.forEach(select => {
+                    const opt = document.createElement('option');
+                    opt.value = d.code;
+                    opt.textContent = optText;
+                    select.appendChild(opt);
                 });
             });
-
-            // Convertir de manera uniforme todos los selects de pilotos (Pole, Sprint y Carrera Larga)
-            convertirSelectEnCustomDropdown('poleSelect');
-            document.querySelectorAll('.driver-select').forEach(sel => {
+        
+            // 3. Convertir de manera uniforme todos los selects en custom dropdowns con scroll
+            const poleSelect = document.getElementById('poleSelect');
+            if (poleSelect) convertirSelectEnCustomDropdown('poleSelect');
+        
+            allDriverSelects.forEach(sel => {
                 convertirSelectEnCustomDropdown(sel.id);
+            });
+        }
+
+        function verificarDuplicadosCarrera() {
+            const raceSlots = document.querySelectorAll('.race-slot');
+            const selectedCodes = Array.from(raceSlots).map(s => s.value).filter(v => v !== "");
+
+            raceSlots.forEach(select => {
+                const currentValue = select.value;
+                Array.from(select.options).forEach(option => {
+                    if (option.value === "") return;
+                    if (selectedCodes.includes(option.value) && option.value !== currentValue) {
+                        option.disabled = true;
+                    } else {
+                        option.disabled = false;
+                    }
+                });
+                actualizarOpcionesCustomDropdown(select.id);
             });
         }
 
@@ -1633,6 +1648,10 @@
                 const rondaB = calendarData.find(c => c.name === b.gran_premio)?.round || 99;
                 return rondaA - rondaB;
             });
+            
+            if (misPrediccionesUsuario.length > 5) {
+                misPrediccionesUsuario = misPrediccionesUsuario.slice(-5);
+            }
 
             const nameDisplayEl = document.getElementById('statUserNameDisplay');
             if (nameDisplayEl) nameDisplayEl.innerText = `Formulero: ${nombreUsuarioDisplay}`;
