@@ -2,481 +2,1469 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Podium FantasyF1 | EFEH Tech</title>
-
-    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Importamos la fuente caligráfica y Montserrat -->
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    <title>Perfect Podium Fantasy F1 - EFEH Systems</title>
+    <!-- SDK de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Script de Conexión Independiente -->
+    <script src="./supabaseClient.js"></script>
+	<link rel="manifest" href="./manifest.json">
+	<!-- Soporte específico para iOS / Apple -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#0b0e11">
-
+    <link rel="apple-touch-icon" href="d5s1wld5s1wld5s1-removebg.png">
     <style>
+
+/* ========================================================
+           1. RESET UNIVERSAL Y VARIABLES GLOBALES
+           ======================================================== */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
         :root {
-            --f1-turquesa: #00d2be;
-            --f1-papaya: #ff8700;
-            --f1-bg: #0b0e11;
-            --f1-card: #1c2025;
-            --white: #ffffff;
-            --danger: #ff4d4d;
+            --bg-main: #000000;
+            --bg-card: rgba(20, 20, 20, 0.88);
+            --color-turquoise: #00f0ff;
+            --color-f1-red: #e10600;
+            --color-red-dark: #991b1b;
+            --color-gold: #ffd700;
+            --color-gold-dark: #b8860b;
+            --text-main: #ffffff;
+            --text-muted: #9ca3af;
+            --border-color: rgba(255, 255, 255, 0.12);
+            --danger: #ef4444;
+            --success: #10b981;
         }
 
         body {
-            background-color: var(--f1-bg);
-            color: var(--white);
-            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
             margin: 0;
             padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
+            position: relative;
+            overflow-x: hidden;
+            font-size: 0.7rem; 
         }
 
-        .app-header-full {
-            width: 100%;
-            background: var(--f1-card);
-            padding: 15px 20px;
-            box-sizing: border-box;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 4px solid var(--f1-papaya);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        /* Fondo estático sin bugs de scroll */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: url('collage.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: -999;
+            pointer-events: none;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+
+        /* ========================================================
+           2. BANNER SUPERIOR (CUSTOM NAVBAR)
+           ======================================================== */
+        .custom-navbar {  	
             position: sticky;
             top: 0;
-            z-index: 100;
-        }
-
-        .header-title-container {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .app-title {
-            font-weight: 900;
-            font-size: 1.2em;
-            color: var(--f1-papaya);
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            margin: 0;
-        }
-
-        .app-subtitle {
-            font-size: 0.7em;
-            color: #a0a0a0;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin: 0;
-        }
-
-        .profile-icon-btn {
-            background: #101317;
-            border: 1px solid #3e444d;
-            color: var(--f1-turquesa);
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 1.1em;
-            transition: 0.2s;
-        }
-        .profile-icon-btn:hover { background: #252b33; }
-
-        .container {
+            z-index: 650;
+            max-width: 650px;
             width: 100%;
-            max-width: 500px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            padding: 15px;
-            box-sizing: border-box;
-            margin-bottom: 70px;
-        }
-
-        .card-box {
-            background: var(--f1-card);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-        }
-
-        .card-box h3 {
-            color: var(--f1-turquesa);
-            font-size: 1em;
-            text-transform: uppercase;
-            margin-top: 0;
-            margin-bottom: 12px;
-            text-align: center;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 10px;
-            background: #101317;
-            border: 1px solid #3e444d;
-            border-radius: 8px;
-            color: var(--white);
-            box-sizing: border-box;
-            font-size: 0.9em;
-        }
-
-        label {
-            font-size: 0.75em;
-            color: #aaa;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: block;
-            margin-bottom: 4px;
-        }
-
-        .btn-action {
-            width: 100%;
-            padding: 14px;
-            background: var(--f1-papaya);
-            color: #000;
-            border: none;
-            border-radius: 8px;
-            font-weight: 900;
-            cursor: pointer;
-            transition: 0.3s;
-            text-transform: uppercase;
-            font-size: 0.9em;
-            text-decoration: none;
-            display: inline-block;
-            box-sizing: border-box;
-            text-align: center;
-            box-shadow: 0 4px 12px rgba(255, 135, 0, 0.3);
-        }
-        .btn-action:hover { opacity: 0.9; }
-
-        .btn-turquesa {
-            background: var(--f1-turquesa);
-            color: #000;
-            box-shadow: 0 4px 12px rgba(0, 210, 190, 0.3);
-        }
-
-        .nav-bar-bottom {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: var(--f1-card);
-            display: flex;
-            justify-content: space-around;
-            border-top: 1px solid #3e444d;
-            box-shadow: 0 -4px 15px rgba(0,0,0,0.6);
-            z-index: 99;
-            box-sizing: border-box;
-            padding: 5px 0;
-        }
-
-        .nav-btn {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: #888;
-            font-size: 0.6em;
-            font-weight: 700;
-            text-transform: uppercase;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 3px;
-            padding: 8px 0;
-            transition: 0.2s;
-        }
-
-        .nav-btn span.icon {
-            font-size: 1.2em;
-        }
-
-        .nav-btn.active {
-            color: var(--f1-turquesa);
-        }
-
-        .app-download-mini {
-            background: #101317;
-            border: 1px solid #3e444d;
-            padding: 12px 15px;
-            border-radius: 10px;
+            margin: 0 auto;
+            background: #0b0f19;
+            padding: 1.5rem 0.8rem 0.6rem 0.8rem; 
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 10px;
-        }
-        .app-download-mini p {
-            font-size: 0.75em;
-            color: #ccc;
-            margin: 0;
-            line-height: 1.3;
+            overflow: visible;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            box-sizing: border-box;
         }
 
-        .sub-tab-container {
+        .custom-navbar::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 0.5px;
+            background: linear-gradient(90deg, transparent 0%, transparent 10%, #e10600 10%, #e10600 17%, transparent 17%, transparent 34%, #00f584 34%, #00f584 41%, transparent 41%, transparent 58%, #00f0ff 58%, #00f0ff 65%, transparent 65%, transparent 82%, #3b82f6 82%, #3b82f6 89%, transparent 89%, transparent 100%);
+            background-size: 350% 100%;
+            animation: telemetryBlocksA 6.550s linear infinite;
+            box-shadow: 0 0 6px rgba(0, 245, 132, 0.4);
+            z-index: 2;
+        }
+        
+        .custom-navbar::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 0.5px;
+            background: linear-gradient(90deg, transparent 0%, transparent 10%, #ff8000 10%, #ff8000 17%, transparent 17%, transparent 34%, #ffd700 34%, #ffd700 41%, transparent 41%, transparent 58%, #c0c0c0 58%, #c0c0c0 65%, transparent 65%, transparent 82%, #ff007f 82%, #ff007f 89%, transparent 89%, transparent 100%);
+            background-size: 350% 100%;
+            animation: telemetryBlocksB 6.6s linear infinite;
+            box-shadow: 0 0 6px rgba(255, 132, 0, 0.4);
+            z-index: 1;
+        }
+
+        @keyframes telemetryBlocksA {
+            0% { background-position: 520% 75%; }
+            100% { background-position: -260% 75%; }
+        }
+        @keyframes telemetryBlocksB {
+            0% { background-position: 520% 75%; }
+            100% { background-position: -260% 75%; }
+        }
+
+        .navbar-brand-container {
             display: flex;
-            gap: 5px;
-            margin-bottom: 12px;
+            align-items: center;
+            gap: 0.5rem;
         }
-        .sub-tab-btn {
+        
+        .navbar-brand-wrapper {
+            display: flex;
+            position: relative;
+            flex-direction: column;
+        }
+        
+        .navbar-brand-title {
+            font-weight: 900;
+            font-size: 1.1rem !important;
+            letter-spacing: 0.8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+        }
+
+        .brand-main {
+            color: var(--color-gold); 
+            background: linear-gradient(135deg, #fff 20%, var(--color-gold) 80%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .navbar-brand-title .f1-highlight {
+            color: var(--color-f1-red);
+            -webkit-text-fill-color: initial;
+        }
+        
+        .brand-perfect-crown {
+            position: absolute;
+            top: -22px;
+            left: 46%;
+            transform: translateX(-39%);
+            font-family: 'Great Vibes', cursive;
+            font-size: 1.5rem;
+            font-weight: 850;
+            font-style: italic;
+            letter-spacing: 3.2px;
+            color: var(--color-gold);
+            text-shadow: 0 0 15px rgba(255, 215, 255, 0.6), 0 0 8px rgba(255, 215, 0, 0.9), 0 2px 4px rgba(0, 0, 0, 0.9);
+            z-index: 10;
+        }
+        
+        span.sub-brand {
+            display: inline-block; 
+            font-size: 0.58rem;
+            color: var(--color-turquoise);
+            background-color: rgba(0, 240, 255, 0.08);
+            padding: 2px 7px;
+            border-radius: 3px;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            border: 1px solid rgba(0, 240, 255, 0.25);
+            width: fit-content;
+            margin: 5px auto 0 auto;
+            text-align: center;
+        }
+
+        .user-info-nav {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .btn-icon-logout {
+            background-color: var(--color-f1-red);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            padding: 0.12rem 0.25rem;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 550;
+            font-size: 0.74rem;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+            box-shadow: 0 2px 6px rgba(225, 6, 0, 0.4);
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        .btn-icon-logout:hover {
+            background-color: #ff1e00;
+            transform: translateY(-1px);
+        }
+
+        .btn-icon-logout svg {
+            width: 11px;
+            height: 11px;
+            fill: currentColor;
+        }
+
+        /* ========================================================
+           3. VISTA DE AUTENTICACIÓN
+           ======================================================== */
+        #authView {
+            display: flex;
+            justify-content: center;
+            align-items: center;
             flex: 1;
-            padding: 8px;
-            background: #101317;
-            border: 1px solid #3e444d;
-            color: #aaa;
-            font-size: 0.75em;
+            padding: 2rem 1rem;
+        }
+
+        .auth-card {
+            background-color: var(--bg-card);
+            border-radius: 8px;
+            padding: 1.5rem;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            border-top: 4px solid var(--color-gold);
+            margin: 0 auto;
+        }
+
+        .auth-header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.6rem;
+        }
+
+        .auth-header-actions h3 {
+            color: var(--color-gold);
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        /* ========================================================
+           4. MODALES (REGISTRO Y VERSUS)
+           ======================================================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.75);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 1000; padding: 0.8rem;
+        }
+        .modal-card {
+            background-color: var(--bg-card);
+            border-radius: 8px; padding: 1.5rem; width: 100%; max-width: 480px;
+            border-top: 4px solid var(--color-gold); position: relative; max-height: 90vh; overflow-y: auto;
+        }
+        .modal-close {
+            position: absolute; top: 0.8rem; right: 0.8rem; background: none; border: none;
+            color: var(--text-muted); font-size: 1.1rem; cursor: pointer;
+        }
+
+        /* ========================================================
+           5. VISTA PRINCIPAL DEL DASHBOARD Y CONTENEDORES
+           ======================================================== */
+        .container {
+            flex: 1;
+            padding: 0.8rem;
+            max-width: 650px;
+            margin: 0 auto;
+            width: 100%;
+            padding-bottom: 6rem;
+        }
+
+        .card-box, 
+        .account-section-box {
+            background: var(--bg-card) !important;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-left: 4px solid var(--color-gold) !important;
+            border-radius: 10px !important;
+            padding: 12px !important;
+            margin-bottom: 12px !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+            width: 100%;
+        }
+
+        .card-box h2 {
+            font-size: 0.9rem;
+            margin: 0 0 0.4rem 0;
+            color: var(--color-turquoise);
+        }
+
+        /* Subtabs (Pestañas internas) */
+        .subtabs { display: flex; gap: 0.8rem; margin-bottom: 0.8rem; }
+        .subtab-btn {
+            background-color: var(--bg-main); border: 1px solid var(--border-color);
+            color: var(--text-muted); padding: 0.4rem 1rem; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.8rem;
+        }
+        .subtab-btn.active {
+            background-color: var(--color-turquoise); color: #000000; border-color: var(--color-turquoise); font-weight: 900;
+        }
+
+        /* --- TAB 1: PREDICCIONES / HOME --- */
+        @keyframes bombPulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.03); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .bomb-red {
+            background-color: #ffffff !important;
+            color: #d32f2f !important;
+            font-weight: bold !important;
+            padding: 8px 16px !important;
+            border-radius: 8px !important;
+            display: inline-block !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+            animation: bombPulse 0.8s infinite ease-in-out;
+        }
+        .bomb-red *, .bomb-red span {
+            color: #d32f2f !important;
+        }
+
+        /* --- TAB 2: STANDINGS --- */
+        .table-container { 
+            width: 100%; 
+            overflow: hidden;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.7rem; 
+        }
+        th, td {
+            padding: 0.4rem 0.5rem !important;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+        th {
+            background-color: rgba(0, 0, 0, 0.2);
+            color: var(--color-turquoise);
+            text-transform: uppercase;
+            font-size: 0.68rem !important;
+            letter-spacing: 0.3px;
+        }
+        td {
+            font-size: 0.8rem !important;
+        }
+        tr.clickable-row {
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+        tr.clickable-row:hover { background-color: rgba(0, 240, 255, 0.08) !important; }
+
+        /* --- TAB 3: MI CUENTA / DESGLOSE Y ESCUDERÍAS --- */
+        .escuderia-box-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .f1-input-compact {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 6px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            width: 200px;
+            max-width: 100%;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+        .btn-f1-compact-primary, .btn-f1-compact-alt, .btn-f1-compact-danger {
             font-weight: bold;
-            border-radius: 6px;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 4px;
             cursor: pointer;
-            text-align: center;
+            font-size: 0.8rem;
+            width: 200px;
         }
-        .sub-tab-btn.active {
-            background: var(--f1-turquesa);
-            color: #000;
-            border-color: var(--f1-turquesa);
+        .btn-f1-compact-primary { background: #ffc107; color: #121212; }
+        .btn-f1-compact-alt { background: rgba(255, 255, 255, 0.1); color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.2); }
+        .btn-f1-compact-danger { background: #dc3545; color: white; }
+
+        /* --- TAB 4: REGLAMENTO E INFO --- */
+        .txt-document-box {
+            background-color: #1a1a1a; color: #e2e8f0;
+            font-size: 0.95rem;
+            font-family: 'Courier New', Courier, monospace;
+            line-height: 1.6; padding: 1.6rem; border-radius: 4px; border: 1px solid #cbd5e1;
+            max-height: 280px; overflow-y: auto; white-space: pre-line; margin-top: 0.4rem;
         }
 
-        .hidden { display: none !important; }
+        /* ========================================================
+           6. BARRA DE NAVEGACIÓN INFERIOR (BOTTOM NAV)
+           ======================================================== */
+        .bottom-nav {
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            right: 0;
+            max-width: 650px;
+            width: 100%;
+            margin: 0 auto;
+            background-color: var(--color-f1-red); 
+            border-top: 0px solid var(--color-red-dark);
+            display: flex; 
+            justify-content: space-around; 
+            padding: 0.2rem 0; 
+            z-index: 1000;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.5);
+            box-sizing: border-box;
+        }
+        .nav-btn {
+            background: none; border: none; color: var(--text-muted);
+            margin: 0 auto;
+            display: flex; flex-direction: column; align-items: center; 
+            font-size: 0.65rem;
+            cursor: pointer; gap: 1px; text-transform: uppercase; font-weight: bold; 
+            padding: 0.2rem 0.5rem; border-radius: 4px;
+        }
+        .nav-btn.active { color: #ffffff; background-color: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.3); }
+        .nav-btn svg { width: 18px; height: 18px; fill: currentColor; }
 
-        .auth-switch {
+        /* ========================================================
+           7. COMPONENTES GLOBALES Y UTILIDADES
+           ======================================================== */
+        .form-group {
+            margin-bottom: 0.8rem;
+            width: 100%;
+        }
+        .form-group label {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 0.2rem;
+        }
+        .form-control, .form-control-compact {
+            width: 100%;
+            background-color: var(--bg-main);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 4px;
+            font-size: 0.7rem; 
+        }
+        .form-control { padding: 0.6rem; font-size: 0.9rem; }
+        .form-control-compact { padding: 0.3rem 0.5rem; font-size: 0.78rem; height: 32px; }
+
+        .form-row-inline {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin-bottom: 0.4rem;
+            width: 100%;
+        }
+        .form-row-inline label {
+            flex: 0 0 45px;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+        .select-wrapper { flex: 1; min-width: 0; }
+
+        /* Custom Dropdown Estilizado */
+        .custom-dropdown {
+            position: relative;
+            width: 100%;
+            font-family: inherit;
+        }
+        .dropdown-trigger {
+            background-color: var(--bg-main);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 0.3rem 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            height: 32px;
+            width: auto;
+        }
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: #141414;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            max-height: 145px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.6);
+            margin-top: 2px;
+        }
+        .dropdown-item {
+            padding: 7px 10px;
+            color: var(--text-main);
+            cursor: pointer;
+            font-size: 0.78rem;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            transition: background 0.15s;
+        }
+        .dropdown-item:hover {
+            background-color: rgba(0, 240, 255, 0.15);
+            color: var(--color-turquoise);
+        }
+        .dropdown-menu::-webkit-scrollbar { width: 5px; }
+        .dropdown-menu::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.25); border-radius: 3px; }
+
+        .btn-action {
+            display: block;
+            width: 220px;
+            max-width: 100%;
+            margin: 12px auto;
+            background-color: var(--color-turquoise);
+            color: #000000;
+            border: none;
+            padding: 0.65rem;
+            font-weight: 900;
+            border-radius: 4px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 0.85rem;
             text-align: center;
+        }
+        .btn-action:hover { opacity: 0.9; }
+        .btn-turquesa { background-color: var(--color-turquoise); color: #000000; }	
+
+        .status-msg {
+            padding: 0.4rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-top: 0.4rem;
+            text-align: center;
+        }
+        .status-success {
+            background-color: rgba(16, 185, 129, 0.2);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+        .status-error {
+            background-color: rgba(239, 68, 68, 0.2);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+
+        /* Estilos específicos para la Cancha del Modal Versus */
+        .versus-grid {
+            display: grid;
+            grid-template-columns: 1fr 2px 1fr;
+            gap: 8px;
             margin-top: 10px;
-            font-size: 0.8em;
-            color: var(--f1-turquesa);
-            cursor: pointer;
-            text-decoration: underline;
+            font-size: 0.75rem;
         }
-
-        .sprint-accordion {
-            background: #101317;
-            border: 1px dashed var(--f1-papaya);
+        .versus-divider {
+            background: linear-gradient(to bottom, transparent, var(--color-turquoise), transparent);
+        }
+        .versus-column {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        /* ========================================================
+           ESTILOS DEDICADOS PARA EL MODAL VERSUS (EFEH TECH)
+           ======================================================== */
+        .versus-card-container {
+            background: rgba(14, 14, 14, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 8px;
             padding: 12px;
-            margin-bottom: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+        }
+
+        .versus-header-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 6px;
+            margin-bottom: 8px;
+            align-items: center;
+        }
+
+        .versus-user-title {
+            color: var(--color-gold);
+            font-size: 0.85rem;
+            font-weight: 900;
+            text-align: left;
+            text-transform: uppercase;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .rival-select-header {
+            font-weight: 900 !important;
+            color: var(--color-gold) !important;
+            background: rgba(255, 215, 0, 0.1) !important;
+            border: 1px solid var(--color-gold) !important;
+            border-radius: 4px !important;
+            font-size: 0.85rem !important;
+            padding: 3px 8px !important;
+            text-align: right !important;
+            cursor: pointer !important;
+            width: 100% !important;
+            font-family: 'Montserrat', sans-serif !important;
+            text-transform: uppercase !important;
+        }
+
+        .rival-select-header option {
+            background-color: #141414 !important;
+            color: var(--text-main) !important;
+        }
+
+        .versus-section-title {
+            text-align: center;
+            color: var(--color-turquoise);
+            font-weight: 900;
+            font-size: 0.8rem;
+            border-top: 2px solid var(--color-turquoise);
+            padding-top: 4px;
+            margin-top: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .versus-row {
+            display: grid;
+            grid-template-columns: 1fr 40px 40px 1fr;
+            align-items: center;
+            padding: 3px 0;
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+
+        .versus-driver-left {
+            color: var(--color-turquoise);
+            font-weight: bold;
+            text-align: left;
+        }
+
+        .versus-pts-left {
+            color: var(--text-main);
+            font-weight: bold;
+            text-align: right;
+            padding-right: 6px;
+        }
+
+        .versus-pts-right {
+            color: var(--text-main);
+            font-weight: bold;
+            text-align: left;
+            padding-left: 6px;
+        }
+
+        .versus-driver-right {
+            color: var(--color-turquoise);
+            font-weight: bold;
+            text-align: right;
+        }
+
+        .versus-footer-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            border-top: 1px solid var(--border-color);
+            margin-top: 10px;
+            padding-top: 6px;
+            text-align: center;
         }
     </style>
 </head>
 <body>
 
-    <header class="app-header-full">
-        <div class="header-title-container">
-            <h1 class="app-title">Podium FantasyF1</h1>
-            <p class="app-subtitle">EFEH Tech Systems</p>
+    <!-- BANNER CON ANIMACIÓN DE MOD_TELEMETRÍA  -->
+<div class="custom-navbar">
+    <div class="navbar-brand-container">
+        <div class="navbar-brand-wrapper">
+            <div class="navbar-brand-title">
+            	<span class="brand-perfect-crown">Perfect</span>
+                <span class="brand-main">PODIUM FANTASY</span>                
+                <span class="f1-highlight">F1</span>
+            </div>
+            <span class="sub-brand">EFEH Systems</span>
         </div>
-        <button class="profile-icon-btn" onclick="switchDashboardTab('account')" title="Mi Cuenta">
-            👤
+    </div>
+    
+    <div id="navUserArea" class="user-info-nav">
+        <span id="userEmailDisplay" style="display: none;"></span>
+        <button class="btn-icon-logout" onclick="cerrarSesion()" title="Cerrar Sesión">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+            <span></span>
         </button>
-    </header>
+    </div>
+</div>
+        
+    <!-- 1. VISTA DE AUTENTICACIÓN -->
+    <div id="authView" class="container">
+        <div class="auth-card">
+            <div class="auth-header-actions">
+                <h3>Acceso de Usuario</h3>
+                <button type="button" class="btn-action btn-turquesa" style="width: auto; padding: 0.3rem 0.6rem; font-size: 0.75rem;" onclick="abrirModalRegistro()">Registrarse</button>
+            </div>
 
-    <div class="container">
-
-        <!-- AUTENTICACIÓN -->
-        <div id="authView" class="card-box">
-            <h3 id="authTitle">Iniciar Sesión</h3>
-            <form id="authForm" onsubmit="handleAuth(event)">
-                <input type="email" id="authEmail" placeholder="Correo electrónico" required>
-                <input type="password" id="authPassword" placeholder="Contraseña" required>
-                <button type="submit" id="authBtn" class="btn-action">Entrar</button>
+            <form id="formLogin" onsubmit="procesarLogin(event)">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" class="form-control" placeholder="usuario@dominio.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-action">Entrar</button>
             </form>
-            <div class="auth-switch" onclick="toggleAuthMode()">¿No tienes cuenta? Regístrate aquí</div>
+            <div id="authFeedback" class="hidden"></div>
+        </div>
+    </div>
+
+    <!-- MODAL DE REGISTRO -->
+    <div id="registerModal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <button type="button" class="modal-close" onclick="cerrarModalRegistro()">×</button>
+            <form id="formRegister" onsubmit="manejarRegistro(event)">
+                <h3 style="color: var(--color-gold); margin-bottom: 0.8rem;">Crear Nueva Cuenta</h3>
+
+                <div class="form-group">
+                    <label>Nombre de Usuario (Username)</label>
+                    <input type="text" id="reg-username" class="form-control" placeholder="ej. username" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="reg-email" class="form-control" placeholder="usuario@dominio.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="reg-password" class="form-control" placeholder="••••••••" required>
+                </div>
+                <div class="form-group">
+                    <label>Confirmar Contraseña</label>
+                    <input type="password" id="reg-password-confirm" class="form-control" placeholder="Repite tu contraseña" required>
+                </div>
+                <div class="form-group">
+                    <label>País</label>
+                    <select id="reg-pais" class="form-control" required>
+                        <option value="">Selecciona tu país</option>
+                        <option value="AR">🇦🇷 Argentina</option>
+                        <option value="BZ">🇧🇿 Belice</option>
+                        <option value="BO">🇧🇴 Bolivia</option>
+                        <option value="BR">🇧🇷 Brasil</option>
+                        <option value="CA">🇨🇦 Canadá</option>
+                        <option value="CL">🇨🇱 Chile</option>
+                        <option value="CO">🇨🇴 Colombia</option>
+                        <option value="CR">🇨🇷 Costa Rica</option>
+                        <option value="CU">🇨🇺 Cuba</option>
+                        <option value="DO">🇩🇴 Rep. Dominicana</option>
+                        <option value="EC">🇪🇨 Ecuador</option>
+                        <option value="SV">🇸🇻 El Salvador</option>
+                        <option value="ES">🇪🇸 España</option>
+                        <option value="GT">🇬🇹 Guatemala</option>
+                        <option value="GY">🇬🇾 Guyana</option>
+                        <option value="HT">🇭🇹 Haití</option>
+                        <option value="HN">🇭🇳 Honduras</option>
+                        <option value="JM">🇯🇲 Jamaica</option>
+                        <option value="MX">🇲🇽 México</option>
+                        <option value="NI">🇳🇮 Nicaragua</option>
+                        <option value="PA">🇵🇦 Panamá</option>
+                        <option value="PY">🇵🇾 Paraguay</option>
+                        <option value="PE">🇵🇪 Perú</option>
+                        <option value="PT">🇵🇹 Portugal</option>
+                        <option value="PR">🇵🇷 Puerto Rico</option>
+                        <option value="SR">🇸🇷 Surinam</option>
+                        <option value="US">🇺🇸 Estados Unidos</option>
+                        <option value="UY">🇺🇾 Uruguay</option>
+                        <option value="VE">🇻🇪 Venezuela</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Idioma Preferido</label>
+                    <select id="reg-idioma" class="form-control">
+                        <option value="es">Español</option>
+                        <option value="en">English</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-action btn-turquesa">Completar Registro</button>
+            </form>
+            <div id="registerFeedback" class="hidden"></div>
+        </div>
+    </div>
+
+<!-- MODAL DE VERSUS // CARA A CARA EN ESPEJO -->
+    <div id="versusModal" class="modal-overlay hidden">
+        <div class="modal-card" style="max-width: 420px; border-top: 4px solid var(--color-turquoise);">
+            <button type="button" class="modal-close" onclick="cerrarModalVersus()">×</button>
+            <h3 style="color: var(--color-turquoise); margin-bottom: 0.5rem; text-align: center; font-weight: 900; letter-spacing: 1px;">VERSUS</h3>
+            
+            <!-- Selector de GP compacto -->
+            <div style="display: flex; justify-content: center; margin-bottom: 0.8rem;">
+                <div style="width: 260px; max-width: 100%;">
+                    <label style="display: block; font-size: 0.68rem; color: var(--text-muted); text-align: center; margin-bottom: 2px; text-transform: uppercase;">Gran Premio</label>
+                    <select id="versusGpSelect" class="form-control-compact" onchange="actualizarComparativaVersus()">
+                        <option value="">Cargando GPs...</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Área de Choque Central (Renderizada por JavaScript) -->
+            <div id="versusContentArea">
+                <p class="text-center" style="color: var(--text-muted); padding: 1rem;">Selecciona un Gran Premio para ver el enfrentamiento.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- B. VISTA PRINCIPAL DEL DASHBOARD Y APLICACIÓN -->
+    <div id="dashboardView" class="container hidden">
+
+        <!-- TAB 1: PREDICCIONES / DASHBOARD  -->
+        <div id="tabHome" class="dashboard-tab">
+            <div class="card-box" style="border-left: 4px solid var(--color-turquoise); padding-bottom: 8px !important;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
+                    <h1 style="font-size: 1.05rem; color: var(--text-main); margin: 0;">Mis predicciones GP</h1> 
+                    <span id="activeRoundTitle" style="color: var(--color-gold); font-weight: bold; font-size: 0.85rem; text-align: right;">Cargando ronda...</span>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; padding-top: 6px; border-top: 1px solid var(--border-color);">
+                    <span id="countdownTimer" style="font-family: monospace; font-weight: bold; font-size: 0.9rem; color: var(--color-turquoise);">--:--:--</span>
+                    <span id="lockStatusText" style="color: var(--text-muted); font-size: 0.75rem; text-align: right;">Cierra 48h antes</span>
+                </div>
+            </div>
+
+            <div class="card-box">
+                <h2 style="color: var(--color-gold); font-size: 0.95rem; margin-bottom: 0.6rem;">Mis predicciones</h2>
+
+                <!-- 1. Pole Position -->
+                <div style="font-size: 0.72rem; color: var(--color-gold); font-weight: bold; margin-bottom: 0.3rem; text-transform: uppercase;">🏁 Pole Position</div>
+                <div class="form-row-inline" style="margin-bottom: 0.6rem;">
+                    <label>Pole</label>
+                    <div class="select-wrapper">
+                        <select id="poleSelect" class="form-control-compact driver-select">
+                            <option value="">Selecciona piloto</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 2. Carrera Sprint (Top 3) - Condicional -->
+                <div id="sprintSection" class="hidden">
+                    <hr style="border-color: var(--border-color); margin: 0.6rem 0;">
+                    <div style="font-size: 0.72rem; color: var(--color-turquoise); font-weight: bold; margin-bottom: 0.3rem; text-transform: uppercase;">⚡ Carrera Sprint (Top 3)</div>
+                    <div class="form-row-inline">
+                        <label>P1</label>
+                        <div class="select-wrapper"><select id="sprint_p1" class="form-control-compact driver-select sprint-slot"><option value="">Selecciona piloto</option></select></div>
+                    </div>
+                    <div class="form-row-inline">
+                        <label>P2</label>
+                        <div class="select-wrapper"><select id="sprint_p2" class="form-control-compact driver-select sprint-slot"><option value="">Selecciona piloto</option></select></div>
+                    </div>
+                    <div class="form-row-inline" style="margin-bottom: 0.6rem;">
+                        <label>P3</label>
+                        <div class="select-wrapper"><select id="sprint_p3" class="form-control-compact driver-select sprint-slot"><option value="">Selecciona piloto</option></select></div>
+                    </div>
+                </div>
+
+                <!-- 3. Carrera Larga (Top 5) -->
+                <hr style="border-color: var(--border-color); margin: 0.6rem 0;">
+                <div style="font-size: 0.72rem; color: var(--color-gold); font-weight: bold; margin-bottom: 0.3rem; text-transform: uppercase;">🏎️ Carrera Larga (Top 5)</div>
+                <div class="form-row-inline">
+                    <label>P1</label>
+                    <div class="select-wrapper"><select id="race_p1" class="form-control-compact driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select></div>
+                </div>
+                <div class="form-row-inline">
+                    <label>P2</label>
+                    <div class="select-wrapper"><select id="race_p2" class="form-control-compact driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select></div>
+                </div>
+                <div class="form-row-inline">
+                    <label>P3</label>
+                    <div class="select-wrapper"><select id="race_p3" class="form-control-compact driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select></div>
+                </div>
+                <div class="form-row-inline">
+                    <label>P4</label>
+                    <div class="select-wrapper"><select id="race_p4" class="form-control-compact driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select></div>
+                </div>
+                <div class="form-row-inline" style="margin-bottom: 0.8rem;">
+                    <label>P5</label>
+                    <div class="select-wrapper"><select id="race_p5" class="form-control-compact driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select></div>
+                </div>
+
+                <button type="button" class="btn-action btn-turquesa" onclick="guardarPrediccion()">Guardar Predicción</button>
+                <div id="predictionFeedback" class="status-msg hidden" style="margin-top: 0.4rem;"></div>
+            </div>
         </div>
 
-        <!-- DASHBOARD PRINCIPAL -->
-        <div id="dashboardView" class="hidden" style="display: flex; flex-direction: column; gap: 15px;">
-            
-            <!-- 1. DASHBOARD / PREDICCIONES -->
-            <div id="tabHome" class="dashboard-tab" style="display: flex; flex-direction: column; gap: 15px;">
-                
-                <div class="app-download-mini">
-                    <p>Lleva el Fantasy en tu móvil Android.</p>
-                    <a href="https://github.com/tu-usuario/tu-repositorio/releases/latest/download/app-release.apk" class="btn-action btn-turquesa" style="width: auto; padding: 8px 12px; font-size: 0.75em;">
-                        APK ⚡
-                    </a>
+        <!-- TAB 2: STANDINGS -->
+        <div id="tabStandings" class="dashboard-tab hidden">
+            <div class="card-box" style="margin-bottom: 0.5rem;">
+                <h1 style="font-size: 1.1rem; color: var(--text-main); margin: 0 0 0.15rem 0;">Tabla de Posiciones</h1>
+                <p style="font-size: 0.7rem; color: var(--text-muted); margin: 0;">Ranking de Usuarios y Escuderías (Toca un usuario para ver Versus)</p>
+            </div>
+
+            <div class="subtabs">
+                <button id="subIndBtn" class="subtab-btn active" onclick="switchStandingsSub('individual')">Individual</button>
+                <button id="subEscBtn" class="subtab-btn" onclick="switchStandingsSub('escuderias')">Escuderías</button>
+            </div>
+
+            <div class="card-box">
+                <div id="subStandingsIndividual" class="table-container">
+                    <p class="text-center" style="color: var(--color-turquoise); padding: 0.8rem;">Cargando ranking individual...</p>
+                </div>
+
+                <div id="subStandingsEscuderias" class="table-container hidden">
+                    <div style="margin-top: 0.2rem; margin-bottom: 0.8rem;">
+                        <h3 style="font-size: 1rem; color: var(--color-gold); margin: 0 0 0.15rem 0; font-weight: bold;">🏆 Campeonato de Escuderías</h3>
+                        <p style="font-size: 0.7rem; color: var(--text-muted); margin: 0;">Clasificación general de constructores</p>
+                    </div>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 38px;">Pos</th>
+                                <th>Escudería</th>
+                                <th class="text-right">Ptos</th>
+                            </tr>
+                        </thead>
+                        <tbody id="global-escuderias-tbody">
+                            <tr><td colspan="3" class="text-center" style="color: var(--text-muted); padding: 0.8rem;">Cargando escuderías...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>    
+        </div>
+        
+        <!-- TAB 3: MI CUENTA / DESGLOSE -->
+        <div id="tabAccount" class="dashboard-tab hidden">
+            <div class="card-box" style="margin-bottom: 0.5rem;">
+                <h1 style="font-size: 1.1rem; color: var(--text-main); margin: 0 0 0.15rem 0;">Mi Cuenta y Puntuación</h1>
+                <p style="font-size: 0.7rem; color: var(--text-muted); margin: 0;">Resumen de rendimiento y gestión de Escuderias</p>
+            </div>
+
+            <div class="subtabs">
+                <button id="subAccIndBtn" class="subtab-btn active" onclick="switchAccountSub('individual')">Personal</button>
+                <button id="subAccEscBtn" class="subtab-btn" onclick="switchAccountSub('escuderias')">Mi Escudería</button>
+            </div>
+
+            <div id="subAccountIndividual">
+                <div style="margin-bottom: 0.5rem; width: 100%;">
+                    <div class="card-box" style="display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0.8rem; border-left: 4px solid var(--color-gold);">
+                        <div>
+                            <h3 id="statUserNameDisplay" style="margin: 0; font-size: 0.9rem; color: var(--text-main); font-weight: bold;">Formulero: --</h3>
+                            <span id="statUserPos" style="font-size: 0.7rem; color: var(--color-gold); font-weight: bold;">Posición individual: --</span>
+                        </div>
+                        <div style="text-align: right; display: flex; align-items: center; gap: 0.4rem;">
+                            <span id="statUserMedalDisplay" style="font-size: 1.3rem;">🏁</span>
+                            <div>
+                                <div id="statGlobalPts" style="font-size: 1.1rem; font-weight: bold; color: var(--color-gold);">0</div>
+                                <span style="font-size: 0.65rem; color: var(--text-muted);">Puntos Totales</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="card-box">
-                    <h3>Mi Predicción</h3>
+                    <h2>Desglose por Gran Premio</h2>
+                    <div class="form-row-inline" style="margin-bottom: 0.6rem;">
+                        <label>GP</label>
+                        <div class="select-wrapper">
+                            <select id="gpHistorySelect" class="form-control-compact" onchange="cambiarGpCuenta()">
+                                <option value="">Cargando historial...</option>
+                            </select>
+                        </div>
+                    </div>
                     
-                    <label>Seleccionar Gran Premio</label>
-                    <select id="raceSelect" onchange="actualizarModalidadGranPremio()">
-                        <option value="">Cargando calendario...</option>
-                    </select>
-
-                    <label>Piloto Pole Position</label>
-                    <select id="poleSelect" class="pole-select">
-                        <option value="">Selecciona Poleman</option>
-                    </select>
-
-                    <!-- SECCIÓN SPRINT -->
-                    <div id="sprintSection" class="sprint-accordion hidden">
-                        <h4 style="color: var(--f1-papaya); margin: 0 0 8px 0; font-size: 0.85em; text-transform: uppercase;">🏁 Sprint (Top 3)</h4>
-                        <label>1° Puesto Sprint</label>
-                        <select class="driver-select sprint-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select>
-                        <label>2° Puesto Sprint</label>
-                        <select class="driver-select sprint-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select>
-                        <label>3° Puesto Sprint</label>
-                        <select class="driver-select sprint-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select>
-                    </div>
-
-                    <!-- CARRERA LARGA (TOP 5) -->
-                    <div style="margin-top: 10px;">
-                        <h4 style="color: var(--f1-turquesa); margin: 0 0 8px 0; font-size: 0.85em; text-transform: uppercase;">🏎️ Carrera Larga (Top 5)</h4>
-                        <label>1° Puesto</label>
-                        <select class="driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select>
-                        <label>2° Puesto</label>
-                        <select class="driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select>
-                        <label>3° Puesto</label>
-                        <select class="driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select>
-                        <label>4° Puesto</label>
-                        <select class="driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select>
-                        <label>5° Puesto</label>
-                        <select class="driver-select race-slot" onchange="verificarDuplicadosCarrera()"><option value="">Selecciona piloto</option></select>
-                    </div>
-
-                    <button class="btn-action" style="margin-top: 15px;" onclick="guardarPrediccion()">Guardar Predicción</button>
-                </div>
-            </div>
-
-            <!-- 2. STANDINGS -->
-            <div id="tabStandings" class="dashboard-tab hidden card-box">
-                <h3>Tabla de Posiciones</h3>
-                
-                <div class="sub-tab-container">
-                    <button class="sub-tab-btn active" id="subIndBtn" onclick="switchStandingsSub('individual')">Individual</button>
-                    <button class="sub-tab-btn" id="subEscBtn" onclick="switchStandingsSub('escuderias')">Escuderías</button>
-                </div>
-
-                <div id="subStandingsIndividual">
-                    <p style="font-size: 0.8em; color: #aaa; text-align: center;">Ranking general sincronizado desde base de datos.</p>
-                    <div style="background: #101317; padding: 12px; border-radius: 8px; text-align: center; color: #666; font-size: 0.8em;" id="dbIndividualContainer">
-                        [Cargando registros individuales...]
-                    </div>
-                </div>
-
-                <div id="subStandingsEscuderias" class="hidden">
-                    <p style="font-size: 0.8em; color: #aaa; text-align: center;">Ranking por escuderías sincronizado desde base de datos.</p>
-                    <div style="background: #101317; padding: 12px; border-radius: 8px; text-align: center; color: #666; font-size: 0.8em;" id="dbEscuderiasContainer">
-                        [Cargando registros de escuderías...]
+                    <div style="display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.8rem;">
+                        <div style="display: flex; justify-content: space-between; padding: 0.1rem 0;">
+                            <span>🏁 Pole Position:</span>
+                            <span id="accPolePts" style="color: var(--text-main); font-weight: bold;">0 pts</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.1rem 0;">
+                            <span>⚡ Carrera Sprint:</span>
+                            <span id="accSprintPts" style="color: var(--color-turquoise); font-weight: bold;">0 pts</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.1rem 0;">
+                            <span>🏎️ Carrera Larga:</span>
+                            <span id="accRacePts" style="color: var(--color-turquoise); font-weight: bold;">0 pts</span>
+                        </div>
+                        <hr style="border-color: var(--border-color); margin: 0.2rem 0;">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.9rem; padding: 0.1rem 0;">
+                            <span style="color: var(--color-gold); font-weight: bold;">Total GP:</span>
+                            <span id="accTotalGpPts" style="color: var(--color-gold); font-weight: bold;">0 pts</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 3. MI CUENTA -->
-            <div id="tabAccount" class="dashboard-tab hidden card-box" style="text-align: left;">
-                <h3>Mi Cuenta y Puntuación</h3>
-                <div style="background: #101317; padding: 12px; border-radius: 8px; margin-bottom: 12px;">
-                    <label>Usuario / Correo:</label>
-                    <p id="userEmailDisplay" style="font-size: 0.85em; color: var(--f1-turquesa); margin: 0 0 8px 0;">-</p>
-                    <label>Puntuación Total Acumulada:</label>
-                    <p id="userTotalPoints" style="font-size: 1.2em; font-weight: bold; color: var(--f1-papaya); margin: 0;">0 pts</p>
+            <div id="subAccountEscuderias" class="hidden">
+                <div class="card-box" style="border-left: 4px solid var(--color-gold);">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h3 id="accTeamNameDisplay" style="margin: 0; font-size: 0.95rem; color: var(--color-gold);">Sin Escudería</h3>
+                            <span id="accTeamPosDisplay" style="font-size: 0.75rem; color: var(--text-muted);">Posición en Campeonato de Escuderias: --</span>
+                        </div>
+                        <div style="text-align: right; display: flex; align-items: center; gap: 0.4rem;">
+                            <span id="accTeamMedalDisplay" style="font-size: 1.3rem;">🏁</span>
+                            <div>
+                                <div id="accTeamPtsDisplay" style="font-size: 1.1rem; font-weight: bold; color: var(--color-gold);">0</div>
+                                <span style="font-size: 0.65rem; color: var(--text-muted);">Puntos Totales</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <h4 style="color: var(--f1-turquesa); font-size: 0.85em; text-transform: uppercase; margin-bottom: 6px;">Desglose por Gran Premio</h4>
-                <label>Seleccionar Gran Premio</label>
-                <select id="gpHistorySelect" onchange="cargarDesgloseGPDB()">
-                    <option value="">Selecciona un GP para consultar</option>
-                </select>
-
-                <!-- Bloque completamente dinámico listo para lectura de base de datos -->
-                <div id="gpBreakdownBox" style="background: #101317; padding: 12px; border-radius: 8px; margin-top: 10px; font-size: 0.8em; color: #ccc;">
-                    <p style="text-align: center; color: #666; margin: 0;">Selecciona un Gran Premio para consultar el desglose directamente desde las tablas.</p>
+                <div class="card-box">
+                    <h3 style="margin-top: 0; font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--color-turquoise);">Campeonato Interno de la Escudería</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width: 38px;">Pos</th>
+                                    <th>Integrantes</th>
+                                    <th class="text-right">Puntos</th>
+                                </tr>
+                            </thead>
+                            <tbody id="accTeamMembersTbody">
+                                <tr><td colspan="3" class="text-center" style="color: var(--text-muted); padding: 0.8rem;">Cargando integrantes...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
-                <button class="btn-action" style="background: var(--danger); color: white; margin-top: 15px;" onclick="cerrarSesion()">Cerrar Sesión</button>
-            </div>
+                <div class="card-box" style="margin-top: 0.8rem;">
+                    <h3 style="margin-top: 0; font-size: 0.9rem; margin-bottom: 8px; color: #fff; text-align: center;">Configuración de Equipo</h3>
+                    
+                    <div id="no-team-section" class="escuderia-box-content">
+                        <div style="margin-bottom: 8px;">
+                            <label style="display:block; font-size: 0.75rem; margin-bottom: 2px; color: #ccc;">Crear Escudería (*Lider de Equipo)</label>
+                            <input type="text" id="input-nombre-escuderia" class="f1-input-compact" placeholder="Ej. EFEH Racing" maxlength="15">
+                            <br>
+                            <button class="btn-f1-compact-primary" onclick="crearEscuderia()">Crear Escudería</button>
+                        </div>
+                        
+                        <div style="width: 80%; border-top: 1px solid rgba(255,255,255,0.1); margin: 6px 0;"></div>
 
-            <!-- 4. Info -->
-            <div id="tabInfo" class="dashboard-tab hidden card-box" style="text-align: left;">
-                <h3>Reglamento de Puntuación</h3>
-                <p style="font-size: 0.8em; line-height: 1.5; color: #cccccc; margin-bottom: 15px;">
-                    <strong>1.</strong> 5 pts por acertar el Pole Man.<br>
-                    <strong>2.</strong> 5 pts por acertar la vuelta rápida. <em>(No válido actualmente)</em><br>
-                    <strong>3.</strong> Podio de ganadores: Tripleta perfecta suman puntos triples (acertar el orden del podio).<br>
-                    <strong>4.</strong> 5 pilotos máximo por carrera (aplicará el puntaje que obtengan los pilotos en carrera).<br>
-                    <strong>5.</strong> En cada carrera se puede variar de pilotos hasta finalizar la FP3 de cada Gran Premio.<br>
-                    <strong>6.</strong> Puntos dobles para el que acierte la posición de un piloto en la grilla (Solo hasta el 5° puesto).
-                </p>
-                <hr style="border: 0; border-top: 1px solid #3e444d; margin: 15px 0;">
-                <h3 style="color: var(--f1-papaya);">Apoya el Proyecto Podium FantasyF1</h3>
-                <p style="font-size: 0.75em; color: #bbb; margin-bottom: 10px; text-align: center;">Ayuda a mantener la infraestructura de EFEH Tech activa.</p>
-                <a href="https://paypal.me/3lvisfeh" target="_blank" class="btn-action" style="background: #00457c; color: white; padding: 10px; font-size: 0.8em;">
-                    💙 Donar con PayPal 💙
-                </a>
-            </div>
+                        <div>
+                            <label style="display:block; font-size: 0.75rem; margin-bottom: 2px; color: #ccc;">Unirse a una Escudería</label>
+                            <input type="text" id="input-codigo-invitacion" class="f1-input-compact" placeholder="Código (Ej. Z9-012ABC)">
+                            <br>
+                            <button class="btn-f1-compact-alt" onclick="unirseEscuderia()">Unirse con Código</button>
+                        </div>
+                    </div>
 
+                    <div id="has-team-section" class="escuderia-box-content" style="display: none; font-size: 0.85rem;">
+                        <p style="margin: 3px 0; color: var(--text-muted);">Tu Código de Invitación:</p>
+                        <div style="display: flex; gap: 0.4rem; align-items: center; justify-content: center; margin-bottom: 6px;">
+                            <input type="text" id="miCodigoInvitacion" readonly value="Cargando..." class="f1-input-compact" style="width: 130px; text-align: center; font-family: monospace;" />
+                            <button type="button" class="btn-f1-compact-alt" style="width: auto; padding: 5px 8px;" onclick="copiarCodigoInvitacion()">Copiar</button>
+                        </div>
+                        <button class="btn-f1-compact-danger" onclick="abandonarEscuderia()">Abandonar Escudería</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
+        <!-- TAB 4: REGLAMENTO E INFO -->
+        <div id="tabInfo" class="dashboard-tab hidden">
+            <div class="card-box" style="margin-bottom: 0.5rem;">
+                <h1 style="font-size: 1.1rem; color: var(--text-main); margin: 0 0 0.15rem 0;">Información / Reglamento</h1>
+                <p style="font-size: 0.7rem; color: var(--text-muted); margin: 0;">______________________________________</p>
+            </div>
+
+            <div class="card-box" style="border-left: 4px solid var(--color-gold);">
+                <div class="collab-card-inline" style="display: flex; justify-content: space-between; align-items: center; gap: 0.8rem; flex-wrap: wrap;">
+                    <div class="collab-text" style="flex: 1; min-width: 180px;">
+                        <h3 style="color: var(--color-turquoise); font-size: 0.9rem; margin: 0 0 0.15rem 0;">Colabora con el proyecto Podium Fantasy F1</h3>
+                        <p style="color: var(--text-muted); font-size: 0.7rem; margin: 0;">Apoya para mantener la plataforma activa.</p>
+                    </div>
+                    <a href="https://paypal.me/3lvisfeh" target="_blank" onclick="agradecerColaboracionPayPal(event)" class="btn-paypal-compact" style="display: inline-flex; align-items: center; gap: 0.3rem; background: linear-gradient(to bottom, #0079C1, #00457C); color: #fff; padding: 0.4rem 0.8rem; border-radius: 4px; text-decoration: none; font-weight: bold; font-size: 0.8rem;">
+                        Donar con PayPal
+                    </a>
+                </div>
+            </div>
+
+            <div class="card-box">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem; gap: 0.8rem; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 180px;">
+                        <h2 style="margin: 0; font-size: 0.9rem;">Reglamento Perfect Podium Fantasy F1</h2>
+                    </div>
+                    <button type="button" class="btn-action btn-turquesa" style="width: auto; padding: 0.25rem 0.5rem; font-size: 0.7rem;" onclick="toggleReglamento()">
+                        <span id="btnReglamentoText">📄 Reglamento</span>
+                    </button>
+                </div>
+                
+                <div id="reglamentoContainer" class="hidden">
+                    <div class="txt-document-box">
+1. <strong>Plazo de modificación:</strong> 48 horas antes de la carrera (inicio en las PL2 o la clasificación Shootout de la carrera Sprint, según el formato del GP).
+2. <strong>5 pts</strong> por acertar el Poleman de cada Gran Premio en <strong>Perfect Podium Fantasy F1</strong>
+3. <strong>Podio de ganadores:</strong> La tripleta perfecta otorga puntos triples.
+4. <strong>Puntos dobles:</strong> Bonificación por acierto exacto de la grilla de llegada.
+5. <strong>Top5 para la carrera:</strong> Aplicará el puntaje simple si no coinciden con tu predicción, siempre que sea parte de los resultados oficiales en el Top 5.
+6. <strong>Campeonato de Escuderías:</strong> Comparte tu código de invitación para sumar puntos globales en equipo.
+7. <strong>También podrás competir por:</strong> El liderato del standing de escudería con (máximo 12) integrantes, o divertirte luchando por el liderato de tu grupo de familiares y amigos en el standing grupal y privado dentro de tu sección "Mi Cuenta".
+
+<strong><em>--- EFEH Systems ---</em></strong>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-box" style="border-left: 4px solid var(--color-turquoise); margin-top: 0.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.8rem; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 180px;">
+                        <h3 style="color: var(--color-turquoise); font-size: 0.9rem; margin: 0 0 0.15rem 0;">Buzón de Sugerencias</h3>
+                        <p style="color: var(--text-muted); font-size: 0.7rem; margin: 0;">¿Tienes alguna idea o propuesta?</p>
+                    </div>
+                    <a href="mailto:franco.spinozze@gmail.com?subject=Sugerencia%20Podium%20Fantasy%20F1" class="btn-action btn-turquesa" style="width: auto; padding: 0.35rem 0.7rem; font-size: 0.7rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.2rem;">
+                       📧 Sugerencias                    </a>
+                </div>
+            </div>
+           	
+            <div style="text-align: center; margin: 1.5rem 0 1rem 0;">
+                <span style="display: inline-block; background-color: rgba(0, 0, 0, 0.7); padding: 6px 16px; border-radius: 20px; font-size: 0.75rem; color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.15); text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);">
+                    EFEH Systems &copy; 2026 — Todos los derechos reservados
+                </span>
+            </div>
+        </div>
+
+        <!-- BARRA DE NAVEGACIÓN INFERIOR -->
+        <nav id="bottomNavBar" class="bottom-nav hidden">
+            <button id="navHomeBtn" class="nav-btn active" onclick="switchDashboardTab('home')">
+                <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                Dashboard
+            </button>
+            <button id="navStandingsBtn" class="nav-btn" onclick="switchDashboardTab('standings')">
+                <svg viewBox="0 0 24 24"><path d="M16 11V3H8v8H2v10h20V11h-6zm-6-6h4v14h-4V5zm-6 8h4v6H4v-6zm16 6h-4v-6h4v6z"/></svg>
+                Standings
+            </button>
+            <button id="navAccountBtn" class="nav-btn" onclick="switchDashboardTab('account')">
+                <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                Mi Cuenta
+            </button>
+            <button id="navInfoBtn" class="nav-btn" onclick="switchDashboardTab('info')">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                 Info 
+            </button>
+        </nav>
     </div>
-
-    <nav class="nav-bar-bottom hidden" id="bottomNavBar">
-        <button class="nav-btn active" id="navHomeBtn" onclick="switchDashboardTab('home')">
-            <span class="icon">🏎️</span> Dashboard
-        </button>
-        <button class="nav-btn" id="navStandingsBtn" onclick="switchDashboardTab('standings')">
-            <span class="icon">📊</span> Standings
-        </button>
-        <button class="nav-btn" id="navAccountBtn" onclick="switchDashboardTab('account')">
-            <span class="icon">👤</span> Mi Cuenta
-        </button>
-        <button class="nav-btn" id="navInfoBtn" onclick="switchDashboardTab('Info')">
-            <span class="icon">📜</span> Info
-        </button>
-    </nav>
-
-    <script>
-        let isRegistering = false;
+	
+	<script>
         let driversList = [];
+        let calendarData = [];
+        let usuarioActual = null;
+        let userIdActual = null;
+        let rondaActivaId = null;
+        let rondaActivaEsSprint = false;
+        let rondaActivaNombre = "";
+        let fechaCierreRonda = null;
+        let countdownInterval = null;
+        let rivalActual = null;
+        let listaUsuariosGlobal = []; // Variable global para el buscador predictivo
 
-        async function inicializarApp() {
-            await cargarPilotos2026();
+        document.addEventListener("DOMContentLoaded", async () => {
+            inicializarPilotosYCalendarioEstaticos();
             await cargarCalendario();
-        }
 
-        async function cargarPilotos2026() {
-            try {
-                const response = await fetch('./drivers.json');
-                driversList = await response.json();
-            } catch (e) {
-                // Parrilla oficial actualizada 2026 (11 equipos / 22 pilotos)
-                driversList = [
-                    { code: 'VER', name: 'Max Verstappen', team: 'Red Bull Racing' },
-                    { code: 'HAD', name: 'Isack Hadjar', team: 'Red Bull Racing' },
-                    { code: 'LEC', name: 'Charles Leclerc', team: 'Ferrari' },
-                    { code: 'HAM', name: 'Lewis Hamilton', team: 'Ferrari' },
-                    { code: 'NOR', name: 'Lando Norris', team: 'McLaren' },
-                    { code: 'PIA', name: 'Oscar Piastri', team: 'McLaren' },
-                    { code: 'RUS', name: 'George Russell', team: 'Mercedes' },
-                    { code: 'ANT', name: 'Kimi Antonelli', team: 'Mercedes' },
-                    { code: 'ALO', name: 'Fernando Alonso', team: 'Aston Martin' },
-                    { code: 'STR', name: 'Lance Stroll', team: 'Aston Martin' },
-                    { code: 'GAS', name: 'Pierre Gasly', team: 'Alpine' },
-                    { code: 'COL', name: 'Franco Colapinto', team: 'Alpine' },
-                    { code: 'OCO', name: 'Esteban Ocon', team: 'Haas F1 Team' },
-                    { code: 'BEA', name: 'Oliver Bearman', team: 'Haas F1 Team' },
-                    { code: 'LAW', name: 'Liam Lawson', team: 'Racing Bulls' },
-                    { code: 'LIN', name: 'Arvid Lindblad', team: 'Racing Bulls' },
-                    { code: 'SAI', name: 'Carlos Sainz', team: 'Williams' },
-                    { code: 'ALB', name: 'Alexander Albon', team: 'Williams' },
-                    { code: 'HUL', name: 'Nico Hülkenberg', team: 'Audi' },
-                    { code: 'BOR', name: 'Gabriel Bortoleto', team: 'Audi' },
-                    { code: 'PER', name: 'Sergio Pérez', team: 'Cadillac F1 Team' },
-                    { code: 'BOT', name: 'Valtteri Bottas', team: 'Cadillac F1 Team' }
-                ];
+            if (supabaseClient) {
+                try {
+                    const { data: { session } } = await supabaseClient.auth.getSession();
+                    if (session && session.user) {
+                        userIdActual = session.user.id;
+                        usuarioActual = session.user.email;
+                        entrarAlSistema(usuarioActual);
+                    }
+                } catch (err) {
+                    console.log("Modo offline o sin sesión activa.");
+                }
             }
+        });
+        
+        function inicializarPilotosYCalendarioEstaticos() {
+            driversList = [
+                { code: 'NOR', name: 'Lando Norris', team: 'McLaren' },
+                { code: 'PIA', name: 'Oscar Piastri', team: 'McLaren' },
+                { code: 'RUS', name: 'George Russell', team: 'Mercedes' },
+                { code: 'ANT', name: 'Kimi Antonelli', team: 'Mercedes' },
+                { code: 'LEC', name: 'Charles Leclerc', team: 'Ferrari' },
+                { code: 'HAM', name: 'Lewis Hamilton', team: 'Ferrari' },
+                { code: 'VER', name: 'Max Verstappen', team: 'Red Bull Racing' },
+                { code: 'HAD', name: 'Isack Hadjar', team: 'Red Bull Racing' },
+                { code: 'LAW', name: 'Liam Lawson', team: 'Racing Bulls, Red Bull' },
+                { code: 'LIN', name: 'Arvid Lindblad', team: 'Racing Bulls' },
+                { code: 'TSU', name: 'Yuki Tsunoda', team: 'Racing Bulls' },
+                { code: 'STR', name: 'Lance Stroll', team: 'Aston Martin' },
+                { code: 'OCO', name: 'Esteban Ocon', team: 'Haas F1 Team' },
+                { code: 'BEA', name: 'Oliver Bearman', team: 'Haas F1 Team' },
+                { code: 'HUL', name: 'Nico Hülkenberg', team: 'Audi' },
+                { code: 'BOR', name: 'Gabriel Bortoleto', team: 'Audi' },
+                { code: 'ALO', name: 'Fernando Alonso', team: 'Aston Martin' },
+                { code: 'SAI', name: 'Carlos Sainz', team: 'Williams' },
+                { code: 'ALB', name: 'Alexander Albon', team: 'Williams' },
+                { code: 'GAS', name: 'Pierre Gasly', team: 'Alpine' },
+                { code: 'COL', name: 'Franco Colapinto', team: 'Alpine' },
+                { code: 'PER', name: 'Sergio Pérez', team: 'Cadillac F1 Team' },
+                { code: 'BOT', name: 'Valtteri Bottas', team: 'Cadillac F1 Team' }
+            ];
             poblarSelectoresPilotos();
         }
 
-        function poblarSelectoresPilotos() {
-            // Llenar selector de Pole
-            const poleSelect = document.getElementById('poleSelect');
-            poleSelect.innerHTML = '<option value="">Selecciona Poleman</option>';
+        async function cargarCalendario() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('calendario')
+                    .select('*')
+                    .order('round', { ascending: true });
+                
+                if (error) throw error;
+                calendarData = data || [];
+                determinarRondaVigente();
+            } catch (error) {
+                console.error("Error al cargar calendario desde Supabase:", error);
+                const titleEl = document.getElementById('activeRoundTitle');
+                if (titleEl) titleEl.innerText = "Error al conectar";
+            }
+        }
+
+        function determinarRondaVigente() {
+            if (!calendarData || calendarData.length === 0) return;
+        
+            const hoyStr = new Date().toISOString().split('T')[0];
+            let raceObjetivo = null;
+        
+            for (const race of calendarData) {
+                const fechaRace = race.date || race.fecha || race.race_date;
+                if (fechaRace && fechaRace >= hoyStr) {
+                    raceObjetivo = race;
+                    break;
+                }
+            }
+        
+            if (!raceObjetivo && calendarData.length > 0) {
+                raceObjetivo = calendarData[calendarData.length - 1];
+            }
+        
+            if (raceObjetivo) {
+                rondaActivaId = raceObjetivo.round;
+                rondaActivaNombre = raceObjetivo.name;
+                rondaActivaEsSprint = raceObjetivo.sprint === true || raceObjetivo.isSprint === true;
+        
+                const fechaRaceStr = raceObjetivo.date || raceObjetivo.fecha || raceObjetivo.race_date;
+                const horaRaceStr = raceObjetivo.hora || "05:00:00";
+        
+                if (fechaRaceStr) {
+                    const raceDateObj = new Date(`${fechaRaceStr}T${horaRaceStr}`);
+                    fechaCierreRonda = new Date(raceDateObj.getTime() - (2 * 24 * 60 * 60 * 1000));
+                }
+        
+                const titleEl = document.getElementById('activeRoundTitle');
+                if (titleEl) titleEl.innerText = `Ronda ${rondaActivaId}: ${rondaActivaNombre}`;
+        
+                const sprintSection = document.getElementById('sprintSection');
+                if (rondaActivaEsSprint) {
+                    sprintSection.classList.remove('hidden');
+                    document.querySelectorAll('.sprint-slot').forEach(sel => {
+                        convertirSelectEnCustomDropdown(sel.id);
+                    });
+                } else {
+                    sprintSection.classList.add('hidden');
+                    document.querySelectorAll('.sprint-slot').forEach(s => s.value = "");
+                }
+        
+                if (userIdActual) {
+                    cargarPrediccionActual();
+                }
+        
+                iniciarContadorRegresivo();
+            }
+        }
+
+        function iniciarContadorRegresivo() {
+            if (typeof countdownInterval !== 'undefined' && countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+        
+            const timerEl = document.getElementById('countdownTimer');
+            const lockStatusEl = document.getElementById('lockStatusText');
+        
+            function actualizar() {
+                if (typeof fechaCierreRonda === 'undefined' || !fechaCierreRonda) {
+                    if (timerEl) timerEl.innerText = "--:--:--.---";
+                    return;
+                }
+        
+                const fechaCierre = fechaCierreRonda instanceof Date ? fechaCierreRonda : new Date(fechaCierreRonda);
+                const ahora = new Date().getTime();
+                const distancia = fechaCierre.getTime() - ahora;
+        
+                if (isNaN(distancia) || distancia <= 0) {
+                    if (timerEl) {
+                        timerEl.innerText = "00:00:00.000";
+                        timerEl.classList.add('bomb-red');
+                    }
+                    if (lockStatusEl) {
+                        lockStatusEl.innerText = "Cerrado (Plazo vencido)";
+                        lockStatusEl.style.color = "var(--color-f1-red)";
+                    }
+                    clearInterval(countdownInterval);
+                    return;
+                }
+        
+                const dias = Math.floor(distancia / (1000 * 60 * 60 * 24));
+                const horas = Math.floor((distancia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutos = Math.floor((distancia % (1000 * 60 * 60)) / (1000 * 60));
+                const segundos = Math.floor((distancia % (1000 * 60)) / 1000);
+                const milisegundos = Math.floor(distancia % 1000);
+        
+                let tiempoTexto = "";
+                if (dias > 0) tiempoTexto += `${dias}d `;
+        
+                const hStr = String(horas).padStart(2, '0');
+                const mStr = String(minutos).padStart(2, '0');
+                const sStr = String(segundos).padStart(2, '0');
+                const msStr = String(milisegundos).padStart(3, '0');
+        
+                tiempoTexto += `${hStr}:${mStr}:${sStr}.${msStr}`;
+        
+                if (timerEl) timerEl.innerText = tiempoTexto;
+        
+                if (distancia <= 3600000) {
+                    if (timerEl) timerEl.classList.add('bomb-red');
+                } else {
+                    if (timerEl) timerEl.classList.remove('bomb-red');
+                }
+            }
+        
+            actualizar();
+            countdownInterval = setInterval(actualizar, 149);
+        }
+
+        function convertirSelectEnCustomDropdown(selectId) {
+            const originalSelect = document.getElementById(selectId);
+            if (!originalSelect) return;
+
+            originalSelect.style.display = 'none';
+
+            let wrapper = document.getElementById(selectId + '_customWrapper');
+            if (!wrapper) {
+                wrapper = document.createElement('div');
+                wrapper.id = selectId + '_customWrapper';
+                wrapper.className = 'custom-dropdown';
+                
+                const trigger = document.createElement('div');
+                trigger.className = 'dropdown-trigger';
+                trigger.id = selectId + '_trigger';
+                trigger.innerHTML = `<span id="${selectId}_label">Selecciona opción</span><span class="arrow-icon">▼</span>`;
+                trigger.onclick = () => toggleCustomDropdown(selectId);
+
+                const menu = document.createElement('div');
+                menu.className = 'dropdown-menu';
+                menu.id = selectId + '_menu';
+
+                wrapper.appendChild(trigger);
+                wrapper.appendChild(menu);
+                originalSelect.parentNode.insertBefore(wrapper, originalSelect.nextSibling);
+            }
+
+            actualizarOpcionesCustomDropdown(selectId);
+        }
+
+        function actualizarOpcionesCustomDropdown(selectId) {
+            const originalSelect = document.getElementById(selectId);
+            const menu = document.getElementById(selectId + '_menu');
+            const label = document.getElementById(selectId + '_label');
+            if (!originalSelect || !menu || !label) return;
+
+            menu.innerHTML = '';
             
-            // Llenar selectores de carrera
+            const selectedOption = originalSelect.options[originalSelect.selectedIndex];
+            if (selectedOption && selectedOption.value !== "") {
+                label.innerText = selectedOption.text;
+            } else {
+                label.innerText = originalSelect.options[0] ? originalSelect.options[0].text : "Selecciona opción";
+            }
+
+            Array.from(originalSelect.options).forEach((opt) => {
+                const item = document.createElement('div');
+                item.className = 'dropdown-item';
+                item.dataset.value = opt.value;
+                item.innerText = opt.text;
+                if (opt.disabled) {
+                    item.style.opacity = '0.4';
+                    item.style.pointerEvents = 'none';
+                }
+                item.onclick = () => {
+                    if (opt.disabled) return;
+                    originalSelect.value = opt.value;
+                    label.innerText = opt.text;
+                    menu.style.display = 'none';
+                    if (typeof originalSelect.onchange === 'function') {
+                        originalSelect.onchange();
+                    }
+                    originalSelect.dispatchEvent(new Event('change'));
+                };
+                menu.appendChild(item);
+            });
+
+            if (selectId === 'gpHistorySelect' || selectId === 'versusGpSelect') {
+                menu.scrollTop = menu.scrollHeight;
+            }
+        }
+
+        function toggleCustomDropdown(selectId) {
+            const menu = document.getElementById(selectId + '_menu');
+            const isOpen = menu.style.display === 'block';
+            
+            document.querySelectorAll('.dropdown-menu').forEach(m => {
+                if (m.id !== 'rivalSearchResults') m.style.display = 'none';
+            });
+
+            if (!isOpen) {
+                menu.style.display = 'block';
+                actualizarOpcionesCustomDropdown(selectId);
+            } else {
+                menu.style.display = 'none';
+            }
+        }
+
+        window.addEventListener('click', (e) => {
+            if (!e.target.closest('.custom-dropdown') && !e.target.closest('#inputRivalSearch') && !e.target.closest('#rivalSearchResults')) {
+                document.querySelectorAll('.dropdown-menu').forEach(m => {
+                    if (m.id !== 'rivalSearchResults') m.style.display = 'none';
+                });
+                const resBox = document.getElementById('rivalSearchResults');
+                if (resBox) resBox.style.display = 'none';
+            }
+        });
+    
+        function poblarSelectoresPilotos() {
+            const poleSelect = document.getElementById('poleSelect');
+            if (!poleSelect) return;
+            poleSelect.innerHTML = '<option value="">Selecciona piloto</option>';
+            
             const raceSelects = document.querySelectorAll('.driver-select');
             raceSelects.forEach(select => {
                 select.innerHTML = '<option value="">Selecciona piloto</option>';
@@ -484,7 +1472,6 @@
 
             driversList.forEach(d => {
                 const optText = `${d.code} - ${d.name} (${d.team})`;
-                
                 const optPole = document.createElement('option');
                 optPole.value = d.code;
                 optPole.textContent = optText;
@@ -497,11 +1484,15 @@
                     select.appendChild(optRace);
                 });
             });
+
+            convertirSelectEnCustomDropdown('poleSelect');
+            document.querySelectorAll('.driver-select').forEach(sel => {
+                convertirSelectEnCustomDropdown(sel.id);
+            });
         }
 
-        // Filtro anti-duplicados estrictamente para la carrera, sin afectar la Pole
         function verificarDuplicadosCarrera() {
-            const raceSlots = document.querySelectorAll('.driver-select');
+            const raceSlots = document.querySelectorAll('.race-slot');
             const selectedCodes = Array.from(raceSlots).map(s => s.value).filter(v => v !== "");
 
             raceSlots.forEach(select => {
@@ -514,51 +1505,340 @@
                         option.disabled = false;
                     }
                 });
+                actualizarOpcionesCustomDropdown(select.id);
             });
         }
 
-        function toggleAuthMode() {
-            isRegistering = !isRegistering;
-            document.getElementById('authTitle').innerText = isRegistering ? 'Crear Cuenta' : 'Iniciar Sesión';
-            document.getElementById('authBtn').innerText = isRegistering ? 'Registrarse' : 'Entrar';
-            document.querySelector('.auth-switch').innerText = isRegistering ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate aquí';
+        function abrirModalRegistro() { document.getElementById('registerModal').classList.remove('hidden'); }
+        function cerrarModalRegistro() { document.getElementById('registerModal').classList.add('hidden'); }
+
+        // --- FUNCIONES DEL MODAL VERSUS (CARA A CARA CON SCROLL DESDE RONDA 1 Y BUSCADOR PREDICTIVO) ---
+        async function abrirModalVersus(rivalId, rivalUsername) {
+            rivalActual = { id: rivalId, username: rivalUsername };
+            
+            const selectGp = document.getElementById('versusGpSelect');
+            selectGp.innerHTML = '<option value="">Selecciona un Gran Premio</option>';
+            
+            if (calendarData && calendarData.length > 0) {
+                const hoyStr = new Date().toISOString().split('T')[0];
+                const gpsCompletados = calendarData.filter(c => (c.date || c.fecha || c.race_date) <= hoyStr);
+
+                gpsCompletados.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c.name;
+                    opt.textContent = `Ronda ${c.round}: ${c.name}`;
+                    selectGp.appendChild(opt);
+                });
+
+                if (gpsCompletados.length > 0) {
+                    selectGp.value = gpsCompletados[gpsCompletados.length - 1].name;
+                }
+            }
+            convertirSelectEnCustomDropdown('versusGpSelect');
+
+            document.getElementById('versusModal').classList.remove('hidden');
+            actualizarComparativaVersus();
         }
 
-        function handleAuth(event) {
-            event.preventDefault();
-            const emailInput = document.getElementById('authEmail').value;
-            document.getElementById('userEmailDisplay').innerText = emailInput;
+        // FUNCIONES DE BÚSQUEDA PREDICTIVA PARA EL RIVAL
+        function filtrarRivalsEnVivo(textoBusqueda) {
+            const resultsBox = document.getElementById('rivalSearchResults');
+            if (!resultsBox) return;
+
+            const query = textoBusqueda.trim().toLowerCase();
+            if (query.length === 0) {
+                resultsBox.style.display = 'none';
+                return;
+            }
+
+            const coincidentes = listaUsuariosGlobal.filter(u => 
+                u.id !== userIdActual && 
+                (u.username || "").toLowerCase().includes(query)
+            );
+
+            if (coincidentes.length === 0) {
+                resultsBox.innerHTML = '<div class="dropdown-item" style="color: var(--text-muted);">Sin resultados</div>';
+                resultsBox.style.display = 'block';
+                return;
+            }
+
+            let html = '';
+            coincidentes.slice(0, 5).forEach(u => {
+                const name = u.username || 'Formulero';
+                html += `<div class="dropdown-item" onclick="seleccionarRivalDirecto('${u.id}', '${name.replace(/'/g, "\\'")}')">${name}</div>`;
+            });
+
+            resultsBox.innerHTML = html;
+            resultsBox.style.display = 'block';
+        }
+
+        function seleccionarRivalDirecto(idRival, nombreRival) {
+            rivalActual = { id: idRival, username: nombreRival };
+            const inputEl = document.getElementById('inputRivalSearch');
+            if (inputEl) inputEl.value = nombreRival;
             
+            const resultsBox = document.getElementById('rivalSearchResults');
+            if (resultsBox) resultsBox.style.display = 'none';
+
+            actualizarComparativaVersus();
+        }
+
+        function cerrarModalVersus() {
+            document.getElementById('versusModal').classList.add('hidden');
+        }
+
+        // ESCALAS OFICIALES FIA DE EFEH TECH
+        const ESCALA_CARRERA_FIA = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
+        const ESCALA_SPRINT_FIA = [25, 18, 15, 12, 10, 8, 6, 4];
+
+        // MOTOR DE INGENIERÍA INVERSA CON LECTURA DE RESULTADOS GLOBALES
+        function calcularPuntosPilotoVersus(predDriver, officialData, indexPred, tipo) {
+            if (!predDriver || !officialData) return 0;
+            
+            if (tipo === 'pole') {
+                const polemanOficial = officialData.quali || officialData.poleman || "";
+                return (polemanOficial && predDriver.trim().toLowerCase() === polemanOficial.trim().toLowerCase()) ? 5 : 0;
+            }
+            
+            if (tipo === 'sprint') {
+                const rawSprint = officialData.sprint || "";
+                const sprintArray = rawSprint.split(',').map(s => s.trim().toLowerCase()).filter(s => s);
+                if (!sprintArray.length) return 0;
+
+                const pPred = predDriver.trim().toLowerCase();
+                const pReal = sprintArray.indexOf(pPred) + 1;
+
+                if (pReal > 0) {
+                    const ptsBase = (pReal - 1) < ESCALA_SPRINT_FIA.length ? ESCALA_SPRINT_FIA[pReal - 1] : 0;
+                    const pPredicha = indexPred + 1;
+                    return (pReal === pPredicha) ? (ptsBase * 2) : ptsBase;
+                }
+                return 0;
+            }
+            
+            if (tipo === 'carrera') {
+                const rawCarrera = officialData.carrera || "";
+                const carreraArray = rawCarrera.split(',').map(c => c.trim().toLowerCase()).filter(c => c);
+                if (!carreraArray.length) return 0;
+
+                const pPred = predDriver.trim().toLowerCase();
+                const pReal = carreraArray.indexOf(pPred) + 1;
+
+                if (pReal > 0) {
+                    const ptsBase = (pReal - 1) < ESCALA_CARRERA_FIA.length ? ESCALA_CARRERA_FIA[pReal - 1] : 0;
+                    const pPredicha = indexPred + 1;
+
+                    const predP1 = (officialData.carrera_p1_pred || "").toLowerCase();
+                    const predP2 = (officialData.carrera_p2_pred || "").toLowerCase();
+                    const predP3 = (officialData.carrera_p3_pred || "").toLowerCase();
+                    
+                    const podioPerfecto = (carreraArray.length >= 3 && 
+                                           carreraArray[0] === predP1 && 
+                                           carreraArray[1] === predP2 && 
+                                           carreraArray[2] === predP3);
+
+                    if (pReal === pPredicha) {
+                        return podioPerfecto ? (ptsBase * 3) : (ptsBase * 2);
+                    } else {
+                        return ptsBase;
+                    }
+                }
+                return 0;
+            }
+            
+            return 0;
+        }
+
+        async function actualizarComparativaVersus() {
+            const selectGp = document.getElementById('versusGpSelect');
+            const gpName = selectGp ? selectGp.value : "";
+            const contentArea = document.getElementById('versusContentArea');
+
+            if (!gpName) {
+                contentArea.innerHTML = '<p class="text-center" style="color: var(--text-muted); padding: 1rem;">Selecciona un Gran Premio para ver el enfrentamiento.</p>';
+                return;
+            }
+
+            contentArea.innerHTML = '<p class="text-center" style="color: var(--color-turquoise); padding: 1rem;">Calculando telemetría e ingeniería inversa...</p>';
+
+            try {
+                const [predMioRes, predRivalRes, resGlobalesRes, usuariosRes] = await Promise.all([
+                    supabaseClient.from('predicciones').select('*').eq('usuario_id', userIdActual).eq('gran_premio', gpName).maybeSingle(),
+                    supabaseClient.from('predicciones').select('*').eq('usuario_id', rivalActual.id).eq('gran_premio', gpName).maybeSingle(),
+                    supabaseClient.from('resultados_globales').select('*').eq('gran_premio', gpName).maybeSingle(),
+                    supabaseClient.from('usuarios').select('id, username, puntos_globales').order('puntos_globales', { ascending: false })
+                ]);
+
+                const pMio = predMioRes.data || {};
+                const pRival = predRivalRes.data || {};
+                const rOficial = resGlobalesRes.data || {};
+                const listaUsuarios = usuariosRes.data || [];
+                
+                // Guardamos en la variable global para alimentar el buscador predictivo
+                listaUsuariosGlobal = listaUsuarios;
+
+                const meObj = listaUsuarios.find(u => u.id === userIdActual);
+                const miNombreDisplay = (meObj && meObj.username && meObj.username.trim() !== "") 
+                    ? meObj.username 
+                    : (usuarioActual ? usuarioActual.split('@')[0] : "TÚ");
+
+                // Asegurar que rivalActual tenga nombre si se abrió por defecto
+                if (!rivalActual.username) {
+                    const foundRival = listaUsuarios.find(u => u.id === rivalActual.id);
+                    if (foundRival) rivalActual.username = foundRival.username || 'Formulero';
+                }
+
+                const raceObj = calendarData.find(c => c.name === gpName);
+                const esSprintGp = raceObj ? (raceObj.sprint === true || raceObj.isSprint === true) : false;
+
+                const rOficialMio = { ...rOficial, carrera_p1_pred: pMio.carrera_p1, carrera_p2_pred: pMio.carrera_p2, carrera_p3_pred: pMio.carrera_p3 };
+                const rOficialRival = { ...rOficial, carrera_p1_pred: pRival.carrera_p1, carrera_p2_pred: pRival.carrera_p2, carrera_p3_pred: pRival.carrera_p3 };
+
+                function renderFilaVersus(driverMio, driverRival, index, tipo) {
+                    const ptsMio = driverMio ? calcularPuntosPilotoVersus(driverMio, rOficialMio, index, tipo) : 0;
+                    const ptsRival = driverRival ? calcularPuntosPilotoVersus(driverRival, rOficialRival, index, tipo) : 0;
+                    
+                    const codeMio = driverMio || '---';
+                    const codeRival = driverRival || '---';
+
+                    return `
+                        <div class="versus-row">
+                            <div class="versus-driver-left">${codeMio}</div>
+                            <div class="versus-pts-left">${ptsMio}</div>
+                            <div class="versus-pts-right">${ptsRival}</div>
+                            <div class="versus-driver-right">${codeRival}</div>
+                        </div>
+                    `;
+                }
+
+                let html = `
+                    <div class="versus-card-container">
+                        
+                        <!-- CABECERA: TU NOMBRE VS BUSCADOR PREDICTIVO DE RIVAL -->
+                        <div class="versus-header-grid">
+                            <div class="versus-user-title">
+                                👤 ${miNombreDisplay}
+                            </div>
+                            <div style="text-align: right; position: relative;">
+                                <input type="text" 
+                                       id="inputRivalSearch" 
+                                       class="rival-select-header" 
+                                       placeholder="Buscar rival..." 
+                                       autocomplete="off"
+                                       value="${rivalActual.username || ''}"
+                                       oninput="filtrarRivalsEnVivo(this.value)" />
+                                
+                                <!-- Micro-desplegable flotante de resultados -->
+                                <div id="rivalSearchResults" class="dropdown-menu" style="right: 0; left: auto; width: 100%; min-width: 140px; display: none;"></div>
+                            </div>
+                        </div>
+
+                        <!-- POLEMAN -->
+                        <div class="versus-section-title">POLEMAN</div>
+                        ${renderFilaVersus(pMio.poleman, pRival.poleman, 0, 'pole')}
+
+                        <!-- SPRINT (SI APLICA) -->
+                        ${esSprintGp ? `
+                        <div class="versus-section-title">SPRINT</div>
+                        ${renderFilaVersus(pMio.sprint_p1, pRival.sprint_p1, 0, 'sprint')}
+                        ${renderFilaVersus(pMio.sprint_p2, pRival.sprint_p2, 1, 'sprint')}
+                        ${renderFilaVersus(pMio.sprint_p3, pRival.sprint_p3, 2, 'sprint')}
+                        ` : ''}
+
+                        <!-- LONG RACE -->
+                        <div class="versus-section-title">LONG RACE</div>
+                        ${renderFilaVersus(pMio.carrera_p1, pRival.carrera_p1, 0, 'carrera')}
+                        ${renderFilaVersus(pMio.carrera_p2, pRival.carrera_p2, 1, 'carrera')}
+                        ${renderFilaVersus(pMio.carrera_p3, pRival.carrera_p3, 2, 'carrera')}
+                        ${renderFilaVersus(pMio.carrera_p4, pRival.carrera_p4, 3, 'carrera')}
+                        ${renderFilaVersus(pMio.carrera_p5, pRival.carrera_p5, 4, 'carrera')}
+
+                        <!-- TOTALES AL PIE DE TARJETA -->
+                        <div class="versus-footer-grid">
+                            <div>
+                                <span style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; display: block;">Total Tu GP</span>
+                                <span style="font-weight: 900; color: var(--color-turquoise); font-size: 1.05rem;">${pMio.total_fin_de_semana || 0} pts</span>
+                            </div>
+                            <div>
+                                <span style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; display: block;">Total Rival GP</span>
+                                <span style="font-weight: 900; color: var(--color-gold); font-size: 1.05rem;">${pRival.total_fin_de_semana || 0} pts</span>
+                            </div>
+                        </div>
+
+                    </div>
+                `;
+                contentArea.innerHTML = html;
+
+            } catch (err) {
+                console.error("Error en Versus:", err);
+                contentArea.innerHTML = '<p class="text-center" style="color: var(--danger); padding: 1rem;">Error al calcular ingeniería inversa del cara a cara.</p>';
+            }
+        }
+
+        async function procesarLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const feedback = document.getElementById('authFeedback');
+            feedback.className = "hidden";
+
+            try {
+                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+
+                userIdActual = data.user ? data.user.id : null;
+                usuarioActual = email;
+                entrarAlSistema(email);
+            } catch (err) {
+                feedback.textContent = "Error al iniciar sesión: " + err.message;
+                feedback.className = "status-msg status-error";
+            }
+        }
+
+        function entrarAlSistema(email) {
+            document.getElementById('userEmailDisplay').innerText = email;
             document.getElementById('authView').classList.add('hidden');
             document.getElementById('dashboardView').classList.remove('hidden');
             document.getElementById('bottomNavBar').classList.remove('hidden');
-            inicializarApp();
+            document.getElementById('navUserArea').classList.remove('hidden');
+            cargarStandingsIndividuales();
+            cargarDatosMiCuenta();
+            cargarPrediccionActual();
         }
 
         function cerrarSesion() {
-            document.getElementById('dashboardView').classList.add('hidden');
-            document.getElementById('bottomNavBar').classList.add('hidden');
-            document.getElementById('authView').classList.remove('hidden');
-            switchDashboardTab('home');
+            if (window.confirm("🏁 ¿Estás seguro de que deseas cerrar sesión?")) {
+                usuarioActual = null;
+                userIdActual = null;
+                if (supabaseClient) supabaseClient.auth.signOut();
+                document.getElementById('dashboardView').classList.add('hidden');
+                document.getElementById('bottomNavBar').classList.add('hidden');
+                document.getElementById('navUserArea').classList.add('hidden');
+                document.getElementById('authView').classList.remove('hidden');
+            }
         }
 
         function switchDashboardTab(tabName) {
-    document.querySelectorAll('.dashboard-tab').forEach(tab => tab.classList.add('hidden'));
-    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.dashboard-tab').forEach(tab => tab.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
 
-    if (tabName === 'home') {
-        document.getElementById('tabHome').classList.remove('hidden');
-        document.getElementById('navHomeBtn').classList.add('active');
-    } else if (tabName === 'standings') {
-        document.getElementById('tabStandings').classList.remove('hidden');
-        document.getElementById('navStandingsBtn').classList.add('active');
-    } else if (tabName === 'account') {
-        document.getElementById('tabAccount').classList.remove('hidden');
-        document.getElementById('navAccountBtn').classList.add('active');
-    } else if (tabName === 'info' || tabName === 'Info') {
-        document.getElementById('tabInfo').classList.remove('hidden');
-        document.getElementById('navInfoBtn').classList.add('active');
-    }
+            const lowerTab = tabName.toLowerCase();
+            if (lowerTab === 'home') {
+                document.getElementById('tabHome').classList.remove('hidden');
+                document.getElementById('navHomeBtn').classList.add('active');
+            } else if (lowerTab === 'standings') {
+                document.getElementById('tabStandings').classList.remove('hidden');
+                document.getElementById('navStandingsBtn').classList.add('active');
+                cargarStandingsIndividuales();
+                cargarStandingsEscuderiasGlobal();
+            } else if (lowerTab === 'account') {
+                document.getElementById('tabAccount').classList.remove('hidden');
+                document.getElementById('navAccountBtn').classList.add('active');
+                cargarDatosMiCuenta();
+            } else if (lowerTab === 'info') {
+                document.getElementById('tabInfo').classList.remove('hidden');
+                document.getElementById('navInfoBtn').classList.add('active');
+            }
         }
 
         function switchStandingsSub(subType) {
@@ -570,73 +1850,602 @@
             if (subType === 'individual') {
                 document.getElementById('subIndBtn').classList.add('active');
                 document.getElementById('subStandingsIndividual').classList.remove('hidden');
+                cargarStandingsIndividuales();
             } else {
                 document.getElementById('subEscBtn').classList.add('active');
                 document.getElementById('subStandingsEscuderias').classList.remove('hidden');
+                cargarStandingsEscuderiasGlobal();
             }
         }
 
-        async function cargarCalendario() {
-            try {
-                const response = await fetch('./calendar.json');
-                const calendar = await response.json();
-                const selectRace = document.getElementById('raceSelect');
-                const historySelect = document.getElementById('gpHistorySelect');
-                
-                selectRace.innerHTML = '<option value="">Selecciona un Gran Premio</option>';
-                historySelect.innerHTML = '<option value="">Selecciona un GP para consultar</option>';
-                
-                calendar.forEach(race => {
-                    const option = document.createElement('option');
-                    option.value = race.round;
-                    option.dataset.isSprint = race.sprint || false;
-                    option.textContent = `Ronda ${race.round}: ${race.name} (${race.date})`;
-                    selectRace.appendChild(option);
+        function switchAccountSub(subType) {
+            document.getElementById('subAccIndBtn').classList.remove('active');
+            document.getElementById('subAccEscBtn').classList.remove('active');
+            document.getElementById('subAccountIndividual').classList.add('hidden');
+            document.getElementById('subAccountEscuderias').classList.add('hidden');
 
-                    const historyOpt = option.cloneNode(true);
-                    historySelect.appendChild(historyOpt);
-                });
-            } catch (error) {
-                console.error("Error al cargar calendar.json:", error);
-            }
-        }
-
-        function actualizarModalidadGranPremio() {
-            const selectRace = document.getElementById('raceSelect');
-            const selectedOption = selectRace.options[selectRace.selectedIndex];
-            const isSprint = selectedOption && selectedOption.dataset.isSprint === 'true';
-            
-            const sprintSection = document.getElementById('sprintSection');
-            if (isSprint) {
-                sprintSection.classList.remove('hidden');
+            if (subType === 'individual') {
+                document.getElementById('subAccIndBtn').classList.add('active');
+                document.getElementById('subAccountIndividual').classList.remove('hidden');
             } else {
-                sprintSection.classList.add('hidden');
-                document.querySelectorAll('.sprint-slot').forEach(s => s.value = "");
+                document.getElementById('subAccEscBtn').classList.add('active');
+                document.getElementById('subAccountEscuderias').classList.remove('hidden');
+                cargarDatosEscuderiaMiCuenta();
             }
-            verificarDuplicadosCarrera();
         }
 
-        function cargarDesgloseGPDB() {
-            const historySelect = document.getElementById('gpHistorySelect');
-            const breakdownBox = document.getElementById('gpBreakdownBox');
-            const selectedVal = historySelect.value;
+        function obtenerBanderaEmoji(paisCode) {
+            if (!paisCode) return '🏁';
+            const code = paisCode.toUpperCase();
+            const mapaBanderas = {
+                'AR': '🇦🇷', 'BZ': '🇧🇿', 'BO': '🇧🇴', 'BR': '🇧🇷', 'CA': '🇨🇦',
+                'CL': '🇨🇱', 'CO': '🇨🇴', 'CR': '🇨🇷', 'CU': '🇨🇺', 'DO': '🇩🇴',
+                'EC': '🇪🇨', 'SV': '🇸🇻', 'ES': '🇪🇸', 'GT': '🇬🇹', 'GY': '🇬🇾',
+                'HT': '🇭🇹', 'HN': '🇭🇳', 'JM': '🇯🇲', 'MX': '🇲🇽', 'NI': '🇳🇮',
+                'PA': '🇵🇦', 'PY': '🇵🇾', 'PE': '🇵🇪', 'PT': '🇵🇹', 'PR': '🇵🇷',
+                'SR': '🇸🇷', 'US': '🇺🇸', 'UY': '🇺🇾', 'VE': '🇻🇪'
+            };
+            return mapaBanderas[code] || '🏁';
+        }
 
-            if(!selectedVal) {
-                breakdownBox.innerHTML = '<p style="text-align: center; color: #666; margin: 0;">Selecciona un Gran Premio para consultar el desglose directamente desde las tablas.</p>';
+        async function cargarStandingsIndividuales() {
+            const container = document.getElementById('subStandingsIndividual');
+            container.innerHTML = '<p class="text-center" style="color: var(--color-turquoise); padding: 0.8rem;">Cargando ranking...</p>';
+
+            let usuarios = [];
+            try {
+                if (supabaseClient) {
+                    const { data, error } = await supabaseClient
+                        .from('usuarios')
+                        .select('id, username, pais, puntos_globales')
+                        .order('puntos_globales', { ascending: false });
+                    if (!error && data) usuarios = data;
+                }
+            } catch (e) {
+                console.warn("Error al cargar standings.");
+            }
+
+            let html = `
+                <div style="margin-top: 0.2rem; margin-bottom: 0.8rem;">
+                    <h3 style="font-size: 1rem; color: var(--color-gold); margin: 0 0 0.15rem 0; font-weight: bold;">🏆 Campeonato de Formuleros</h3>
+                    <p style="font-size: 0.7rem; color: var(--text-muted); margin: 0;">Toca cualquier fila para abrir el Versus cara a cara</p>
+                </div>
+            `;
+
+            if (usuarios.length === 0) {
+                html += '<p class="text-center" style="color: var(--text-muted); padding: 0.8rem;">No hay usuarios registrados aún.</p>';
+                container.innerHTML = html;
                 return;
             }
 
-            // Espacio reservado para inyectar la consulta dinámica de Supabase/Base de datos
-            breakdownBox.innerHTML = `
-                <div style="text-align: center; color: var(--f1-turquesa); padding: 5px;">
-                    [ Consultando registros del GP #${selectedVal} en base de datos... ]
-                </div>
-            `;
+            html += '<table>';
+            html += '<tr><th style="width: 38px;">Pos</th><th>Usuario</th><th style="width: 45px; text-align: center;">País</th><th class="text-right">Ptos</th></tr>';
+            
+            usuarios.forEach((u, index) => {
+                const bandera = obtenerBanderaEmoji(u.pais);
+                const nombreUser = u.username || 'Usuario';
+                html += `<tr class="clickable-row" onclick="abrirModalVersus('${u.id}', '${nombreUser.replace(/'/g, "\\'")}')">
+                    <td><strong style="color: var(--color-gold);">${index + 1}</strong></td>
+                    <td style="color: var(--text-main); font-weight: bold;">${nombreUser} ${u.id === userIdActual ? '(Tú)' : ''}</td>
+                    <td style="text-align: center; font-size: 1.1rem;">${bandera}</td>
+                    <td class="text-right" style="color: var(--color-gold); font-weight: bold;">${u.puntos_globales || 0}</td>
+                </tr>`;
+            });
+            html += '</table>';
+
+            container.innerHTML = html;
         }
 
-        function guardarPrediccion() {
-            alert("¡Predicción guardada correctamente con validación independiente de Pole y Carrera!");
+        async function cargarStandingsEscuderiasGlobal() {
+            const tbody = document.getElementById('global-escuderias-tbody');
+            if (!tbody) return;
+            tbody.innerHTML = '<tr><td colspan="3" class="text-center" style="color: var(--text-muted); padding: 0.8rem;">Calculando campeonato...</td></tr>';
+
+            try {
+                const { data: usuarios, error } = await supabaseClient
+                    .from('usuarios')
+                    .select('username, puntos_globales, nombre_escuderia, escuderia_id');
+
+                if (error) throw error;
+                if (!usuarios || usuarios.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3" class="text-center" style="color: var(--text-muted); padding: 0.8rem;">No hay escuderías.</td></tr>';
+                    return;
+                }
+
+                const equiposMap = {};
+                usuarios.forEach(u => {
+                    if (u.nombre_escuderia && u.nombre_escuderia.trim() !== "") {
+                        const clave = u.escuderia_id || u.nombre_escuderia;
+                        if (!equiposMap[clave]) {
+                            equiposMap[clave] = { nombre: u.nombre_escuderia, puntosTotal: 0 };
+                        }
+                        equiposMap[clave].puntosTotal += (u.puntos_globales || 0);
+                    }
+                });
+
+                const rankingEquipos = Object.values(equiposMap).sort((a, b) => b.puntosTotal - a.puntosTotal);
+
+                if (rankingEquipos.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3" class="text-center" style="color: var(--text-muted); padding: 0.8rem;">Aún no hay escuderías formadas.</td></tr>';
+                    return;
+                }
+
+                let html = '';
+                rankingEquipos.forEach((eq, idx) => {
+                    html += `<tr>
+                        <td><strong style="color: var(--color-gold);">${idx + 1}</strong></td>
+                        <td><strong style="color: var(--text-main);">${eq.nombre}</strong></td>
+                        <td class="text-right"><strong style="color: var(--color-gold);">${eq.puntosTotal}</strong></td>
+                    </tr>`;
+                });
+
+                tbody.innerHTML = html;
+            } catch (err) {
+                console.error("Error al cargar standings de escuderías:", err);
+                tbody.innerHTML = '<tr><td colspan="3" class="text-center" style="color: var(--danger); padding: 0.8rem;">Error al cargar campeonato.</td></tr>';
+            }
         }
-    </script>
+
+        let misPrediccionesUsuario = [];
+
+        async function cargarDatosMiCuenta() {
+            let puntosGlobales = 0;
+            let posicionRanking = "-";
+            let nombreUsuarioDisplay = usuarioActual ? usuarioActual.split('@')[0] : "Usuario";
+            misPrediccionesUsuario = [];
+
+            try {
+                if (supabaseClient && userIdActual) {
+                    const { data: rankData, error: rankError } = await supabaseClient
+                        .from('usuarios')
+                        .select('id, username, puntos_globales, nombre_escuderia, escuderia_id, codigo_invitacion')
+                        .order('puntos_globales', { ascending: false });
+
+                    if (!rankError && rankData) {
+                        const usuarioActualObj = rankData.find(u => u.id === userIdActual);
+                        if (usuarioActualObj) {
+                            puntosGlobales = usuarioActualObj.puntos_globales || 0;
+                            if (usuarioActualObj.username && usuarioActualObj.username.trim() !== "") {
+                                nombreUsuarioDisplay = usuarioActualObj.username;
+                            }
+                            const index = rankData.findIndex(u => u.id === userIdActual);
+                            if (index !== -1) posicionRanking = `${index + 1}`;
+                            window.currentUserData = usuarioActualObj;
+                        }
+
+                        const { data: predList, error: predError } = await supabaseClient
+                            .from('predicciones')
+                            .select('*')
+                            .eq('usuario_id', userIdActual);
+
+                        if (!predError && predList) misPrediccionesUsuario = predList;
+                    }
+                }
+            } catch (e) {
+                console.warn("Error al sincronizar datos de la cuenta:", e);
+            }
+
+            misPrediccionesUsuario.sort((a, b) => {
+                const rondaA = calendarData.find(c => c.name === a.gran_premio)?.round || 99;
+                const rondaB = calendarData.find(c => c.name === b.gran_premio)?.round || 99;
+                return rondaA - rondaB;
+            });
+            
+            if (misPrediccionesUsuario.length > 5) {
+                misPrediccionesUsuario = misPrediccionesUsuario.slice(-5);
+            }
+
+            const nameDisplayEl = document.getElementById('statUserNameDisplay');
+            if (nameDisplayEl) nameDisplayEl.innerText = `Formulero: ${nombreUsuarioDisplay}`;
+
+            const ptsEl = document.getElementById('statGlobalPts');
+            if (ptsEl) ptsEl.innerText = `${puntosGlobales}`;
+
+            const posEl = document.getElementById('statUserPos');
+            if (posEl) posEl.innerText = `Posición individual: ${posicionRanking}`;
+
+            const medalEl = document.getElementById('statUserMedalDisplay');
+            if (medalEl) {
+                let posNum = parseInt(posicionRanking);
+                if (posNum === 1) medalEl.innerText = "🥇";
+                else if (posNum === 2) medalEl.innerText = "🥈";
+                else if (posNum === 3) medalEl.innerText = "🥉";
+                else medalEl.innerText = "🏁";
+            }
+
+            const selectHistory = document.getElementById('gpHistorySelect');
+            if (selectHistory) {
+                selectHistory.innerHTML = '';
+                if (misPrediccionesUsuario.length === 0) {
+                    selectHistory.innerHTML = '<option value="">No hay predicciones registradas</option>';
+                    limpiarDesgloseCuentaZeros();
+                } else {
+                    const hoyStr = new Date().toISOString().split('T')[0];
+                    let ultimaRondaRealizadaNombre = null;
+                    for (let i = calendarData.length - 1; i >= 0; i--) {
+                        const fRace = calendarData[i].date || calendarData[i].fecha || calendarData[i].race_date;
+                        if (fRace && fRace <= hoyStr) {
+                            ultimaRondaRealizadaNombre = calendarData[i].name;
+                            break;
+                        }
+                    }
+
+                    let targetIndex = 0;
+                    misPrediccionesUsuario.forEach((pred, index) => {
+                        const option = document.createElement('option');
+                        option.value = index; 
+                        option.textContent = pred.gran_premio; 
+                        selectHistory.appendChild(option);
+                        if (ultimaRondaRealizadaNombre && pred.gran_premio === ultimaRondaRealizadaNombre) {
+                            targetIndex = index;
+                        }
+                    });
+                    selectHistory.selectedIndex = targetIndex;
+                    cambiarGpCuenta();
+                }
+                convertirSelectEnCustomDropdown('gpHistorySelect');
+            }
+            actualizarVistaEscuderiaControles();
+        }
+
+        function cambiarGpCuenta() {
+            const selectHistory = document.getElementById('gpHistorySelect');
+            if (!selectHistory) return;
+            const index = selectHistory.value;
+
+            if (index === "" || !misPrediccionesUsuario[index]) {
+                limpiarDesgloseCuentaZeros();
+                return;
+            }
+
+            const predSeleccionada = misPrediccionesUsuario[index];
+            document.getElementById('accPolePts').innerText = `${predSeleccionada.puntos_qualy || 0} pts`;
+            document.getElementById('accSprintPts').innerText = `${predSeleccionada.puntos_sprint || 0} pts`;
+            document.getElementById('accRacePts').innerText = `${predSeleccionada.puntos_carrera || 0} pts`;
+            document.getElementById('accTotalGpPts').innerText = `${predSeleccionada.total_fin_de_semana || 0} pts`;
+        }
+
+        function limpiarDesgloseCuentaZeros() {
+            document.getElementById('accPolePts').innerText = "0 pts";
+            document.getElementById('accSprintPts').innerText = "0 pts";
+            document.getElementById('accRacePts').innerText = "0 pts";
+            document.getElementById('accTotalGpPts').innerText = "0 pts";
+        }
+
+        async function guardarPrediccion() {
+            const feedback = document.getElementById('predictionFeedback');
+
+            if (fechaCierreRonda && new Date().getTime() >= fechaCierreRonda.getTime()) {
+                feedback.textContent = "⚠️ El plazo para realizar o modificar predicciones ha caducado (cierre 2 días antes de la carrera).";
+                feedback.className = "status-msg status-error";
+                return;
+            }
+
+            if (!rondaActivaNombre) {
+                feedback.textContent = "No hay una ronda activa identificada.";
+                feedback.className = "status-msg status-error";
+                return;
+            }
+
+            const pole = document.getElementById('poleSelect').value;
+            const raceSlots = Array.from(document.querySelectorAll('.race-slot')).map(s => s.value);
+            const sprintSlots = Array.from(document.querySelectorAll('.sprint-slot')).map(s => s.value);
+
+            if (!pole || raceSlots.some(slot => !slot)) {
+                feedback.textContent = "Por favor selecciona el Poleman y los 5 puestos de la carrera larga.";
+                feedback.className = "status-msg status-error";
+                return;
+            }
+
+            try {
+                const { data: existingPred, error: searchError } = await supabaseClient
+                    .from('predicciones')
+                    .select('id')
+                    .eq('usuario_id', userIdActual)
+                    .eq('gran_premio', rondaActivaNombre)
+                    .maybeSingle();
+
+                if (searchError) throw searchError;
+
+                const datosPrediccion = {
+                    usuario_id: userIdActual,
+                    gran_premio: rondaActivaNombre,
+                    poleman: pole,
+                    carrera_p1: raceSlots[0],
+                    carrera_p2: raceSlots[1],
+                    carrera_p3: raceSlots[2],
+                    carrera_p4: raceSlots[3],
+                    carrera_p5: raceSlots[4],
+                    sprint_p1: rondaActivaEsSprint ? sprintSlots[0] : null,
+                    sprint_p2: rondaActivaEsSprint ? sprintSlots[1] : null,
+                    sprint_p3: rondaActivaEsSprint ? sprintSlots[2] : null
+                };
+
+                let result;
+                if (existingPred) {
+                    result = await supabaseClient
+                        .from('predicciones')
+                        .update(datosPrediccion)
+                        .eq('id', existingPred.id);
+                } else {
+                    result = await supabaseClient
+                        .from('predicciones')
+                        .insert([datosPrediccion]);
+                }
+
+                if (result.error) throw result.error;
+
+                feedback.style = "";
+                feedback.textContent = "¡Predicción guardada con éxito!";
+                feedback.className = "status-msg status-success";
+            } catch (err) {
+                feedback.style = "";
+                feedback.textContent = "Error al guardar: " + err.message;
+                feedback.className = "status-msg status-error";
+            }
+        }
+
+        async function manejarRegistro(event) {
+            event.preventDefault();
+            const username = document.getElementById('reg-username').value;
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-password').value;
+            const passwordConfirm = document.getElementById('reg-password-confirm').value;
+            const pais = document.getElementById('reg-pais').value;
+            const idioma = document.getElementById('reg-idioma').value;
+            const feedback = document.getElementById('registerFeedback');
+            feedback.className = "hidden";
+
+            if (password !== passwordConfirm) {
+                feedback.textContent = "Las contraseñas no coinciden.";
+                feedback.className = "status-msg status-error";
+                return;
+            }
+
+            try {
+                const { data, error } = await supabaseClient.auth.signUp({ email, password });
+                if (error) throw error;
+
+                const user = data.user;
+                if (user) {
+                    const { error: dbError } = await supabaseClient
+                        .from('usuarios')
+                        .upsert({ id: user.id, username: username, pais: pais, idioma_preferido: idioma, puntos_globales: 0 });
+                    if (dbError) throw dbError;
+                }
+
+                feedback.textContent = "¡Registro exitoso! Ya puedes iniciar sesión.";
+                feedback.className = "status-msg status-success";
+                setTimeout(() => { cerrarModalRegistro(); }, 2000);
+            } catch (err) {
+                feedback.textContent = "Error en el registro: " + err.message;
+                feedback.className = "status-msg status-error";
+            }
+        }
+
+        function toggleReglamento() {
+            const container = document.getElementById('reglamentoContainer');
+            const btnText = document.getElementById('btnReglamentoText');
+            if (container.classList.contains('hidden')) {
+                container.classList.remove('hidden');
+                btnText.textContent = "Ocultar Reglamento";
+            } else {
+                container.classList.add('hidden');
+                btnText.textContent = "📄 Reglamento";
+            }
+        }
+
+        async function crearEscuderia() {
+            if (!userIdActual) { alert("Debes iniciar sesión."); return; }
+            const inputNombre = document.getElementById('input-nombre-escuderia');
+            const nombreEscuderia = inputNombre ? inputNombre.value.trim() : "";
+            if (!nombreEscuderia) { alert("Ingresa un nombre."); return; }
+            if (nombreEscuderia.length > 15) { alert("Máximo 15 caracteres."); return; }
+
+            try {
+                const codigoUnico = userIdActual.substring(0, 8).toUpperCase();
+                const { error } = await supabaseClient.from('usuarios').update({ 
+                    nombre_escuderia: nombreEscuderia, escuderia_id: userIdActual, codigo_invitacion: codigoUnico
+                }).eq('id', userIdActual);
+
+                if (error) throw error;
+                alert(`¡Escudería "${nombreEscuderia}" creada!`);
+                if (inputNombre) inputNombre.value = "";
+                cargarDatosMiCuenta();
+            } catch (err) { alert("Error: " + err.message); }
+        }
+
+        async function unirseEscuderia() {
+            try {
+                if (!userIdActual) return;
+                const inputEl = document.getElementById('input-codigo-invitacion');
+                const codigoIngresado = inputEl ? inputEl.value.trim().toUpperCase() : "";
+                if (!codigoIngresado) { alert("Ingresa un código."); return; }
+
+                const { data: duenoCodigo, error: errEsc } = await supabaseClient.from('usuarios').select('id, username, nombre_escuderia, escuderia_id').eq('codigo_invitacion', codigoIngresado).single();
+                if (errEsc || !duenoCodigo) { alert("Código inválido."); return; }
+                if (duenoCodigo.id === userIdActual) { alert("Es tu propio código."); return; }
+
+                const { error: errUpdate } = await supabaseClient.from('usuarios').update({ 
+                    nombre_escuderia: duenoCodigo.nombre_escuderia, escuderia_id: duenoCodigo.escuderia_id || duenoCodigo.id 
+                }).eq('id', userIdActual);
+
+                if (errUpdate) throw errUpdate;
+                alert(`¡Unido a ${duenoCodigo.nombre_escuderia}!`);
+                if (inputEl) inputEl.value = "";
+                cargarDatosMiCuenta();
+            } catch (err) { alert("Error: " + err.message); }
+        }
+
+        async function abandonarEscuderia() {
+            if (!confirm("¿Deseas abandonar tu escudería?")) return;
+            try {
+                const { error } = await supabaseClient.from('usuarios').update({ nombre_escuderia: null, escuderia_id: null }).eq('id', userIdActual);
+                if (error) throw error;
+                alert("Has abandonado la escudería.");
+                cargarDatosMiCuenta();
+            } catch (err) { alert("Error: " + err.message); }
+        }
+
+        function copiarCodigoInvitacion() {
+            const inputCodigo = document.getElementById('miCodigoInvitacion');
+            if (!inputCodigo) return;
+            inputCodigo.select();
+            navigator.clipboard.writeText(inputCodigo.value).then(() => { alert("¡Código copiado!"); });
+        }
+
+        async function cargarDatosEscuderiaMiCuenta() {
+            const membersTbody = document.getElementById('accTeamMembersTbody');
+            const teamNameDisplay = document.getElementById('accTeamNameDisplay');
+            const teamPosDisplay = document.getElementById('accTeamPosDisplay');
+            const teamPtsDisplay = document.getElementById('accTeamPtsDisplay');
+            const teamMedalDisplay = document.getElementById('accTeamMedalDisplay');
+
+            if (!membersTbody) return;
+            membersTbody.innerHTML = '<tr><td colspan="3" class="text-center" style="color: var(--text-muted); padding: 0.8rem;">Calculando...</td></tr>';
+
+            try {
+                const { data: usuarios, error } = await supabaseClient.from('usuarios').select('id, username, puntos_globales, nombre_escuderia, escuderia_id, codigo_invitacion');
+                if (error) throw error;
+                if (!usuarios || usuarios.length === 0) return;
+
+                const me = usuarios.find(u => u.id === userIdActual);
+                const noTeamSection = document.getElementById('no-team-section');
+                const hasTeamSection = document.getElementById('has-team-section');
+                const inputCodigoMiCuenta = document.getElementById('miCodigoInvitacion');
+
+                if (!me || (!me.nombre_escuderia && !me.escuderia_id)) {
+                    teamNameDisplay.innerText = "Sin Escudería";
+                    teamPosDisplay.innerText = "Crea o únete a una escudería";
+                    teamPtsDisplay.innerText = "0";
+                    teamMedalDisplay.innerText = "🏁";
+                    membersTbody.innerHTML = '<tr><td colspan="3" class="text-center" style="color: var(--text-muted); padding: 0.8rem;">No estás en ninguna escudería.</td></tr>';
+                    if (noTeamSection) noTeamSection.style.display = 'flex';
+                    if (hasTeamSection) hasTeamSection.style.display = 'none';
+                    return;
+                }
+
+                if (noTeamSection) noTeamSection.style.display = 'none';
+                if (hasTeamSection) hasTeamSection.style.display = 'block';
+
+                const miEscuderiaNombre = me.nombre_escuderia;
+                const miEscuderiaId = me.escuderia_id || me.id;
+                if (inputCodigoMiCuenta) inputCodigoMiCuenta.value = me.codigo_invitacion || userIdActual.substring(0, 8).toUpperCase();
+
+                const equiposMap = {};
+                usuarios.forEach(u => {
+                    if (u.nombre_escuderia && u.nombre_escuderia.trim() !== "") {
+                        const clave = u.escuderia_id || u.nombre_escuderia;
+                        if (!equiposMap[clave]) equiposMap[clave] = { nombre: u.nombre_escuderia, puntos: 0 };
+                        equiposMap[clave].puntos += (u.puntos_globales || 0);
+                    }
+                });
+
+                const rankingEquipos = Object.values(equiposMap).sort((a, b) => b.puntos - a.puntos);
+                const posEquipoIndex = rankingEquipos.findIndex(e => e.nombre === miEscuderiaNombre);
+                const posicionEquipo = posEquipoIndex !== -1 ? posEquipoIndex + 1 : "-";
+                const puntosEquipoTotal = rankingEquipos[posEquipoIndex] ? rankingEquipos[posEquipoIndex].puntos : 0;
+
+                let medallaEmoji = `Puesto ${posicionEquipo}`;
+                if (posicionEquipo === 1) medallaEmoji = "🥇 1º";
+                else if (posicionEquipo === 2) medallaEmoji = "🥈 2º";
+                else if (posicionEquipo === 3) medallaEmoji = "🥉 3º";
+
+                teamNameDisplay.innerText = miEscuderiaNombre;
+                teamPosDisplay.innerText = `Posición: ${medallaEmoji}`;
+                teamPtsDisplay.innerText = `${puntosEquipoTotal}`;
+                teamMedalDisplay.innerText = posicionEquipo === 1 ? "🏆" : (posicionEquipo <= 3 ? "🏅" : "🏎️");
+
+                const miembrosEscuderia = usuarios.filter(u => u.escuderia_id === miEscuderiaId || u.nombre_escuderia === miEscuderiaNombre);
+                miembrosEscuderia.sort((a, b) => (b.puntos_globales || 0) - (a.puntos_globales || 0));
+
+                let htmlMiembros = '';
+                miembrosEscuderia.forEach((m, idx) => {
+                    let nombreM = m.username || "Formulero";
+                    if (m.id === userIdActual) nombreM += " (Tú)";
+                    htmlMiembros += `<tr>
+                        <td><strong style="color: var(--color-gold);">${idx + 1}</strong></td>
+                        <td style="color: var(--text-main);">${nombreM}</td>
+                        <td class="text-right" style="font-weight: bold; color: var(--color-turquoise);">${m.puntos_globales || 0}</td>
+                    </tr>`;
+                });
+                membersTbody.innerHTML = htmlMiembros;
+            } catch (err) {
+                membersTbody.innerHTML = '<tr><td colspan="3" class="text-center" style="color: var(--danger); padding: 0.8rem;">Error al cargar campeonato interno.</td></tr>';
+            }
+        }
+
+        function actualizarVistaEscuderiaControles() {
+            if (typeof cargarDatosEscuderiaMiCuenta === 'function') cargarDatosEscuderiaMiCuenta();
+        }
+		
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js')
+            .then(() => console.log("Service Worker registrado con éxito"))
+            .catch((err) => console.log("Error al registrar Service Worker", err));
+        }
+
+        async function cargarPrediccionActual() {
+            if (!userIdActual || !rondaActivaNombre) return;
+
+            document.getElementById('poleSelect').value = "";
+            actualizarOpcionesCustomDropdown('poleSelect');
+
+            document.querySelectorAll('.race-slot').forEach(s => {
+                s.value = "";
+                actualizarOpcionesCustomDropdown(s.id);
+            });
+
+            document.querySelectorAll('.sprint-slot').forEach(s => {
+                s.value = "";
+                actualizarOpcionesCustomDropdown(s.id);
+            });
+
+            const feedback = document.getElementById('predictionFeedback');
+            if (feedback) {
+                feedback.className = "hidden";
+                feedback.innerText = "";
+            }
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('predicciones')
+                    .select('*')
+                    .eq('usuario_id', userIdActual)
+                    .eq('gran_premio', rondaActivaNombre)
+                    .maybeSingle();
+
+                if (error) throw error;
+
+                if (data) {
+                    if (data.poleman) {
+                        document.getElementById('poleSelect').value = data.poleman;
+                        actualizarOpcionesCustomDropdown('poleSelect');
+                    }
+
+                    const raceSlots = document.querySelectorAll('.race-slot');
+                    if (raceSlots[0] && data.carrera_p1) raceSlots[0].value = data.carrera_p1;
+                    if (raceSlots[1] && data.carrera_p2) raceSlots[1].value = data.carrera_p2;
+                    if (raceSlots[2] && data.carrera_p3) raceSlots[2].value = data.carrera_p3;
+                    if (raceSlots[3] && data.carrera_p4) raceSlots[3].value = data.carrera_p4;
+                    if (raceSlots[4] && data.carrera_p5) raceSlots[4].value = data.carrera_p5;
+                    
+                    raceSlots.forEach(s => actualizarOpcionesCustomDropdown(s.id));
+                    verificarDuplicadosCarrera();
+
+                    if (rondaActivaEsSprint) {
+                        const sprintSlots = document.querySelectorAll('.sprint-slot');
+                        if (sprintSlots[0] && data.sprint_p1) sprintSlots[0].value = data.sprint_p1;
+                        if (sprintSlots[1] && data.sprint_p2) sprintSlots[1].value = data.sprint_p2;
+                        if (sprintSlots[2] && data.sprint_p3) sprintSlots[2].value = data.sprint_p3;
+                        
+                        sprintSlots.forEach(s => actualizarOpcionesCustomDropdown(s.id));
+                    }
+                }
+            } catch (err) {
+                console.error("Error al cargar la predicción actual:", err);
+            }
+        }
+	</script>
 </body>
 </html>
