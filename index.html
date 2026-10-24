@@ -262,7 +262,7 @@
         }
 
         /* ========================================================
-           4. MODALES (REGISTRO Y OTROS)
+           4. MODALES (REGISTRO Y VERSUS)
            ======================================================== */
         .modal-overlay {
             position: fixed;
@@ -273,7 +273,7 @@
         }
         .modal-card {
             background-color: var(--bg-card);
-            border-radius: 8px; padding: 1.5rem; width: 100%; max-width: 420px;
+            border-radius: 8px; padding: 1.5rem; width: 100%; max-width: 480px;
             border-top: 4px solid var(--color-gold); position: relative; max-height: 90vh; overflow-y: auto;
         }
         .modal-close {
@@ -323,7 +323,6 @@
         }
 
         /* --- TAB 1: PREDICCIONES / HOME --- */
-        /* Animación y estilo de bomba para la última hora del contador */
         @keyframes bombPulse {
             0% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.7; transform: scale(1.03); }
@@ -369,7 +368,11 @@
         td {
             font-size: 0.8rem !important;
         }
-        tr:hover { background-color: rgba(255, 255, 255, 0.02); }
+        tr.clickable-row {
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+        tr.clickable-row:hover { background-color: rgba(0, 240, 255, 0.08) !important; }
 
         /* --- TAB 3: MI CUENTA / DESGLOSE Y ESCUDERÍAS --- */
         .escuderia-box-content {
@@ -444,7 +447,7 @@
         .nav-btn svg { width: 18px; height: 18px; fill: currentColor; }
 
         /* ========================================================
-           7. COMPONENTES GLOBALES Y UTILIDADES (FORMULARIOS, DROPDOWNS, ETC.)
+           7. COMPONENTES GLOBALES Y UTILIDADES
            ======================================================== */
         .form-group {
             margin-bottom: 0.8rem;
@@ -484,7 +487,7 @@
         }
         .select-wrapper { flex: 1; min-width: 0; }
 
-        /* Custom Dropdown Estilizado - Limitado exactamente a 5 elementos visibles con scroll */
+        /* Custom Dropdown Estilizado */
         .custom-dropdown {
             position: relative;
             width: 100%;
@@ -512,7 +515,7 @@
             background-color: #141414;
             border: 1px solid var(--border-color);
             border-radius: 4px;
-            max-height: 145px; /* Estrictamente limitado para mostrar ~5 elementos y evitar invadir la pantalla */
+            max-height: 145px;
             overflow-y: auto;
             z-index: 1000;
             display: none;
@@ -531,15 +534,9 @@
             background-color: rgba(0, 240, 255, 0.15);
             color: var(--color-turquoise);
         }
-        .dropdown-menu::-webkit-scrollbar {
-            width: 5px;
-        }
-        .dropdown-menu::-webkit-scrollbar-thumb {
-            background: rgba(255,255,255,0.25);
-            border-radius: 3px;
-        }
+        .dropdown-menu::-webkit-scrollbar { width: 5px; }
+        .dropdown-menu::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.25); border-radius: 3px; }
 
-        /* Botones de acción principales */
         .btn-action {
             display: block;
             width: 220px;
@@ -559,7 +556,6 @@
         .btn-action:hover { opacity: 0.9; }
         .btn-turquesa { background-color: var(--color-turquoise); color: #000000; }	
 
-        /* Mensajes de Estado */
         .status-msg {
             padding: 0.4rem;
             border-radius: 4px;
@@ -576,6 +572,132 @@
             background-color: rgba(239, 68, 68, 0.2);
             border: 1px solid var(--danger);
             color: var(--danger);
+        }
+
+        /* Estilos específicos para la Cancha del Modal Versus */
+        .versus-grid {
+            display: grid;
+            grid-template-columns: 1fr 2px 1fr;
+            gap: 8px;
+            margin-top: 10px;
+            font-size: 0.75rem;
+        }
+        .versus-divider {
+            background: linear-gradient(to bottom, transparent, var(--color-turquoise), transparent);
+        }
+        .versus-column {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        /* ========================================================
+           ESTILOS DEDICADOS PARA EL MODAL VERSUS (EFEH TECH)
+           ======================================================== */
+        .versus-card-container {
+            background: rgba(14, 14, 14, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 8px;
+            padding: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+        }
+
+        .versus-header-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 6px;
+            margin-bottom: 8px;
+            align-items: center;
+        }
+
+        .versus-user-title {
+            color: var(--color-gold);
+            font-size: 0.85rem;
+            font-weight: 900;
+            text-align: left;
+            text-transform: uppercase;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .rival-select-header {
+            font-weight: 900 !important;
+            color: var(--color-gold) !important;
+            background: rgba(255, 215, 0, 0.1) !important;
+            border: 1px solid var(--color-gold) !important;
+            border-radius: 4px !important;
+            font-size: 0.85rem !important;
+            padding: 3px 8px !important;
+            text-align: right !important;
+            cursor: pointer !important;
+            width: 100% !important;
+            font-family: 'Montserrat', sans-serif !important;
+            text-transform: uppercase !important;
+        }
+
+        .rival-select-header option {
+            background-color: #141414 !important;
+            color: var(--text-main) !important;
+        }
+
+        .versus-section-title {
+            text-align: center;
+            color: var(--color-turquoise);
+            font-weight: 900;
+            font-size: 0.8rem;
+            border-top: 2px solid var(--color-turquoise);
+            padding-top: 4px;
+            margin-top: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .versus-row {
+            display: grid;
+            grid-template-columns: 1fr 40px 40px 1fr;
+            align-items: center;
+            padding: 3px 0;
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+
+        .versus-driver-left {
+            color: var(--color-turquoise);
+            font-weight: bold;
+            text-align: left;
+        }
+
+        .versus-pts-left {
+            color: var(--text-main);
+            font-weight: bold;
+            text-align: right;
+            padding-right: 6px;
+        }
+
+        .versus-pts-right {
+            color: var(--text-main);
+            font-weight: bold;
+            text-align: left;
+            padding-left: 6px;
+        }
+
+        .versus-driver-right {
+            color: var(--color-turquoise);
+            font-weight: bold;
+            text-align: right;
+        }
+
+        .versus-footer-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            border-top: 1px solid var(--border-color);
+            margin-top: 10px;
+            padding-top: 6px;
+            text-align: center;
         }
     </style>
 </head>
@@ -594,7 +716,6 @@
         </div>
     </div>
     
-    <!-- Área de Usuario / Botón de Salida Rectangular y Rojo -->
     <div id="navUserArea" class="user-info-nav">
         <span id="userEmailDisplay" style="display: none;"></span>
         <button class="btn-icon-logout" onclick="cerrarSesion()" title="Cerrar Sesión">
@@ -698,13 +819,34 @@
         </div>
     </div>
 
+<!-- MODAL DE VERSUS // CARA A CARA EN ESPEJO -->
+    <div id="versusModal" class="modal-overlay hidden">
+        <div class="modal-card" style="max-width: 420px; border-top: 4px solid var(--color-turquoise);">
+            <button type="button" class="modal-close" onclick="cerrarModalVersus()">×</button>
+            <h3 style="color: var(--color-turquoise); margin-bottom: 0.5rem; text-align: center; font-weight: 900; letter-spacing: 1px;">VERSUS</h3>
+            
+            <!-- Selector de GP compacto -->
+            <div style="display: flex; justify-content: center; margin-bottom: 0.8rem;">
+                <div style="width: 260px; max-width: 100%;">
+                    <label style="display: block; font-size: 0.68rem; color: var(--text-muted); text-align: center; margin-bottom: 2px; text-transform: uppercase;">Gran Premio</label>
+                    <select id="versusGpSelect" class="form-control-compact" onchange="actualizarComparativaVersus()">
+                        <option value="">Cargando GPs...</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Área de Choque Central (Renderizada por JavaScript) -->
+            <div id="versusContentArea">
+                <p class="text-center" style="color: var(--text-muted); padding: 1rem;">Selecciona un Gran Premio para ver el enfrentamiento.</p>
+            </div>
+        </div>
+    </div>
+
     <!-- B. VISTA PRINCIPAL DEL DASHBOARD Y APLICACIÓN -->
     <div id="dashboardView" class="container hidden">
 
         <!-- TAB 1: PREDICCIONES / DASHBOARD  -->
         <div id="tabHome" class="dashboard-tab">
-            
-            <!-- CAJA 1: TÍTULO, RONDA DINÁMICA Y RELOJ PLANO -->
             <div class="card-box" style="border-left: 4px solid var(--color-turquoise); padding-bottom: 8px !important;">
                 <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
                     <h1 style="font-size: 1.05rem; color: var(--text-main); margin: 0;">Mis predicciones GP</h1> 
@@ -717,7 +859,6 @@
                 </div>
             </div>
 
-            <!-- CAJA 2: CAMPOS DE PREDICCIONES (POLE, SPRINT Y CARRERA LARGA) -->
             <div class="card-box">
                 <h2 style="color: var(--color-gold); font-size: 0.95rem; margin-bottom: 0.6rem;">Mis predicciones</h2>
 
@@ -783,7 +924,7 @@
         <div id="tabStandings" class="dashboard-tab hidden">
             <div class="card-box" style="margin-bottom: 0.5rem;">
                 <h1 style="font-size: 1.1rem; color: var(--text-main); margin: 0 0 0.15rem 0;">Tabla de Posiciones</h1>
-                <p style="font-size: 0.7rem; color: var(--text-muted); margin: 0;">Ranking de Usuarios y Escuderías</p>
+                <p style="font-size: 0.7rem; color: var(--text-muted); margin: 0;">Ranking de Usuarios y Escuderías (Toca un usuario para ver Versus)</p>
             </div>
 
             <div class="subtabs">
@@ -792,12 +933,10 @@
             </div>
 
             <div class="card-box">
-                <!-- Contenedor Individual -->
                 <div id="subStandingsIndividual" class="table-container">
                     <p class="text-center" style="color: var(--color-turquoise); padding: 0.8rem;">Cargando ranking individual...</p>
                 </div>
 
-                <!-- Contenedor Escuderías -->
                 <div id="subStandingsEscuderias" class="table-container hidden">
                     <div style="margin-top: 0.2rem; margin-bottom: 0.8rem;">
                         <h3 style="font-size: 1rem; color: var(--color-gold); margin: 0 0 0.15rem 0; font-weight: bold;">🏆 Campeonato de Escuderías</h3>
@@ -832,7 +971,6 @@
                 <button id="subAccEscBtn" class="subtab-btn" onclick="switchAccountSub('escuderias')">Mi Escudería</button>
             </div>
 
-            <!-- SUB-TAB 1: VISTA PERSONAL -->
             <div id="subAccountIndividual">
                 <div style="margin-bottom: 0.5rem; width: 100%;">
                     <div class="card-box" style="display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0.8rem; border-left: 4px solid var(--color-gold);">
@@ -883,7 +1021,6 @@
                 </div>
             </div>
 
-            <!-- SUB-TAB 2: VISTA DE ESCUDERÍA -->
             <div id="subAccountEscuderias" class="hidden">
                 <div class="card-box" style="border-left: 4px solid var(--color-gold);">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -965,7 +1102,6 @@
                         <h3 style="color: var(--color-turquoise); font-size: 0.9rem; margin: 0 0 0.15rem 0;">Colabora con el proyecto Podium Fantasy F1</h3>
                         <p style="color: var(--text-muted); font-size: 0.7rem; margin: 0;">Apoya para mantener la plataforma activa.</p>
                     </div>
-                    <!-- Botón PayPal con mensaje de agradecimiento -->
                     <a href="https://paypal.me/3lvisfeh" target="_blank" onclick="agradecerColaboracionPayPal(event)" class="btn-paypal-compact" style="display: inline-flex; align-items: center; gap: 0.3rem; background: linear-gradient(to bottom, #0079C1, #00457C); color: #fff; padding: 0.4rem 0.8rem; border-radius: 4px; text-decoration: none; font-weight: bold; font-size: 0.8rem;">
                         Donar con PayPal
                     </a>
@@ -1007,12 +1143,12 @@
                        📧 Sugerencias                    </a>
                 </div>
             </div>
-           	<!-- COPYRIGHT EFEH SYSTEM -->
-<div style="text-align: center; margin: 1.5rem 0 1rem 0;">
-    <span style="display: inline-block; background-color: rgba(0, 0, 0, 0.7); padding: 6px 16px; border-radius: 20px; font-size: 0.75rem; color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.15); text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);">
-        EFEH Systems &copy; 2026 — Todos los derechos reservados
-    </span>
-</div>
+           	
+            <div style="text-align: center; margin: 1.5rem 0 1rem 0;">
+                <span style="display: inline-block; background-color: rgba(0, 0, 0, 0.7); padding: 6px 16px; border-radius: 20px; font-size: 0.75rem; color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.15); text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);">
+                    EFEH Systems &copy; 2026 — Todos los derechos reservados
+                </span>
+            </div>
         </div>
 
         <!-- BARRA DE NAVEGACIÓN INFERIOR -->
@@ -1046,7 +1182,8 @@
         let rondaActivaNombre = "";
         let fechaCierreRonda = null;
         let countdownInterval = null;
-        let mostrandoResultadosOficiales = false;
+        let rivalActual = null;
+        let listaUsuariosGlobal = []; // Variable global para el buscador predictivo
 
         document.addEventListener("DOMContentLoaded", async () => {
             inicializarPilotosYCalendarioEstaticos();
@@ -1104,9 +1241,7 @@
                 
                 if (error) throw error;
                 calendarData = data || [];
-                
                 determinarRondaVigente();
-
             } catch (error) {
                 console.error("Error al cargar calendario desde Supabase:", error);
                 const titleEl = document.getElementById('activeRoundTitle');
@@ -1205,9 +1340,7 @@
                 const milisegundos = Math.floor(distancia % 1000);
         
                 let tiempoTexto = "";
-                if (dias > 0) {
-                    tiempoTexto += `${dias}d `;
-                }
+                if (dias > 0) tiempoTexto += `${dias}d `;
         
                 const hStr = String(horas).padStart(2, '0');
                 const mStr = String(minutos).padStart(2, '0');
@@ -1216,9 +1349,7 @@
         
                 tiempoTexto += `${hStr}:${mStr}:${sStr}.${msStr}`;
         
-                if (timerEl) {
-                    timerEl.innerText = tiempoTexto;
-                }
+                if (timerEl) timerEl.innerText = tiempoTexto;
         
                 if (distancia <= 3600000) {
                     if (timerEl) timerEl.classList.add('bomb-red');
@@ -1231,7 +1362,6 @@
             countdownInterval = setInterval(actualizar, 149);
         }
 
-        // --- SISTEMA UNIFICADO DE CUSTOM DROPDOWNS CON SCROLL (5 ELEMENTOS MÁXIMO) ---
         function convertirSelectEnCustomDropdown(selectId) {
             const originalSelect = document.getElementById(selectId);
             if (!originalSelect) return;
@@ -1247,7 +1377,7 @@
                 const trigger = document.createElement('div');
                 trigger.className = 'dropdown-trigger';
                 trigger.id = selectId + '_trigger';
-                trigger.innerHTML = `<span id="${selectId}_label">Selecciona piloto</span><span class="arrow-icon">▼</span>`;
+                trigger.innerHTML = `<span id="${selectId}_label">Selecciona opción</span><span class="arrow-icon">▼</span>`;
                 trigger.onclick = () => toggleCustomDropdown(selectId);
 
                 const menu = document.createElement('div');
@@ -1274,7 +1404,7 @@
             if (selectedOption && selectedOption.value !== "") {
                 label.innerText = selectedOption.text;
             } else {
-                label.innerText = originalSelect.options[0] ? originalSelect.options[0].text : "Selecciona piloto";
+                label.innerText = originalSelect.options[0] ? originalSelect.options[0].text : "Selecciona opción";
             }
 
             Array.from(originalSelect.options).forEach((opt) => {
@@ -1299,7 +1429,7 @@
                 menu.appendChild(item);
             });
 
-            if (selectId === 'gpHistorySelect') {
+            if (selectId === 'gpHistorySelect' || selectId === 'versusGpSelect') {
                 menu.scrollTop = menu.scrollHeight;
             }
         }
@@ -1308,7 +1438,9 @@
             const menu = document.getElementById(selectId + '_menu');
             const isOpen = menu.style.display === 'block';
             
-            document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
+            document.querySelectorAll('.dropdown-menu').forEach(m => {
+                if (m.id !== 'rivalSearchResults') m.style.display = 'none';
+            });
 
             if (!isOpen) {
                 menu.style.display = 'block';
@@ -1319,55 +1451,43 @@
         }
 
         window.addEventListener('click', (e) => {
-            if (!e.target.closest('.custom-dropdown')) {
-                document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
+            if (!e.target.closest('.custom-dropdown') && !e.target.closest('#inputRivalSearch') && !e.target.closest('#rivalSearchResults')) {
+                document.querySelectorAll('.dropdown-menu').forEach(m => {
+                    if (m.id !== 'rivalSearchResults') m.style.display = 'none';
+                });
+                const resBox = document.getElementById('rivalSearchResults');
+                if (resBox) resBox.style.display = 'none';
             }
         });
     
         function poblarSelectoresPilotos() {
-            const allDriverSelects = document.querySelectorAll('.driver-select');
-            if (!allDriverSelects.length) return;
-        
-            // 1. Limpiar todos los selectores de pilotos de un solo golpe
-            allDriverSelects.forEach(select => {
+            const poleSelect = document.getElementById('poleSelect');
+            if (!poleSelect) return;
+            poleSelect.innerHTML = '<option value="">Selecciona piloto</option>';
+            
+            const raceSelects = document.querySelectorAll('.driver-select');
+            raceSelects.forEach(select => {
                 select.innerHTML = '<option value="">Selecciona piloto</option>';
             });
-        
-            // 2. Poblar cada piloto de forma limpia y uniforme en todos los desplegables (incluyendo la pole)
+
             driversList.forEach(d => {
                 const optText = `${d.code} - ${d.name} (${d.team})`;
-                allDriverSelects.forEach(select => {
-                    const opt = document.createElement('option');
-                    opt.value = d.code;
-                    opt.textContent = optText;
-                    select.appendChild(opt);
+                const optPole = document.createElement('option');
+                optPole.value = d.code;
+                optPole.textContent = optText;
+                poleSelect.appendChild(optPole);
+
+                raceSelects.forEach(select => {
+                    const optRace = document.createElement('option');
+                    optRace.value = d.code;
+                    optRace.textContent = optText;
+                    select.appendChild(optRace);
                 });
             });
-        
-            // 3. Convertir de manera uniforme todos los selects en custom dropdowns con scroll
-            const poleSelect = document.getElementById('poleSelect');
-            if (poleSelect) convertirSelectEnCustomDropdown('poleSelect');
-        
-            allDriverSelects.forEach(sel => {
+
+            convertirSelectEnCustomDropdown('poleSelect');
+            document.querySelectorAll('.driver-select').forEach(sel => {
                 convertirSelectEnCustomDropdown(sel.id);
-            });
-        }
-
-        function verificarDuplicadosCarrera() {
-            const raceSlots = document.querySelectorAll('.race-slot');
-            const selectedCodes = Array.from(raceSlots).map(s => s.value).filter(v => v !== "");
-
-            raceSlots.forEach(select => {
-                const currentValue = select.value;
-                Array.from(select.options).forEach(option => {
-                    if (option.value === "") return;
-                    if (selectedCodes.includes(option.value) && option.value !== currentValue) {
-                        option.disabled = true;
-                    } else {
-                        option.disabled = false;
-                    }
-                });
-                actualizarOpcionesCustomDropdown(select.id);
             });
         }
 
@@ -1391,6 +1511,269 @@
 
         function abrirModalRegistro() { document.getElementById('registerModal').classList.remove('hidden'); }
         function cerrarModalRegistro() { document.getElementById('registerModal').classList.add('hidden'); }
+
+        // --- FUNCIONES DEL MODAL VERSUS (CARA A CARA CON SCROLL DESDE RONDA 1 Y BUSCADOR PREDICTIVO) ---
+        async function abrirModalVersus(rivalId, rivalUsername) {
+            rivalActual = { id: rivalId, username: rivalUsername };
+            
+            const selectGp = document.getElementById('versusGpSelect');
+            selectGp.innerHTML = '<option value="">Selecciona un Gran Premio</option>';
+            
+            if (calendarData && calendarData.length > 0) {
+                const hoyStr = new Date().toISOString().split('T')[0];
+                const gpsCompletados = calendarData.filter(c => (c.date || c.fecha || c.race_date) <= hoyStr);
+
+                gpsCompletados.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c.name;
+                    opt.textContent = `Ronda ${c.round}: ${c.name}`;
+                    selectGp.appendChild(opt);
+                });
+
+                if (gpsCompletados.length > 0) {
+                    selectGp.value = gpsCompletados[gpsCompletados.length - 1].name;
+                }
+            }
+            convertirSelectEnCustomDropdown('versusGpSelect');
+
+            document.getElementById('versusModal').classList.remove('hidden');
+            actualizarComparativaVersus();
+        }
+
+        // FUNCIONES DE BÚSQUEDA PREDICTIVA PARA EL RIVAL
+        function filtrarRivalsEnVivo(textoBusqueda) {
+            const resultsBox = document.getElementById('rivalSearchResults');
+            if (!resultsBox) return;
+
+            const query = textoBusqueda.trim().toLowerCase();
+            if (query.length === 0) {
+                resultsBox.style.display = 'none';
+                return;
+            }
+
+            const coincidentes = listaUsuariosGlobal.filter(u => 
+                u.id !== userIdActual && 
+                (u.username || "").toLowerCase().includes(query)
+            );
+
+            if (coincidentes.length === 0) {
+                resultsBox.innerHTML = '<div class="dropdown-item" style="color: var(--text-muted);">Sin resultados</div>';
+                resultsBox.style.display = 'block';
+                return;
+            }
+
+            let html = '';
+            coincidentes.slice(0, 5).forEach(u => {
+                const name = u.username || 'Formulero';
+                html += `<div class="dropdown-item" onclick="seleccionarRivalDirecto('${u.id}', '${name.replace(/'/g, "\\'")}')">${name}</div>`;
+            });
+
+            resultsBox.innerHTML = html;
+            resultsBox.style.display = 'block';
+        }
+
+        function seleccionarRivalDirecto(idRival, nombreRival) {
+            rivalActual = { id: idRival, username: nombreRival };
+            const inputEl = document.getElementById('inputRivalSearch');
+            if (inputEl) inputEl.value = nombreRival;
+            
+            const resultsBox = document.getElementById('rivalSearchResults');
+            if (resultsBox) resultsBox.style.display = 'none';
+
+            actualizarComparativaVersus();
+        }
+
+        function cerrarModalVersus() {
+            document.getElementById('versusModal').classList.add('hidden');
+        }
+
+        // ESCALAS OFICIALES FIA DE EFEH TECH
+        const ESCALA_CARRERA_FIA = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
+        const ESCALA_SPRINT_FIA = [25, 18, 15, 12, 10, 8, 6, 4];
+
+        // MOTOR DE INGENIERÍA INVERSA CON LECTURA DE RESULTADOS GLOBALES
+        function calcularPuntosPilotoVersus(predDriver, officialData, indexPred, tipo) {
+            if (!predDriver || !officialData) return 0;
+            
+            if (tipo === 'pole') {
+                const polemanOficial = officialData.quali || officialData.poleman || "";
+                return (polemanOficial && predDriver.trim().toLowerCase() === polemanOficial.trim().toLowerCase()) ? 5 : 0;
+            }
+            
+            if (tipo === 'sprint') {
+                const rawSprint = officialData.sprint || "";
+                const sprintArray = rawSprint.split(',').map(s => s.trim().toLowerCase()).filter(s => s);
+                if (!sprintArray.length) return 0;
+
+                const pPred = predDriver.trim().toLowerCase();
+                const pReal = sprintArray.indexOf(pPred) + 1;
+
+                if (pReal > 0) {
+                    const ptsBase = (pReal - 1) < ESCALA_SPRINT_FIA.length ? ESCALA_SPRINT_FIA[pReal - 1] : 0;
+                    const pPredicha = indexPred + 1;
+                    return (pReal === pPredicha) ? (ptsBase * 2) : ptsBase;
+                }
+                return 0;
+            }
+            
+            if (tipo === 'carrera') {
+                const rawCarrera = officialData.carrera || "";
+                const carreraArray = rawCarrera.split(',').map(c => c.trim().toLowerCase()).filter(c => c);
+                if (!carreraArray.length) return 0;
+
+                const pPred = predDriver.trim().toLowerCase();
+                const pReal = carreraArray.indexOf(pPred) + 1;
+
+                if (pReal > 0) {
+                    const ptsBase = (pReal - 1) < ESCALA_CARRERA_FIA.length ? ESCALA_CARRERA_FIA[pReal - 1] : 0;
+                    const pPredicha = indexPred + 1;
+
+                    const predP1 = (officialData.carrera_p1_pred || "").toLowerCase();
+                    const predP2 = (officialData.carrera_p2_pred || "").toLowerCase();
+                    const predP3 = (officialData.carrera_p3_pred || "").toLowerCase();
+                    
+                    const podioPerfecto = (carreraArray.length >= 3 && 
+                                           carreraArray[0] === predP1 && 
+                                           carreraArray[1] === predP2 && 
+                                           carreraArray[2] === predP3);
+
+                    if (pReal === pPredicha) {
+                        return podioPerfecto ? (ptsBase * 3) : (ptsBase * 2);
+                    } else {
+                        return ptsBase;
+                    }
+                }
+                return 0;
+            }
+            
+            return 0;
+        }
+
+        async function actualizarComparativaVersus() {
+            const selectGp = document.getElementById('versusGpSelect');
+            const gpName = selectGp ? selectGp.value : "";
+            const contentArea = document.getElementById('versusContentArea');
+
+            if (!gpName) {
+                contentArea.innerHTML = '<p class="text-center" style="color: var(--text-muted); padding: 1rem;">Selecciona un Gran Premio para ver el enfrentamiento.</p>';
+                return;
+            }
+
+            contentArea.innerHTML = '<p class="text-center" style="color: var(--color-turquoise); padding: 1rem;">Calculando telemetría e ingeniería inversa...</p>';
+
+            try {
+                const [predMioRes, predRivalRes, resGlobalesRes, usuariosRes] = await Promise.all([
+                    supabaseClient.from('predicciones').select('*').eq('usuario_id', userIdActual).eq('gran_premio', gpName).maybeSingle(),
+                    supabaseClient.from('predicciones').select('*').eq('usuario_id', rivalActual.id).eq('gran_premio', gpName).maybeSingle(),
+                    supabaseClient.from('resultados_globales').select('*').eq('gran_premio', gpName).maybeSingle(),
+                    supabaseClient.from('usuarios').select('id, username, puntos_globales').order('puntos_globales', { ascending: false })
+                ]);
+
+                const pMio = predMioRes.data || {};
+                const pRival = predRivalRes.data || {};
+                const rOficial = resGlobalesRes.data || {};
+                const listaUsuarios = usuariosRes.data || [];
+                
+                // Guardamos en la variable global para alimentar el buscador predictivo
+                listaUsuariosGlobal = listaUsuarios;
+
+                const meObj = listaUsuarios.find(u => u.id === userIdActual);
+                const miNombreDisplay = (meObj && meObj.username && meObj.username.trim() !== "") 
+                    ? meObj.username 
+                    : (usuarioActual ? usuarioActual.split('@')[0] : "TÚ");
+
+                // Asegurar que rivalActual tenga nombre si se abrió por defecto
+                if (!rivalActual.username) {
+                    const foundRival = listaUsuarios.find(u => u.id === rivalActual.id);
+                    if (foundRival) rivalActual.username = foundRival.username || 'Formulero';
+                }
+
+                const raceObj = calendarData.find(c => c.name === gpName);
+                const esSprintGp = raceObj ? (raceObj.sprint === true || raceObj.isSprint === true) : false;
+
+                const rOficialMio = { ...rOficial, carrera_p1_pred: pMio.carrera_p1, carrera_p2_pred: pMio.carrera_p2, carrera_p3_pred: pMio.carrera_p3 };
+                const rOficialRival = { ...rOficial, carrera_p1_pred: pRival.carrera_p1, carrera_p2_pred: pRival.carrera_p2, carrera_p3_pred: pRival.carrera_p3 };
+
+                function renderFilaVersus(driverMio, driverRival, index, tipo) {
+                    const ptsMio = driverMio ? calcularPuntosPilotoVersus(driverMio, rOficialMio, index, tipo) : 0;
+                    const ptsRival = driverRival ? calcularPuntosPilotoVersus(driverRival, rOficialRival, index, tipo) : 0;
+                    
+                    const codeMio = driverMio || '---';
+                    const codeRival = driverRival || '---';
+
+                    return `
+                        <div class="versus-row">
+                            <div class="versus-driver-left">${codeMio}</div>
+                            <div class="versus-pts-left">${ptsMio}</div>
+                            <div class="versus-pts-right">${ptsRival}</div>
+                            <div class="versus-driver-right">${codeRival}</div>
+                        </div>
+                    `;
+                }
+
+                let html = `
+                    <div class="versus-card-container">
+                        
+                        <!-- CABECERA: TU NOMBRE VS BUSCADOR PREDICTIVO DE RIVAL -->
+                        <div class="versus-header-grid">
+                            <div class="versus-user-title">
+                                👤 ${miNombreDisplay}
+                            </div>
+                            <div style="text-align: right; position: relative;">
+                                <input type="text" 
+                                       id="inputRivalSearch" 
+                                       class="rival-select-header" 
+                                       placeholder="Buscar rival..." 
+                                       autocomplete="off"
+                                       value="${rivalActual.username || ''}"
+                                       oninput="filtrarRivalsEnVivo(this.value)" />
+                                
+                                <!-- Micro-desplegable flotante de resultados -->
+                                <div id="rivalSearchResults" class="dropdown-menu" style="right: 0; left: auto; width: 100%; min-width: 140px; display: none;"></div>
+                            </div>
+                        </div>
+
+                        <!-- POLEMAN -->
+                        <div class="versus-section-title">POLEMAN</div>
+                        ${renderFilaVersus(pMio.poleman, pRival.poleman, 0, 'pole')}
+
+                        <!-- SPRINT (SI APLICA) -->
+                        ${esSprintGp ? `
+                        <div class="versus-section-title">SPRINT</div>
+                        ${renderFilaVersus(pMio.sprint_p1, pRival.sprint_p1, 0, 'sprint')}
+                        ${renderFilaVersus(pMio.sprint_p2, pRival.sprint_p2, 1, 'sprint')}
+                        ${renderFilaVersus(pMio.sprint_p3, pRival.sprint_p3, 2, 'sprint')}
+                        ` : ''}
+
+                        <!-- LONG RACE -->
+                        <div class="versus-section-title">LONG RACE</div>
+                        ${renderFilaVersus(pMio.carrera_p1, pRival.carrera_p1, 0, 'carrera')}
+                        ${renderFilaVersus(pMio.carrera_p2, pRival.carrera_p2, 1, 'carrera')}
+                        ${renderFilaVersus(pMio.carrera_p3, pRival.carrera_p3, 2, 'carrera')}
+                        ${renderFilaVersus(pMio.carrera_p4, pRival.carrera_p4, 3, 'carrera')}
+                        ${renderFilaVersus(pMio.carrera_p5, pRival.carrera_p5, 4, 'carrera')}
+
+                        <!-- TOTALES AL PIE DE TARJETA -->
+                        <div class="versus-footer-grid">
+                            <div>
+                                <span style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; display: block;">Total Tu GP</span>
+                                <span style="font-weight: 900; color: var(--color-turquoise); font-size: 1.05rem;">${pMio.total_fin_de_semana || 0} pts</span>
+                            </div>
+                            <div>
+                                <span style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; display: block;">Total Rival GP</span>
+                                <span style="font-weight: 900; color: var(--color-gold); font-size: 1.05rem;">${pRival.total_fin_de_semana || 0} pts</span>
+                            </div>
+                        </div>
+
+                    </div>
+                `;
+                contentArea.innerHTML = html;
+
+            } catch (err) {
+                console.error("Error en Versus:", err);
+                contentArea.innerHTML = '<p class="text-center" style="color: var(--danger); padding: 1rem;">Error al calcular ingeniería inversa del cara a cara.</p>';
+            }
+        }
 
         async function procesarLogin(event) {
             event.preventDefault();
@@ -1514,7 +1897,7 @@
                 if (supabaseClient) {
                     const { data, error } = await supabaseClient
                         .from('usuarios')
-                        .select('username, pais, puntos_globales')
+                        .select('id, username, pais, puntos_globales')
                         .order('puntos_globales', { ascending: false });
                     if (!error && data) usuarios = data;
                 }
@@ -1525,7 +1908,7 @@
             let html = `
                 <div style="margin-top: 0.2rem; margin-bottom: 0.8rem;">
                     <h3 style="font-size: 1rem; color: var(--color-gold); margin: 0 0 0.15rem 0; font-weight: bold;">🏆 Campeonato de Formuleros</h3>
-                    <p style="font-size: 0.7rem; color: var(--text-muted); margin: 0;">Clasificación de Formuleros</p>
+                    <p style="font-size: 0.7rem; color: var(--text-muted); margin: 0;">Toca cualquier fila para abrir el Versus cara a cara</p>
                 </div>
             `;
 
@@ -1540,9 +1923,10 @@
             
             usuarios.forEach((u, index) => {
                 const bandera = obtenerBanderaEmoji(u.pais);
-                html += `<tr>
+                const nombreUser = u.username || 'Usuario';
+                html += `<tr class="clickable-row" onclick="abrirModalVersus('${u.id}', '${nombreUser.replace(/'/g, "\\'")}')">
                     <td><strong style="color: var(--color-gold);">${index + 1}</strong></td>
-                    <td style="color: var(--text-main); font-weight: bold;">${u.username || 'Usuario'}</td>
+                    <td style="color: var(--text-main); font-weight: bold;">${nombreUser} ${u.id === userIdActual ? '(Tú)' : ''}</td>
                     <td style="text-align: center; font-size: 1.1rem;">${bandera}</td>
                     <td class="text-right" style="color: var(--color-gold); font-weight: bold;">${u.puntos_globales || 0}</td>
                 </tr>`;
@@ -1590,9 +1974,7 @@
                 rankingEquipos.forEach((eq, idx) => {
                     html += `<tr>
                         <td><strong style="color: var(--color-gold);">${idx + 1}</strong></td>
-                        <td>
-                            <strong style="color: var(--text-main);">${eq.nombre}</strong>
-                        </td>
+                        <td><strong style="color: var(--text-main);">${eq.nombre}</strong></td>
                         <td class="text-right"><strong style="color: var(--color-gold);">${eq.puntosTotal}</strong></td>
                     </tr>`;
                 });
@@ -2002,10 +2384,10 @@
             .then(() => console.log("Service Worker registrado con éxito"))
             .catch((err) => console.log("Error al registrar Service Worker", err));
         }
-async function cargarPrediccionActual() {
+
+        async function cargarPrediccionActual() {
             if (!userIdActual || !rondaActivaNombre) return;
 
-            // Limpiar valores previos y sus etiquetas visuales
             document.getElementById('poleSelect').value = "";
             actualizarOpcionesCustomDropdown('poleSelect');
 
@@ -2036,13 +2418,11 @@ async function cargarPrediccionActual() {
                 if (error) throw error;
 
                 if (data) {
-                    // Cargar Pole Position
                     if (data.poleman) {
                         document.getElementById('poleSelect').value = data.poleman;
                         actualizarOpcionesCustomDropdown('poleSelect');
                     }
 
-                    // Cargar Carrera Larga (Top 5)
                     const raceSlots = document.querySelectorAll('.race-slot');
                     if (raceSlots[0] && data.carrera_p1) raceSlots[0].value = data.carrera_p1;
                     if (raceSlots[1] && data.carrera_p2) raceSlots[1].value = data.carrera_p2;
@@ -2053,7 +2433,6 @@ async function cargarPrediccionActual() {
                     raceSlots.forEach(s => actualizarOpcionesCustomDropdown(s.id));
                     verificarDuplicadosCarrera();
 
-                    // Cargar Carrera Sprint (Top 3) si aplica
                     if (rondaActivaEsSprint) {
                         const sprintSlots = document.querySelectorAll('.sprint-slot');
                         if (sprintSlots[0] && data.sprint_p1) sprintSlots[0].value = data.sprint_p1;
