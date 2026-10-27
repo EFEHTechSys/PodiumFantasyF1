@@ -135,29 +135,38 @@ def procesar_todo(supabase):
 
         print(f"🎯 GP: {gran_premio} | Usuario: {usuario_id[:8]}... -> Q: {puntos_quali} | S: {puntos_sprint} | C: {puntos_carrera} | Total GP: {puntos_total_fin_de_semana} [PROCESADO]")
 
-    # 3. Actualizar los puntos globales en la tabla 'usuarios' con logs detallados y control de errores
-    for u_id in puntos_acumulados_usuarios.keys():
-        try:
-            preds_usuario = supabase.table("predicciones").select("total_fin_de_semana").eq("usuario_id", u_id).eq("estado", "procesado").execute()
+# 3. Auditoría y Actualización Global de Puntos para TODOS los usuarios (Independiente de si hubo pendientes o no)
+    print("🔄 [EFEH TECH] Ejecutando auditoría y sincronización global de puntos de usuarios...")
+    
+    # Consultamos todos los usuarios activos
+    usuarios_res = supabase.table("usuarios").select("id, username").execute()
+    
+    if usuarios_res.data:
+        for usr in usuarios_res.data:
+            u_id = usr['id']
+            username = usr['username']
             
-            puntos_totales_globales = 0
-            if preds_usuario.data:
-                for p in preds_usuario.data:
-                    puntos_totales_globales += (p.get("total_fin_de_semana") or 0)
+            try:
+                # Buscamos TODAS las predicciones de este usuario (sin importar el GP) que estén procesadas
+                preds_usuario = supabase.table("predicciones").select("total_fin_de_semana").eq("usuario_id", u_id).eq("estado", "procesado").execute()
+                
+                puntos_totales_reales = 0
+                if preds_usuario.data:
+                    for p in preds_usuario.data:
+                        puntos_totales_reales += (p.get("total_fin_de_semana") or 0)
 
-            print(f"📊 [DEBUG] Usuario {u_id[:8]}... -> Predicciones procesadas: {len(preds_usuario.data) if preds_usuario.data else 0} | Suma calculada: {puntos_totales_globales}")
+                # Forzamos la actualización autoritaria en la tabla usuarios (Elimina cualquier punto falso o duplicado)
+                res_update = supabase.table("usuarios").update({
+                    "puntos_globales": puntos_totales_reales
+                }).eq("id", u_id).execute()
 
-            res_update = supabase.table("usuarios").update({
-                "puntos_globales": puntos_totales_globales
-            }).eq("id", u_id).execute()
+                if hasattr(res_update, 'error') and res_update.error:
+                    print(f"❌ [ERROR] No se pudieron actualizar los puntos globales de {username}: {res_update.error}")
+                else:
+                    print(f"✅ [AUDITORÍA] Usuario '{username}' sincronizado. Puntos Globales Reales: {puntos_totales_reales}")
 
-            if hasattr(res_update, 'error') and res_update.error:
-                print(f"❌ [ERROR SUPABASE] No se pudieron actualizar los puntos del usuario {u_id[:8]}: {res_update.error}")
-            else:
-                print(f"✅ [ÉXITO] Usuario {u_id[:8]}... actualizado con Puntos Globales Totales: {puntos_totales_globales}")
-
-        except Exception as e:
-            print(f"❌ [EXCEPCIÓN CRÍTICA] Error al procesar puntos globales para el usuario {u_id[:8]}: {str(e)}")
+            except Exception as e:
+                print(f"❌ [EXCEPCIÓN] Error al auditar al usuario {username}: {str(e)}")
 
 if __name__ == "__main__":
     url = os.environ.get("SUPABASE_URL")
