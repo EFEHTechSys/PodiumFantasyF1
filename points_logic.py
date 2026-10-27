@@ -61,9 +61,9 @@ def calcular_puntos_sesion(pred_text, real_text, limite_puestos, es_sprint=False
     return pts
 
 def procesar_todo(supabase):
-    print("🚀 [EFEH TECH] Iniciando motor de cálculo oficial (Tabla unificada: resultados_globales)...")
+    print("🚀 [EFEH TECH] Iniciando motor de cálculo oficial de puntos (Modo Pendientes)...")
 
-    # 1. Obtener únicamente las predicciones pendientes por procesar
+    # 1. Obtener únicamente las predicciones que estén pendientes por procesar
     preds_res = supabase.table("predicciones").select("*").eq("estado", "pendiente").execute()
     if not preds_res.data:
         print("⚠️ No hay predicciones pendientes registradas en la base de datos.")
@@ -77,42 +77,49 @@ def procesar_todo(supabase):
         gran_premio = pred['gran_premio']
         pred_id = pred['id']
 
-        # 🛡️ Consulta directa y unificada a 'resultados_globales'
-        res_global = supabase.table("resultados_globales").select("quali, sprint, carrera").eq("gran_premio", gran_premio).execute()
+        # 🛡️ BLINDAJE EFEH TECH (Soporte Multitabla y Transición):
+        # Verificar que la carrera tenga resultados en 'resultados_globales' o 'resultados_oficiales'
+        res_global = supabase.table("resultados_globales").select("*").eq("gran_premio", gran_premio).execute()
+        res_oficial = supabase.table("resultados_oficiales").select("carrera").eq("gran_premio", gran_premio).execute()
         
-        if not res_global.data or not res_global.data[0].get("carrera"):
-            print(f"⏳ [OMITIDO] El GP '{gran_premio}' aún no tiene resultados oficiales en la tabla unificada. Se MANTIENE en 'pendiente'.")
+        if not res_global.data and not res_oficial.data:
+            print(f"⏳ [OMITIDO] El GP '{gran_premio}' aún no tiene resultados de carrera cargados. Se MANTIENE en 'pendiente'.")
             continue
-
-        resultados = res_global.data[0]
-        poleman_real = resultados.get("quali")
-        real_sprint_text = resultados.get("sprint")
-        real_carrera_text = resultados.get("carrera")
+        # ---------------------------------------------------------------------------------
 
         puntos_quali = 0
         puntos_sprint = 0
         puntos_carrera = 0
 
-        # --- A. QUALI (Poleman) ---
+        # --- A. QUALI (Valor fijo exacto: 5 puntos si acierta el poleman) ---
         poleman_predicho = pred.get('poleman')
-        if poleman_predicho and poleman_real:
-            if poleman_predicho.strip().lower() == poleman_real.strip().lower():
-                puntos_quali = 5
+        if poleman_predicho:
+            res_q = supabase.table("resultados_quali").select("quali").eq("gran_premio", gran_premio).execute()
+            if res_q.data:
+                poleman_real = res_q.data[0]['quali']
+                if poleman_predicho.strip().lower() == poleman_real.strip().lower():
+                    puntos_quali = 5
 
         # --- B. SPRINT ---
         sprint_preds = [pred.get('sprint_p1'), pred.get('sprint_p2'), pred.get('sprint_p3')]
-        if any(sprint_preds) and real_sprint_text:
+        if any(sprint_preds):
             pred_sprint_text = ",".join([str(p) for p in sprint_preds if p])
-            puntos_sprint = calcular_puntos_sesion(pred_sprint_text, real_sprint_text, limite_puestos=8, es_sprint=True)
+            res_s = supabase.table("resultados_sprint").select("sprint").eq("gran_premio", gran_premio).execute()
+            if res_s.data:
+                real_sprint_text = res_s.data[0]['sprint']
+                puntos_sprint = calcular_puntos_sesion(pred_sprint_text, real_sprint_text, limite_puestos=8, es_sprint=True)
 
         # --- C. CARRERA OFICIAL ---
         carrera_preds = [
             pred.get('carrera_p1'), pred.get('carrera_p2'), pred.get('carrera_p3'), 
             pred.get('carrera_p4'), pred.get('carrera_p5')
         ]
-        if any(carrera_preds) and real_carrera_text:
+        if any(carrera_preds):
             pred_carrera_text = ",".join([str(p) for p in carrera_preds if p])
-            puntos_carrera = calcular_puntos_sesion(pred_carrera_text, real_carrera_text, limite_puestos=10, es_sprint=False)
+            res_c = supabase.table("resultados_oficiales").select("carrera").eq("gran_premio", gran_premio).execute()
+            if res_c.data:
+                real_carrera_text = res_c.data[0]['carrera']
+                puntos_carrera = calcular_puntos_sesion(pred_carrera_text, real_carrera_text, limite_puestos=10, es_sprint=False)
 
         puntos_total_fin_de_semana = puntos_quali + puntos_sprint + puntos_carrera
 
@@ -132,19 +139,22 @@ def procesar_todo(supabase):
 
         print(f"🎯 GP: {gran_premio} | Usuario: {usuario_id[:8]}... -> Q: {puntos_quali} | S: {puntos_sprint} | C: {puntos_carrera} | Total GP: {puntos_total_fin_de_semana} [PROCESADO]")
 
-    # 3. Actualizar los puntos globales en la tabla 'usuarios'
-    for u_id, pts_nuevos in puntos_acumulados_usuarios.items():
-        user_res = supabase.table("usuarios").select("puntos_globales").eq("id", u_id).execute()
-        puntos_actuales = 0
-        if user_res.data and user_res.data[0].get("puntos_globales") is not None:
-            puntos_actuales = user_res.data[0]["puntos_globales"]
+# 3. Actualizar los puntos globales en la tabla 'usuarios' de forma blindada y 100% precisa
+    for u_id in puntos_acumulados_usuarios.keys():
+        # Consultamos TODAS las predicciones procesadas de este usuario para recalcular el total real
+        preds_usuario = supabase.table("predicciones").select("total_fin_de_semana").eq("usuario_id", u_id).eq("estado", "procesado").execute()
         
-        puntos_totales_globales = puntos_actuales + pts_nuevos
+        puntos_totales_globales = 0
+        if preds_usuario.data:
+            for p in preds_usuario.data:
+                puntos_totales_globales += (p.get("total_fin_de_semana") or 0)
 
+        # Actualizamos la tabla usuarios con el total real recalculado desde las fuentes
         supabase.table("usuarios").update({
             "puntos_globales": puntos_totales_globales
         }).eq("id", u_id).execute()
-        print(f"👤 Usuario {u_id[:8]}... actualizado con Puntos Globales Totales: {puntos_totales_globales}")
+        
+        print(f"👤 Usuario {u_id[:8]}... recalibrado con Puntos Globales Reales: {puntos_totales_globales}")
 
 if __name__ == "__main__":
     url = os.environ.get("SUPABASE_URL")
