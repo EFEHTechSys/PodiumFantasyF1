@@ -69,7 +69,7 @@ def procesar_todo(supabase):
         print("⚠️ No hay predicciones pendientes registradas en la base de datos.")
         return
 
-    # Diccionario para acumular los puntos globales de cada usuario
+    # Diccionario para acumular los usuarios que tuvieron actividad en este ciclo
     puntos_acumulados_usuarios = {}
 
     for pred in preds_res.data:
@@ -78,20 +78,18 @@ def procesar_todo(supabase):
         pred_id = pred['id']
 
         # 🛡️ BLINDAJE EFEH TECH (Soporte Multitabla y Transición):
-        # Verificar que la carrera tenga resultados en 'resultados_globales' o 'resultados_oficiales'
         res_global = supabase.table("resultados_globales").select("*").eq("gran_premio", gran_premio).execute()
         res_oficial = supabase.table("resultados_oficiales").select("carrera").eq("gran_premio", gran_premio).execute()
         
         if not res_global.data and not res_oficial.data:
             print(f"⏳ [OMITIDO] El GP '{gran_premio}' aún no tiene resultados de carrera cargados. Se MANTIENE en 'pendiente'.")
             continue
-        # ---------------------------------------------------------------------------------
 
         puntos_quali = 0
         puntos_sprint = 0
         puntos_carrera = 0
 
-        # --- A. QUALI (Valor fijo exacto: 5 puntos si acierta el poleman) ---
+        # --- A. QUALI ---
         poleman_predicho = pred.get('poleman')
         if poleman_predicho:
             res_q = supabase.table("resultados_quali").select("quali").eq("gran_premio", gran_premio).execute()
@@ -123,7 +121,7 @@ def procesar_todo(supabase):
 
         puntos_total_fin_de_semana = puntos_quali + puntos_sprint + puntos_carrera
 
-        # 2. Actualizar la tabla 'predicciones' con los parciales, el total y marcar como 'procesado'
+        # 2. Actualizar la tabla 'predicciones'
         supabase.table("predicciones").update({
             "puntos_qualy": puntos_quali,
             "puntos_sprint": puntos_sprint,
@@ -132,29 +130,34 @@ def procesar_todo(supabase):
             "estado": "procesado"
         }).eq("id", pred_id).execute()
 
-        # Acumular para el global del usuario
-        if usuario_id not in puntos_acumulados_usuarios:
-            puntos_acumulados_usuarios[usuario_id] = 0
-        puntos_acumulados_usuarios[usuario_id] += puntos_total_fin_de_semana
+        # Registrar usuario afectado para actualizar su global
+        puntos_acumulados_usuarios[usuario_id] = True
 
         print(f"🎯 GP: {gran_premio} | Usuario: {usuario_id[:8]}... -> Q: {puntos_quali} | S: {puntos_sprint} | C: {puntos_carrera} | Total GP: {puntos_total_fin_de_semana} [PROCESADO]")
 
-# 3. Actualizar los puntos globales en la tabla 'usuarios' de forma blindada y 100% precisa
+    # 3. Actualizar los puntos globales en la tabla 'usuarios' con logs detallados y control de errores
     for u_id in puntos_acumulados_usuarios.keys():
-        # Consultamos TODAS las predicciones procesadas de este usuario para recalcular el total real
-        preds_usuario = supabase.table("predicciones").select("total_fin_de_semana").eq("usuario_id", u_id).eq("estado", "procesado").execute()
-        
-        puntos_totales_globales = 0
-        if preds_usuario.data:
-            for p in preds_usuario.data:
-                puntos_totales_globales += (p.get("total_fin_de_semana") or 0)
+        try:
+            preds_usuario = supabase.table("predicciones").select("total_fin_de_semana").eq("usuario_id", u_id).eq("estado", "procesado").execute()
+            
+            puntos_totales_globales = 0
+            if preds_usuario.data:
+                for p in preds_usuario.data:
+                    puntos_totales_globales += (p.get("total_fin_de_semana") or 0)
 
-        # Actualizamos la tabla usuarios con el total real recalculado desde las fuentes
-        supabase.table("usuarios").update({
-            "puntos_globales": puntos_totales_globales
-        }).eq("id", u_id).execute()
-        
-        print(f"👤 Usuario {u_id[:8]}... recalibrado con Puntos Globales Reales: {puntos_totales_globales}")
+            print(f"📊 [DEBUG] Usuario {u_id[:8]}... -> Predicciones procesadas: {len(preds_usuario.data) if preds_usuario.data else 0} | Suma calculada: {puntos_totales_globales}")
+
+            res_update = supabase.table("usuarios").update({
+                "puntos_globales": puntos_totales_globales
+            }).eq("id", u_id).execute()
+
+            if hasattr(res_update, 'error') and res_update.error:
+                print(f"❌ [ERROR SUPABASE] No se pudieron actualizar los puntos del usuario {u_id[:8]}: {res_update.error}")
+            else:
+                print(f"✅ [ÉXITO] Usuario {u_id[:8]}... actualizado con Puntos Globales Totales: {puntos_totales_globales}")
+
+        except Exception as e:
+            print(f"❌ [EXCEPCIÓN CRÍTICA] Error al procesar puntos globales para el usuario {u_id[:8]}: {str(e)}")
 
 if __name__ == "__main__":
     url = os.environ.get("SUPABASE_URL")
