@@ -73,7 +73,7 @@ def procesar_todo(supabase):
             gran_premio = pred['gran_premio']
             pred_id = pred['id']
 
-# 🛡️ BLINDAJE EFEH TECH (Soporte Multitabla y Transición):
+            # 🛡️ BLINDAJE EFEH TECH (Soporte Multitabla y Transición):
             res_global = supabase.table("resultados_globales").select("*").eq("gran_premio", gran_premio).execute()
             
             if not res_global.data:
@@ -110,6 +110,10 @@ def procesar_todo(supabase):
                 pred_carrera_text = ",".join([str(p) for p in carrera_preds if p])
                 real_carrera_text = row_resultados['carrera']
                 puntos_carrera = calcular_puntos_sesion(pred_carrera_text, real_carrera_text, limite_puestos=10, es_sprint=False)
+
+            # 👈 Definición correcta de la suma total del fin de semana
+            puntos_total_fin_de_semana = puntos_quali + puntos_sprint + puntos_carrera
+
             # 2. Actualizar la tabla 'predicciones' con los parciales y marcar como 'procesado'
             supabase.table("predicciones").update({
                 "puntos_qualy": puntos_quali,
