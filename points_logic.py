@@ -104,7 +104,7 @@ def procesar_todo(supabase):
             # --- C. CARRERA OFICIAL ---
             carrera_preds = [
                 pred.get('carrera_p1'), pred.get('carrera_p2'), pred.get('carrera_p3'), 
-                pred.get('carrera_p4'), pred.get('carrera_p5']
+                pred.get('carrera_p4'), pred.get('carrera_p5')
             ]
             if any(carrera_preds) and row_resultados.get('carrera'):
                 pred_carrera_text = ",".join([str(p) for p in carrera_preds if p])
