@@ -744,6 +744,10 @@
                 </div>
                 <button type="submit" class="btn-action">Entrar</button>
             </form>
+            
+            <!-- PASE PADDOCK (MODO ESPECTADOR / EXPLORADOR) -->
+            <button type="button" class="btn-action" style="background: transparent; border: 1px solid var(--color-turquoise); color: var(--color-turquoise); margin-top: 10px;" onclick="entrarModoPaddock()">Pase Paddock</button>
+
             <div id="authFeedback" class="hidden"></div>
         </div>
     </div>
@@ -1096,7 +1100,20 @@
                 <p style="font-size: 0.7rem; color: var(--text-muted); margin: 0;">______________________________________</p>
             </div>
 
+            <!-- BOTÓN DE DESCARGA APK (EFEH TECH) -->
             <div class="card-box" style="border-left: 4px solid var(--color-gold);">
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.8rem; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 180px;">
+                        <h3 style="color: var(--color-gold); font-size: 0.9rem; margin: 0 0 0.15rem 0;">Descarga la Aplicación Móvil</h3>
+                        <p style="color: var(--text-muted); font-size: 0.7rem; margin: 0;">Lleva el Fantasy en tu Android (APK oficial).</p>
+                    </div>
+                    <a href="#" onclick="alert('Próximamente disponible el APK oficial de EFEH TECH.'); return false;" class="btn-action" style="width: auto; padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; background: linear-gradient(135deg, #ffd700, #b8860b); color: #000; font-weight: 900; margin: 0;">
+                        Descargar APK
+                    </a>
+                </div>
+            </div>
+
+            <div class="card-box" style="border-left: 4px solid var(--color-turquoise);">
                 <div class="collab-card-inline" style="display: flex; justify-content: space-between; align-items: center; gap: 0.8rem; flex-wrap: wrap;">
                     <div class="collab-text" style="flex: 1; min-width: 180px;">
                         <h3 style="color: var(--color-turquoise); font-size: 0.9rem; margin: 0 0 0.15rem 0;">Colabora con el proyecto Podium Fantasy F1</h3>
@@ -1144,10 +1161,16 @@
                 </div>
             </div>
            	
-            <div style="text-align: center; margin: 1.5rem 0 1rem 0;">
+            <!-- FOOTER CON DERECHOS RESERVADOS Y LOGOTIPO OFICIAL EFEH TECH COMPUTERS -->
+            <div style="text-align: center; margin: 1.5rem 0 1rem 0; display: flex; flex-direction: column; align-items: center; gap: 8px;">
                 <span style="display: inline-block; background-color: rgba(0, 0, 0, 0.7); padding: 6px 16px; border-radius: 20px; font-size: 0.75rem; color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.15); text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);">
                     EFEH Systems &copy; 2026 — Todos los derechos reservados
                 </span>
+                
+                <!-- Cuadrito miniatura con el logo oficial de espadas láser -->
+                <div style="width: 40px; height: 40px; background: #000000; border-radius: 6px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(0, 210, 255, 0.3); box-shadow: inset 0 2px 4px rgba(0,0,0,0.8); overflow: hidden;">
+                    <img src="1001097937.jpg" alt="EFEH TECH Logo" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
             </div>
         </div>
 
@@ -1202,6 +1225,23 @@
                 }
             }
         });
+
+        // FUNCIÓN PARA ENTRAR EN MODO PADDOCK (ESPECTADOR LIBRE)
+        function entrarModoPaddock() {
+            userIdActual = null;
+            usuarioActual = null;
+            document.getElementById('authView').classList.add('hidden');
+            document.getElementById('dashboardView').classList.remove('hidden');
+            document.getElementById('bottomNavBar').classList.remove('hidden');
+            document.getElementById('navUserArea').classList.add('hidden');
+            
+            cargarStandingsIndividuales();
+            cargarStandingsEscuderiasGlobal();
+            
+            // Mostrar aviso sutil de que están en Modo Paddock
+            const titleEl = document.getElementById('activeRoundTitle');
+            if (titleEl) titleEl.innerText = `[MODO PADDOCK] Ronda ${rondaActivaId}: ${rondaActivaNombre}`;
+        }
         
         function inicializarPilotosYCalendarioEstaticos() {
             driversList = [
@@ -1281,7 +1321,7 @@
                 }
         
                 const titleEl = document.getElementById('activeRoundTitle');
-                if (titleEl) titleEl.innerText = `Ronda ${rondaActivaId}: ${rondaActivaNombre}`;
+                if (titleEl) titleEl.innerText = userIdActual ? `Ronda ${rondaActivaId}: ${rondaActivaNombre}` : `[MODO PADDOCK] Ronda ${rondaActivaId}: ${rondaActivaNombre}`;
         
                 const sprintSection = document.getElementById('sprintSection');
                 if (rondaActivaEsSprint) {
@@ -1663,7 +1703,7 @@
 
             try {
                 const [predMioRes, predRivalRes, resGlobalesRes, usuariosRes] = await Promise.all([
-                    supabaseClient.from('predicciones').select('*').eq('usuario_id', userIdActual).eq('gran_premio', gpName).maybeSingle(),
+                    userIdActual ? supabaseClient.from('predicciones').select('*').eq('usuario_id', userIdActual).eq('gran_premio', gpName).maybeSingle() : Promise.resolve({data: null}),
                     supabaseClient.from('predicciones').select('*').eq('usuario_id', rivalActual.id).eq('gran_premio', gpName).maybeSingle(),
                     supabaseClient.from('resultados_globales').select('*').eq('gran_premio', gpName).maybeSingle(),
                     supabaseClient.from('usuarios').select('id, username, puntos_globales').order('puntos_globales', { ascending: false })
@@ -1674,15 +1714,11 @@
                 const rOficial = resGlobalesRes.data || {};
                 const listaUsuarios = usuariosRes.data || [];
                 
-                // Guardamos en la variable global para alimentar el buscador predictivo
                 listaUsuariosGlobal = listaUsuarios;
 
-                const meObj = listaUsuarios.find(u => u.id === userIdActual);
-                const miNombreDisplay = (meObj && meObj.username && meObj.username.trim() !== "") 
-                    ? meObj.username 
-                    : (usuarioActual ? usuarioActual.split('@')[0] : "TÚ");
+                const meObj = userIdActual ? listaUsuarios.find(u => u.id === userIdActual) : null;
+                const miNombreDisplay = meObj && meObj.username ? meObj.username : (usuarioActual ? usuarioActual.split('@')[0] : "VISITANTE PADDOCK");
 
-                // Asegurar que rivalActual tenga nombre si se abrió por defecto
                 if (!rivalActual.username) {
                     const foundRival = listaUsuarios.find(u => u.id === rivalActual.id);
                     if (foundRival) rivalActual.username = foundRival.username || 'Formulero';
@@ -1728,7 +1764,6 @@
                                        value="${rivalActual.username || ''}"
                                        oninput="filtrarRivalsEnVivo(this.value)" />
                                 
-                                <!-- Micro-desplegable flotante de resultados -->
                                 <div id="rivalSearchResults" class="dropdown-menu" style="right: 0; left: auto; width: 100%; min-width: 140px; display: none;"></div>
                             </div>
                         </div>
@@ -1991,8 +2026,15 @@
         async function cargarDatosMiCuenta() {
             let puntosGlobales = 0;
             let posicionRanking = "-";
-            let nombreUsuarioDisplay = usuarioActual ? usuarioActual.split('@')[0] : "Usuario";
+            let nombreUsuarioDisplay = usuarioActual ? usuarioActual.split('@')[0] : "Visitante Paddock";
             misPrediccionesUsuario = [];
+
+            if (!userIdActual) {
+                document.getElementById('statUserNameDisplay').innerText = `Formulero: [Modo Paddock]`;
+                document.getElementById('statGlobalPts').innerText = `0`;
+                document.getElementById('statUserPos').innerText = `Posición individual: N/A`;
+                return;
+            }
 
             try {
                 if (supabaseClient && userIdActual) {
@@ -2115,6 +2157,12 @@
         async function guardarPrediccion() {
             const feedback = document.getElementById('predictionFeedback');
 
+            if (!userIdActual) {
+                abrirModalRegistro();
+                alert("🔒 Estás explorando en Modo Paddock. Debes registrarte o iniciar sesión para guardar tu predicción oficial.");
+                return;
+            }
+
             if (fechaCierreRonda && new Date().getTime() >= fechaCierreRonda.getTime()) {
                 feedback.textContent = "⚠️ El plazo para realizar o modificar predicciones ha caducado (cierre 2 días antes de la carrera).";
                 feedback.className = "status-msg status-error";
@@ -2236,7 +2284,7 @@
         }
 
         async function crearEscuderia() {
-            if (!userIdActual) { alert("Debes iniciar sesión."); return; }
+            if (!userIdActual) { alert("Debes iniciar sesión para crear una escudería."); return; }
             const inputNombre = document.getElementById('input-nombre-escuderia');
             const nombreEscuderia = inputNombre ? inputNombre.value.trim() : "";
             if (!nombreEscuderia) { alert("Ingresa un nombre."); return; }
@@ -2257,7 +2305,7 @@
 
         async function unirseEscuderia() {
             try {
-                if (!userIdActual) return;
+                if (!userIdActual) { alert("Debes iniciar sesión para unirte a una escudería."); return; }
                 const inputEl = document.getElementById('input-codigo-invitacion');
                 const codigoIngresado = inputEl ? inputEl.value.trim().toUpperCase() : "";
                 if (!codigoIngresado) { alert("Ingresa un código."); return; }
@@ -2278,6 +2326,7 @@
         }
 
         async function abandonarEscuderia() {
+            if (!userIdActual) return;
             if (!confirm("¿Deseas abandonar tu escudería?")) return;
             try {
                 const { error } = await supabaseClient.from('usuarios').update({ nombre_escuderia: null, escuderia_id: null }).eq('id', userIdActual);
@@ -2303,6 +2352,14 @@
 
             if (!membersTbody) return;
             membersTbody.innerHTML = '<tr><td colspan="3" class="text-center" style="color: var(--text-muted); padding: 0.8rem;">Calculando...</td></tr>';
+
+            if (!userIdActual) {
+                teamNameDisplay.innerText = "Modo Paddock";
+                teamPosDisplay.innerText = "Inicia sesión para gestionar escuderías";
+                teamPtsDisplay.innerText = "0";
+                membersTbody.innerHTML = '<tr><td colspan="3" class="text-center" style="color: var(--text-muted); padding: 0.8rem;">Función bloqueada en modo espectador.</td></tr>';
+                return;
+            }
 
             try {
                 const { data: usuarios, error } = await supabaseClient.from('usuarios').select('id, username, puntos_globales, nombre_escuderia, escuderia_id, codigo_invitacion');
