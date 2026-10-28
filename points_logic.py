@@ -61,84 +61,77 @@ def calcular_puntos_sesion(pred_text, real_text, limite_puestos, es_sprint=False
     return pts
 
 def procesar_todo(supabase):
-    print("🚀 [EFEH TECH] Iniciando motor de cálculo oficial de puntos (Modo Pendientes)...")
+    print("🚀 [EFEH TECH] Iniciando motor de cálculo oficial de puntos...")
 
     # 1. Obtener únicamente las predicciones que estén pendientes por procesar
     preds_res = supabase.table("predicciones").select("*").eq("estado", "pendiente").execute()
-    if not preds_res.data:
-        print("⚠️ No hay predicciones pendientes registradas en la base de datos.")
-        return
-
-    # Diccionario para acumular los usuarios que tuvieron actividad en este ciclo
-    puntos_acumulados_usuarios = {}
-
-    for pred in preds_res.data:
-        usuario_id = pred['usuario_id']
-        gran_premio = pred['gran_premio']
-        pred_id = pred['id']
-
-        # 🛡️ BLINDAJE EFEH TECH (Soporte Multitabla y Transición):
-        res_global = supabase.table("resultados_globales").select("*").eq("gran_premio", gran_premio).execute()
-        res_oficial = supabase.table("resultados_oficiales").select("carrera").eq("gran_premio", gran_premio).execute()
-        
-        if not res_global.data and not res_oficial.data:
-            print(f"⏳ [OMITIDO] El GP '{gran_premio}' aún no tiene resultados de carrera cargados. Se MANTIENE en 'pendiente'.")
-            continue
-
-        puntos_quali = 0
-        puntos_sprint = 0
-        puntos_carrera = 0
-
-        # --- A. QUALI ---
-        poleman_predicho = pred.get('poleman')
-        if poleman_predicho:
-            res_q = supabase.table("resultados_quali").select("quali").eq("gran_premio", gran_premio).execute()
-            if res_q.data:
-                poleman_real = res_q.data[0]['quali']
-                if poleman_predicho.strip().lower() == poleman_real.strip().lower():
-                    puntos_quali = 5
-
-        # --- B. SPRINT ---
-        sprint_preds = [pred.get('sprint_p1'), pred.get('sprint_p2'), pred.get('sprint_p3')]
-        if any(sprint_preds):
-            pred_sprint_text = ",".join([str(p) for p in sprint_preds if p])
-            res_s = supabase.table("resultados_sprint").select("sprint").eq("gran_premio", gran_premio).execute()
-            if res_s.data:
-                real_sprint_text = res_s.data[0]['sprint']
-                puntos_sprint = calcular_puntos_sesion(pred_sprint_text, real_sprint_text, limite_puestos=8, es_sprint=True)
-
-        # --- C. CARRERA OFICIAL ---
-        carrera_preds = [
-            pred.get('carrera_p1'), pred.get('carrera_p2'), pred.get('carrera_p3'), 
-            pred.get('carrera_p4'), pred.get('carrera_p5')
-        ]
-        if any(carrera_preds):
-            pred_carrera_text = ",".join([str(p) for p in carrera_preds if p])
-            res_c = supabase.table("resultados_oficiales").select("carrera").eq("gran_premio", gran_premio).execute()
-            if res_c.data:
-                real_carrera_text = res_c.data[0]['carrera']
-                puntos_carrera = calcular_puntos_sesion(pred_carrera_text, real_carrera_text, limite_puestos=10, es_sprint=False)
-
-        puntos_total_fin_de_semana = puntos_quali + puntos_sprint + puntos_carrera
-
-        # 2. Actualizar la tabla 'predicciones'
-        supabase.table("predicciones").update({
-            "puntos_qualy": puntos_quali,
-            "puntos_sprint": puntos_sprint,
-            "puntos_carrera": puntos_carrera,
-            "total_fin_de_semana": puntos_total_fin_de_semana,
-            "estado": "procesado"
-        }).eq("id", pred_id).execute()
-
-        # Registrar usuario afectado para actualizar su global
-        puntos_acumulados_usuarios[usuario_id] = True
-
-        print(f"🎯 GP: {gran_premio} | Usuario: {usuario_id[:8]}... -> Q: {puntos_quali} | S: {puntos_sprint} | C: {puntos_carrera} | Total GP: {puntos_total_fin_de_semana} [PROCESADO]")
-
-# 3. Auditoría y Actualización Global de Puntos para TODOS los usuarios (Independiente de si hubo pendientes o no)
-    print("🔄 [EFEH TECH] Ejecutando auditoría y sincronización global de puntos de usuarios...")
     
-    # Consultamos todos los usuarios activos
+    if preds_res.data:
+        print(f"📥 Se encontraron {len(preds_res.data)} predicciones pendientes por procesar.")
+        for pred in preds_res.data:
+            usuario_id = pred['usuario_id']
+            gran_premio = pred['gran_premio']
+            pred_id = pred['id']
+
+            # 🛡️ BLINDAJE EFEH TECH (Soporte Multitabla y Transición):
+            res_global = supabase.table("resultados_globales").select("*").eq("gran_premio", gran_premio).execute()
+            res_oficial = supabase.table("resultados_oficiales").select("carrera").eq("gran_premio", gran_premio).execute()
+            
+            if not res_global.data and not res_oficial.data:
+                print(f"⏳ [OMITIDO] El GP '{gran_premio}' aún no tiene resultados de carrera cargados. Se MANTIENE en 'pendiente'.")
+                continue
+
+            puntos_quali = 0
+            puntos_sprint = 0
+            puntos_carrera = 0
+
+            # --- A. QUALI ---
+            poleman_predicho = pred.get('poleman')
+            if poleman_predicho:
+                res_q = supabase.table("resultados_quali").select("quali").eq("gran_premio", gran_premio).execute()
+                if res_q.data:
+                    poleman_real = res_q.data[0]['quali']
+                    if poleman_predicho.strip().lower() == poleman_real.strip().lower():
+                        puntos_quali = 5
+
+            # --- B. SPRINT ---
+            sprint_preds = [pred.get('sprint_p1'), pred.get('sprint_p2'), pred.get('sprint_p3')]
+            if any(sprint_preds):
+                pred_sprint_text = ",".join([str(p) for p in sprint_preds if p])
+                res_s = supabase.table("resultados_sprint").select("sprint").eq("gran_premio", gran_premio).execute()
+                if res_s.data:
+                    real_sprint_text = res_s.data[0]['sprint']
+                    puntos_sprint = calcular_puntos_sesion(pred_sprint_text, real_sprint_text, limite_puestos=8, es_sprint=True)
+
+            # --- C. CARRERA OFICIAL ---
+            carrera_preds = [
+                pred.get('carrera_p1'), pred.get('carrera_p2'), pred.get('carrera_p3'), 
+                pred.get('carrera_p4'), pred.get('carrera_p5')
+            ]
+            if any(carrera_preds):
+                pred_carrera_text = ",".join([str(p) for p in carrera_preds if p])
+                res_c = supabase.table("resultados_oficiales").select("carrera").eq("gran_premio", gran_premio).execute()
+                if res_c.data:
+                    real_carrera_text = res_c.data[0]['carrera']
+                    puntos_carrera = calcular_puntos_sesion(pred_carrera_text, real_carrera_text, limite_puestos=10, es_sprint=False)
+
+            puntos_total_fin_de_semana = puntos_quali + puntos_sprint + puntos_carrera
+
+            # 2. Actualizar la tabla 'predicciones' con los parciales y marcar como 'procesado'
+            supabase.table("predicciones").update({
+                "puntos_qualy": puntos_quali,
+                "puntos_sprint": puntos_sprint,
+                "puntos_carrera": puntos_carrera,
+                "total_fin_de_semana": puntos_total_fin_de_semana,
+                "estado": "procesado"
+            }).eq("id", pred_id).execute()
+
+            print(f"🎯 GP: {gran_premio} | Usuario: {usuario_id[:8]}... -> Q: {puntos_quali} | S: {puntos_sprint} | C: {puntos_carrera} | Total GP: {puntos_total_fin_de_semana} [PROCESADO]")
+    else:
+        print("⚠️ No hay predicciones pendientes nuevas en este ciclo. Procediendo directamente a la auditoría global de puntos.")
+
+    # 3. AUDITORÍA Y ACTUALIZACIÓN GLOBAL (Se ejecuta SIEMPRE, sin importar si hubo pendientes o no)
+    print("🔄 [EFEH TECH] Ejecutando auditoría y sincronización global de puntos de usuarios...")
     usuarios_res = supabase.table("usuarios").select("id, username").execute()
     
     if usuarios_res.data:
@@ -147,7 +140,7 @@ def procesar_todo(supabase):
             username = usr['username']
             
             try:
-                # Buscamos TODAS las predicciones de este usuario (sin importar el GP) que estén procesadas
+                # Buscamos TODAS las predicciones procesadas de este usuario para sumar sus totales reales
                 preds_usuario = supabase.table("predicciones").select("total_fin_de_semana").eq("usuario_id", u_id).eq("estado", "procesado").execute()
                 
                 puntos_totales_reales = 0
@@ -155,7 +148,7 @@ def procesar_todo(supabase):
                     for p in preds_usuario.data:
                         puntos_totales_reales += (p.get("total_fin_de_semana") or 0)
 
-                # Forzamos la actualización autoritaria en la tabla usuarios (Elimina cualquier punto falso o duplicado)
+                # Forzamos la actualización autoritaria en la tabla usuarios (Alinea el puntaje global con la realidad)
                 res_update = supabase.table("usuarios").update({
                     "puntos_globales": puntos_totales_reales
                 }).eq("id", u_id).execute()
