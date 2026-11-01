@@ -494,7 +494,7 @@
             font-family: inherit;
         }
         .dropdown-trigger {
-            background-color: var(--bg-main);
+            background-color: var(--bg-grey);
             border: 1px solid var(--border-color);
             color: var(--text-main);
             padding: 0.3rem 0.5rem;
@@ -627,7 +627,7 @@
             font-weight: 900 !important;
             color: var(--color-gold) !important;
             background: rgba(255, 215, 0, 0.1) !important;
-            border: 1px solid var(--color-gold) !important;
+            border: 0px solid var(--color-gold) !important;
             border-radius: 4px !important;
             font-size: 0.85rem !important;
             padding: 3px 8px !important;
@@ -866,12 +866,12 @@
             <div class="card-box">
                 <h2 style="color: var(--color-gold); font-size: 0.95rem; margin-bottom: 0.6rem;">Mis predicciones</h2>
 
-                <!-- 1. Pole Position -->
+                <!-- 1. Pole Position (Corregido: limpio, sin duplicidad y con texto uniforme) -->
                 <div style="font-size: 0.72rem; color: var(--color-gold); font-weight: bold; margin-bottom: 0.3rem; text-transform: uppercase;">🏁 Pole Position</div>
                 <div class="form-row-inline" style="margin-bottom: 0.6rem;">
                     <label>Pole</label>
                     <div class="select-wrapper">
-                        <select id="poleSelect" class="form-control-compact driver-select">
+                        <select id="poleSelect" class="form-control-compact">
                             <option value="">Selecciona piloto</option>
                         </select>
                     </div>
@@ -1100,19 +1100,6 @@
                 <p style="font-size: 0.7rem; color: var(--text-muted); margin: 0;">______________________________________</p>
             </div>
 
-            <!-- BOTÓN DE DESCARGA APK (EFEH TECH) -->
-            <div class="card-box" style="border-left: 4px solid var(--color-gold);">
-                <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.8rem; flex-wrap: wrap;">
-                    <div style="flex: 1; min-width: 180px;">
-                        <h3 style="color: var(--color-gold); font-size: 0.9rem; margin: 0 0 0.15rem 0;">Descarga la Aplicación Móvil</h3>
-                        <p style="color: var(--text-muted); font-size: 0.7rem; margin: 0;">Lleva el Fantasy en tu Android (APK oficial).</p>
-                    </div>
-                    <a href="#" onclick="alert('Próximamente disponible el APK oficial de EFEH TECH.'); return false;" class="btn-action" style="width: auto; padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; background: linear-gradient(135deg, #ffd700, #b8860b); color: #000; font-weight: 900; margin: 0;">
-                        Descargar APK
-                    </a>
-                </div>
-            </div>
-
             <div class="card-box" style="border-left: 4px solid var(--color-turquoise);">
                 <div class="collab-card-inline" style="display: flex; justify-content: space-between; align-items: center; gap: 0.8rem; flex-wrap: wrap;">
                     <div class="collab-text" style="flex: 1; min-width: 180px;">
@@ -1160,14 +1147,24 @@
                        📧 Sugerencias                    </a>
                 </div>
             </div>
+           	            <!-- BOTÓN DE DESCARGA APK (EFEH TECH) -->
+            <div class="card-box" style="border-left: 4px solid var(--color-gold);">
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.8rem; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 180px;">
+                        <h3 style="color: var(--color-gold); font-size: 0.9rem; margin: 0 0 0.15rem 0;">Descarga la Aplicación Móvil</h3>
+                        <p style="color: var(--text-muted); font-size: 0.7rem; margin: 0;">Lleva el Fantasy en tu Android (APK oficial).</p>
+                    </div>
+                    <a href="#" onclick="alert('Próximamente disponible el APK oficial de EFEH TECH.'); return false;" class="btn-action" style="width: auto; padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; background: linear-gradient(135deg, #ffd700, #b8860b); color: #000; font-weight: 900; margin: 0;">
+                        Descargar APK
+                    </a>
+                </div>
+            </div>
            	
-            <!-- FOOTER CON DERECHOS RESERVADOS Y LOGOTIPO OFICIAL EFEH TECH COMPUTERS -->
             <div style="text-align: center; margin: 1.5rem 0 1rem 0; display: flex; flex-direction: column; align-items: center; gap: 8px;">
                 <span style="display: inline-block; background-color: rgba(0, 0, 0, 0.7); padding: 6px 16px; border-radius: 20px; font-size: 0.75rem; color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.15); text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);">
                     EFEH Systems &copy; 2026 — Todos los derechos reservados
                 </span>
                 
-                <!-- Cuadrito miniatura con el logo oficial de espadas láser -->
                 <div style="width: 40px; height: 40px; background: #000000; border-radius: 6px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(0, 210, 255, 0.3); box-shadow: inset 0 2px 4px rgba(0,0,0,0.8); overflow: hidden;">
                     <img src="1001097937.jpg" alt="EFEH TECH Logo" style="width: 100%; height: 100%; object-fit: contain;">
                 </div>
@@ -1206,7 +1203,7 @@
         let fechaCierreRonda = null;
         let countdownInterval = null;
         let rivalActual = null;
-        let listaUsuariosGlobal = []; // Variable global para el buscador predictivo
+        let listaUsuariosGlobal = [];
 
         document.addEventListener("DOMContentLoaded", async () => {
             inicializarPilotosYCalendarioEstaticos();
@@ -1226,7 +1223,6 @@
             }
         });
 
-        // FUNCIÓN PARA ENTRAR EN MODO PADDOCK (ESPECTADOR LIBRE)
         function entrarModoPaddock() {
             userIdActual = null;
             usuarioActual = null;
@@ -1238,7 +1234,6 @@
             cargarStandingsIndividuales();
             cargarStandingsEscuderiasGlobal();
             
-            // Mostrar aviso sutil de que están en Modo Paddock
             const titleEl = document.getElementById('activeRoundTitle');
             if (titleEl) titleEl.innerText = `[MODO PADDOCK] Ronda ${rondaActivaId}: ${rondaActivaNombre}`;
         }
@@ -1552,7 +1547,6 @@
         function abrirModalRegistro() { document.getElementById('registerModal').classList.remove('hidden'); }
         function cerrarModalRegistro() { document.getElementById('registerModal').classList.add('hidden'); }
 
-        // --- FUNCIONES DEL MODAL VERSUS (CARA A CARA CON SCROLL DESDE RONDA 1 Y BUSCADOR PREDICTIVO) ---
         async function abrirModalVersus(rivalId, rivalUsername) {
             rivalActual = { id: rivalId, username: rivalUsername };
             
@@ -1580,7 +1574,6 @@
             actualizarComparativaVersus();
         }
 
-        // FUNCIONES DE BÚSQUEDA PREDICTIVA PARA EL RIVAL
         function filtrarRivalsEnVivo(textoBusqueda) {
             const resultsBox = document.getElementById('rivalSearchResults');
             if (!resultsBox) return;
@@ -1627,11 +1620,9 @@
             document.getElementById('versusModal').classList.add('hidden');
         }
 
-        // ESCALAS OFICIALES FIA DE EFEH TECH
         const ESCALA_CARRERA_FIA = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
         const ESCALA_SPRINT_FIA = [25, 18, 15, 12, 10, 8, 6, 4];
 
-        // MOTOR DE INGENIERÍA INVERSA CON LECTURA DE RESULTADOS GLOBALES
         function calcularPuntosPilotoVersus(predDriver, officialData, indexPred, tipo) {
             if (!predDriver || !officialData) return 0;
             
@@ -1750,7 +1741,6 @@
                 let html = `
                     <div class="versus-card-container">
                         
-                        <!-- CABECERA: TU NOMBRE VS BUSCADOR PREDICTIVO DE RIVAL -->
                         <div class="versus-header-grid">
                             <div class="versus-user-title">
                                 👤 ${miNombreDisplay}
@@ -1768,11 +1758,9 @@
                             </div>
                         </div>
 
-                        <!-- POLEMAN -->
                         <div class="versus-section-title">POLEMAN</div>
                         ${renderFilaVersus(pMio.poleman, pRival.poleman, 0, 'pole')}
 
-                        <!-- SPRINT (SI APLICA) -->
                         ${esSprintGp ? `
                         <div class="versus-section-title">SPRINT</div>
                         ${renderFilaVersus(pMio.sprint_p1, pRival.sprint_p1, 0, 'sprint')}
@@ -1780,7 +1768,6 @@
                         ${renderFilaVersus(pMio.sprint_p3, pRival.sprint_p3, 2, 'sprint')}
                         ` : ''}
 
-                        <!-- LONG RACE -->
                         <div class="versus-section-title">LONG RACE</div>
                         ${renderFilaVersus(pMio.carrera_p1, pRival.carrera_p1, 0, 'carrera')}
                         ${renderFilaVersus(pMio.carrera_p2, pRival.carrera_p2, 1, 'carrera')}
@@ -1788,11 +1775,10 @@
                         ${renderFilaVersus(pMio.carrera_p4, pRival.carrera_p4, 3, 'carrera')}
                         ${renderFilaVersus(pMio.carrera_p5, pRival.carrera_p5, 4, 'carrera')}
 
-                        <!-- TOTALES AL PIE DE TARJETA -->
                         <div class="versus-footer-grid">
                             <div>
                                 <span style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; display: block;">Total Tu GP</span>
-                                <span style="font-weight: 900; color: var(--color-turquoise); font-size: 1.05rem;">${pMio.total_fin_de_semana || 0} pts</span>
+                                <span style="font-weight: 900; color: var(--color-gold); font-size: 1.05rem;">${pMio.total_fin_de_semana || 0} pts</span>
                             </div>
                             <div>
                                 <span style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; display: block;">Total Rival GP</span>
@@ -2067,15 +2053,12 @@
                 console.warn("Error al sincronizar datos de la cuenta:", e);
             }
 
+            // CORREGIDO: Orden cronológico de TODAS las rondas (sin el slice que limitaba a 5)
             misPrediccionesUsuario.sort((a, b) => {
                 const rondaA = calendarData.find(c => c.name === a.gran_premio)?.round || 99;
                 const rondaB = calendarData.find(c => c.name === b.gran_premio)?.round || 99;
                 return rondaA - rondaB;
             });
-            
-            if (misPrediccionesUsuario.length > 5) {
-                misPrediccionesUsuario = misPrediccionesUsuario.slice(-5);
-            }
 
             const nameDisplayEl = document.getElementById('statUserNameDisplay');
             if (nameDisplayEl) nameDisplayEl.innerText = `Formulero: ${nombreUsuarioDisplay}`;
